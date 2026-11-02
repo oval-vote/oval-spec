@@ -1,0 +1,950 @@
+# Varun's Voting Guide, 2024 General Election, converted from the YAML source at
+# github.com/vsanthanam/voting-guide (src/content/guides/2024-general/).
+#
+# Conversion decisions, where the source and the Oval model disagree:
+#
+#   1. Structure. The source is organized by level of government (federal, state,
+#      city), not by electorate. Oval's ballot tree models electorates. Rather
+#      than invent sub-ballots the author never wrote, each source jurisdiction
+#      is a root ballot and the author's sections are kept as sections. District
+#      scope ("Palo Alto", "Oakland Hills") is carried in subtitles as the
+#      source does. An electorate-faithful tree is possible but is a different
+#      guide; see the notes at the end of this file.
+#
+#   2. BART. The source lists BART District 7 under both San Francisco and
+#      Oakland. Oval requires each contest to appear exactly once, so the three
+#      BART contests are a sixth root ballot with an eligibility line. This is
+#      the cross-cutting-district case the model anticipated.
+#
+#   3. Recalls. The model has no Recall entity yet (DATA_MODEL.md, resolved Q6).
+#      The two Oakland recalls are written as measures, which is what the
+#      source does too (kind: recall shares the measure fields). Noted inline.
+#
+#   4. Per-pick notes. The source attaches "if you must" to one mayoral pick.
+#      Oval has no per-tier or per-stance note, so it is in the recommendation's
+#      note. This was deferred deliberately in the model; here is the first
+#      real case for it.
+#
+# Source fields that map directly: office -> contest title; area -> subtitle;
+# kind single/multi/ranked -> single/multiple/ranked; seats -> multiple N;
+# candidates -> campaigns; incumbent -> incumbent flag; party -> party ref;
+# picks (each slot) -> one support line, any_of -> several refs on one line;
+# avoid -> oppose; why -> justification; measure + title -> measure title +
+# subtitle; position yes/no/none -> recommend yes/no/no-position;
+# note -> note.
+
+guide "Varun's Voting Guide"
+election "2024 General Election"
+date 2024-11-05
+
+note:
+  Written by Varun Santhanam. Designed for voters in select cities in the San
+  Francisco Bay Area. Always double check the options written on your ballot.
+
+# ---------------------------------------------------------------- parties
+
+party @dem "Democratic"
+  abbreviation "D"
+party @gop "Republican"
+  abbreviation "R"
+party @aip "American Independent"
+  abbreviation "AIP"
+party @green "Green"
+  abbreviation "G"
+party @pf "Peace and Freedom"
+  abbreviation "PF"
+party @lib "Libertarian"
+  abbreviation "LIB"
+
+# ------------------------------------------------------------- candidates
+# Only people who appear in more than one contest.
+
+candidate @adam-schiff "Adam Schiff"
+  party @dem
+candidate @steve-garvey "Steve Garvey"
+  party @gop
+
+# ======================================================================
+ballot @federal "Federal Government"
+
+  section "Executive Offices"
+
+    contest @president "President and Vice President of the United States of America" single
+
+      campaign
+        @kamala-harris "Kamala Harris" as "President"
+          party @dem
+        @tim-walz "Tim Walz" as "Vice President"
+          party @dem
+      campaign
+        @donald-trump "Donald Trump" as "President"
+          party @gop
+        @jd-vance "JD Vance" as "Vice President"
+          party @gop
+      campaign
+        @rfk-jr "Robert F. Kennedy Jr." as "President"
+          party @aip
+        @nicole-shanahan "Nicole Shanahan" as "Vice President"
+          party @aip
+      campaign
+        @jill-stein "Jill Stein" as "President"
+          party @green
+        @butch-ware "Butch Ware" as "Vice President"
+          party @green
+      campaign
+        @claudia-de-la-cruz "Claudia De la Cruz" as "President"
+          party @pf
+        @karina-garcia "Karina Garcia" as "Vice President"
+          party @pf
+      campaign
+        @chase-oliver "Chase Oliver" as "President"
+          party @lib
+        @mike-ter-maat "Mike ter Maat" as "Vice President"
+          party @lib
+
+      recommend
+        support @kamala-harris
+
+  section "United States Senate"
+
+    contest @us-senate-special "United States Senate, Special Election for California Senator" single
+      subtitle "Remainder of term, 2018 to 2024"
+
+      campaign @adam-schiff
+      campaign @steve-garvey
+
+      recommend
+        support @adam-schiff
+
+    contest @us-senate-full "United States Senate, Junior Senator for California" single
+      subtitle "Full term, 2024 to 2030"
+
+      campaign @adam-schiff
+      campaign @steve-garvey
+
+      recommend
+        support @adam-schiff
+
+  section "United States House of Representatives"
+
+    contest @ca-16 "United States House of Representatives, District 16" single
+      subtitle "Palo Alto"
+
+      campaign @sam-liccardo "Sam Liccardo"
+        party @dem
+      campaign @evan-low "Evan Low"
+        party @dem
+
+      recommend
+        support @evan-low
+
+    contest @ca-12 "United States House of Representatives, District 12" single
+      subtitle "Oakland Hills"
+
+      campaign @lateefah-simon "Lateefah Simon"
+        party @dem
+      campaign @jennifer-tran "Jennifer Tran"
+        party @dem
+
+      recommend
+        support @lateefah-simon
+
+    contest @ca-11 "United States House of Representatives, District 11" single
+      subtitle "San Francisco"
+
+      campaign incumbent @nancy-pelosi "Nancy Pelosi"
+        party @dem
+      campaign @bruce-lou "Bruce Lou"
+        party @gop
+
+      recommend
+        support @nancy-pelosi
+
+# ======================================================================
+ballot @california "The State of California"
+
+  section "California State Assembly"
+
+    contest @ad-14 "California State Assembly, District 14" single
+      subtitle "Oakland Hills"
+
+      campaign incumbent @buffy-wicks "Buffy Wicks"
+        party @dem
+      campaign @margot-smith "Margot Smith"
+        party @dem
+
+      recommend
+        support @buffy-wicks
+
+    contest @ad-17 "California State Assembly, District 17" single
+      subtitle "San Francisco"
+
+      campaign incumbent @matt-haney "Matt Haney"
+        party @dem
+      campaign @manuel-noris-barrera "Manuel Noris-Barrera"
+        party @gop
+
+      recommend
+        support @matt-haney
+
+    contest @ad-19 "California State Assembly, District 19" single
+      subtitle "San Francisco"
+
+      campaign @catherine-stefani "Catherine Stefani"
+        party @dem
+      campaign @david-lee "David Lee"
+        party @dem
+
+      recommend
+        support @catherine-stefani @david-lee
+
+    contest @ad-23 "California State Assembly, District 23" single
+      subtitle "Palo Alto"
+
+      campaign incumbent @marc-berman "Marc Berman"
+        party @dem
+      campaign @lydia-kou "Lydia Kou"
+        party @dem
+
+      recommend
+        support @marc-berman
+
+  section "California State Senate"
+
+    contest @sd-7 "California State Senate, District 7" single
+      subtitle "Oakland Hills"
+
+      campaign @jesse-arreguin "Jesse Arreguín"
+        party @dem
+      campaign @jovanka-beckles "Jovanka Beckles"
+        party @dem
+
+      recommend
+        support @jesse-arreguin
+
+    contest @sd-11 "California State Senate, District 11" single
+      subtitle "San Francisco"
+
+      campaign incumbent @scott-wiener "Scott Wiener"
+        party @dem
+      campaign @yvette-corkrean "Yvette Corkrean"
+        party @gop
+
+      recommend
+        support @scott-wiener
+
+    contest @sd-13 "California State Senate, District 13" single
+      subtitle "Palo Alto"
+
+      campaign incumbent @josh-becker "Josh Becker"
+        party @dem
+      campaign @alexander-glew "Alexander Glew"
+        party @gop
+
+      recommend
+        support @josh-becker
+
+  section "California Ballot Propositions"
+
+    measure @ca-prop-2 "Proposition 2"
+      subtitle "Public school facilities bond"
+      recommend yes
+        justification:
+          This is a pretty straightforward bond for public school infrastructure in the
+          state. California has a rather precarious funding structure for public schools
+          because of 1978's Proposition 13 and the Gann Limit, which means that annual
+          resource allocations are extremely volatile and depend primarily on the recency
+          of real estate sales and their updated value appraisals, making bonds like this
+          a necessary regular funding mechanism to ensure predictable funding, especially
+          in years when the number of transactions are down and property values are not
+          reassessed for tax purposes.
+
+    measure @ca-prop-3 "Proposition 3"
+      subtitle "Right to marry"
+      recommend yes
+        justification:
+          This is essentially the opposite of 2008's Proposition 8, and enshrines the
+          right to marry regardless of race, gender, sexual orientation, etc.
+
+    measure @ca-prop-4 "Proposition 4"
+      subtitle "Climate and wildfire bond"
+      recommend yes
+        justification:
+          As wildfires become a nearly annual occurrence in the state, this bond will
+          provide critical funding for necessary infrastructure to keep our communities
+          safe from this growing threat.
+
+    measure @ca-prop-5 "Proposition 5"
+      subtitle "55% threshold for local housing bonds"
+      recommend yes
+        justification:
+          State laws ensure that random asshats can jam up processes used by cities and
+          counties to acquire affordable housing bonds. This law enables localities to set
+          up these bonds as long as they have a 55% majority vote by the local electorate.
+          Local housing bonds are good, and are generally more precise instruments than
+          their state-wide alternatives.
+
+    measure @ca-prop-6 "Proposition 6"
+      subtitle "End involuntary servitude in prisons"
+      recommend yes
+        justification:
+          Abolishes slavery. Slavery is bad.
+
+    measure @ca-prop-32 "Proposition 32"
+      subtitle "$18 minimum wage"
+      recommend no-position
+        justification:
+          This law does two things: it sets up a ramped state-wide minimum wage to $18 by
+          2026, and enables further increases based on inflation and cost of labor. Given
+          that we're just coming off the backs of an inflationary macroeconomic
+          environment, I won't begrudge anyone for voting no on this one, and I think that
+          in general minimum wage laws are a good but limited policy lever for
+          strengthening overall wages. Sectoral bargaining is better. That said, I
+          personally will be voting "yes" on this one.
+
+    measure @ca-prop-33 "Proposition 33"
+      subtitle "Repeal Costa-Hawkins"
+      recommend no
+        justification:
+          Costa-Hawkins is a loose, state-wide rent-control measure that caps increases at
+          fixed percentages or inflation, and bans localities from instituting their own
+          rent-control regimes unless they were already established before Costa-Hawkins.
+          Prop 33 eliminates Costa-Hawkins, and enables local communities to enable their
+          own rent control laws. Look, I'd love to get rid of Costa-Hawkins. It sucks. But
+          the mechanism by which this law does this is pretty insane, and sets up
+          literally zero limits on what localities can do in place of Costa-Hawkins. This
+          comes at a time when cities all over the state are fighting back against the
+          state government for enforcing much needed housing regulations. Prop 33 enables
+          these notoriously anti-housing cities to effectively avoid much of the recent
+          pro-housing legislation like AB2011 (CEQA reform), AB2097 (eliminating parking
+          minimums next to transit centers), AB1551 (density bonus), and AB2234 (project
+          timeline enforcement) by designing rent control schemes that make compliance
+          with these laws impossible. Some cities have gone as far as to say this out
+          loud. Most California cities have proven themselves to be untrustworthy when it
+          comes to self-regulating their own housing production, and have fought tooth and
+          nail to ensure that they can avoid state housing regulation. We need to get rid
+          of Costa-Hawkins eventually, but we cannot do it at the expense of badly needed
+          housing production in the state with the worst housing shortage in America.
+          Vote No.
+
+    measure @ca-prop-34 "Proposition 34"
+      subtitle "Restrict spending of prescription drug revenue"
+      recommend yes
+        justification:
+          NGOs in California have often received very little oversight over the public
+          money that they have been deputized to spend. This law is a step in the right
+          direction and dictates that 98% of the public health money they receive
+          actually needs to be spent on the sanctioned care and not other infrastructure.
+          The ballot measure is opposed only by one of the most notoriously negligent NGOs
+          in the state, the AIDS Healthcare Foundation, which for some reason has dipped
+          its toes into housing advocacy in the last decade. In general, anytime you see
+          something endorsed by the AHF, you can pretty safely assume that you should
+          oppose it.
+
+    measure @ca-prop-35 "Proposition 35"
+      subtitle "Permanent managed care tax for Medi-Cal"
+      recommend yes
+        justification:
+          This law establishes a permanent tax on managed care organizations (MCOs) to
+          support Medi-Cal, California's Medicaid program that provides health coverage
+          for low-income individuals. Major MCOs like Kaiser Permanente, Anthem Blue
+          Cross, and Blue Shield deliver healthcare services through Medi-Cal.
+
+          Revenue from the tax will be used to cover Medi-Cal enrollment and
+          administrative expenses immediately. In 2025 and 2026, the tax is expected to
+          generate $2.7 billion for Medi-Cal and health workforce initiatives, with an
+          additional $2 billion directed to the general fund to help offset Medi-Cal
+          costs. Starting in 2027, the tax will also help subsidize drug prices, and
+          replaces the existing, annual, highly political process of funding Medi-Cal. It
+          holds the Governor's mansion to the terms of the original MCO tax.
+
+    measure @ca-prop-36 "Proposition 36"
+      subtitle "Felony charges for certain drug and theft crimes"
+      recommend no
+        justification:
+          This law essentially enables larger jail sentences for certain kinds of
+          drug-related offenses by making them felonies instead of misdemeanors. While I
+          am sympathetic to the desire to enforce basic order in public spaces (I live in
+          San Francisco after all), we know from study after study that sentence length
+          deterrence is not an effective mechanism to reduce crime. The basic theory is
+          that when someone has decided to break the law, the difference between a 3 year
+          and 5 year sentence has effectively zero effect on their decision. Each
+          additional year of jail time establishes less and less deterrence, but has a
+          linear impact on taxpayer spending, and an exponential negative impact on
+          rehabilitation and recidivism. It's just not a good system. To effectively
+          combat petty street crime (most of which actually isn't even covered by this
+          law), cities need to actually invest in crime prevention, detectives, and
+          performance management of their local police departments. This law does none
+          of those.
+
+# ======================================================================
+ballot @sf "City of San Francisco"
+
+  section "Executive Offices"
+
+    contest @sf-mayor "Mayor of San Francisco" ranked
+
+      campaign incumbent @london-breed "London Breed"
+      campaign @daniel-lurie "Daniel Lurie"
+      campaign @mark-farrell "Mark Farrell"
+      campaign @aaron-peskin "Aaron Peskin"
+      campaign @ahsha-safai "Ahsha Safaí"
+      campaign @ellen-lee-zhou "Ellen Lee Zhou"
+      campaign @dylan-hirsch-shell "Dylan Hirsch-Shell"
+      campaign @keith-freedman "Keith Freedman"
+      campaign @nelson-mei "Nelson Mei"
+      campaign @shahram-shariati "Shahram Shariati"
+      campaign @henry-flynn "Henry Flynn"
+      campaign @paul-ybarra-robertson "Paul Ybarra Robertson"
+      campaign @jon-ernest-soderstrom "Jon Ernest Soderstrom"
+
+      recommend
+        support @london-breed @daniel-lurie
+        support @mark-farrell
+        oppose @aaron-peskin
+        justification:
+          Do not, under any circumstances, rank Aaron Peskin anywhere on your ballot.
+          Overall this is not a great mayoral election. London Breed has been an OK but
+          not great mayor, Lurie is kind of an unknown quantity, and the rest of these
+          clowns are a serious downgrade from Breed. I won't really be happy with any of
+          these outcomes.
+        note:
+          Rank Breed and Lurie first and second in either order. Farrell third, if you
+          must.
+
+    contest @sf-da "District Attorney" single
+
+      campaign incumbent @brooke-jenkins "Brooke Jenkins"
+      campaign @ryan-khojasteh "Ryan Khojasteh"
+
+      recommend
+        support @brooke-jenkins @ryan-khojasteh
+
+    contest @sf-city-attorney "City Attorney" single
+
+      campaign incumbent @david-chiu "David Chiu"
+      campaign @richard-woon "Richard Woon"
+
+      recommend
+        support @david-chiu
+
+    contest @sf-sheriff "Sheriff" single
+
+      campaign incumbent @paul-miyamoto "Paul Miyamoto"
+      campaign @michael-juan "Michael Juan"
+
+      recommend
+        support @paul-miyamoto
+
+    contest @sf-treasurer "Treasurer" single
+
+      campaign incumbent @jose-cisneros "José Cisneros"
+
+      recommend
+        support @jose-cisneros
+
+  section "San Francisco Board of Supervisors"
+
+    contest @sf-d1 "San Francisco Board of Supervisors, District 1" ranked
+
+      campaign incumbent @connie-chan "Connie Chan"
+      campaign @marjan-philhour "Marjan Philhour"
+      campaign @jen-nossokoff "Jen Nossokoff"
+      campaign @jeremiah-boehner "Jeremiah Boehner"
+      campaign @sherman-dsilva "Sherman D'Silva"
+
+      recommend
+        support @marjan-philhour
+
+    contest @sf-d3 "San Francisco Board of Supervisors, District 3" ranked
+
+      campaign @danny-sauter "Danny Sauter"
+      campaign @sharon-lai "Sharon Lai"
+      campaign @moe-jamil "Moe Jamil"
+      campaign @matthew-susk "Matthew Susk"
+      campaign @wendy-ha-chau "Wendy Ha Chau"
+      campaign @eduard-navarro "Eduard Navarro"
+
+      recommend
+        support @danny-sauter
+
+    contest @sf-d5 "San Francisco Board of Supervisors, District 5" ranked
+
+      campaign incumbent @dean-preston "Dean Preston"
+      campaign @bilal-mahmood "Bilal Mahmood"
+      campaign @scotty-jacobs "Scotty Jacobs"
+      campaign @autumn-looijen "Autumn Looijen"
+      campaign @allen-jones "Allen Jones"
+
+      recommend
+        support @bilal-mahmood
+
+    contest @sf-d7 "San Francisco Board of Supervisors, District 7" ranked
+
+      campaign incumbent @myrna-melgar "Myrna Melgar"
+      campaign @matt-boschetto "Matt Boschetto"
+      campaign @stephen-martin-pinto "Stephen Martin-Pinto"
+      campaign @edward-yee "Edward Yee"
+
+      recommend
+        support @myrna-melgar
+
+    contest @sf-d9 "San Francisco Board of Supervisors, District 9" ranked
+
+      campaign @jackie-fielder "Jackie Fielder"
+      campaign @trevor-chandler "Trevor Chandler"
+      campaign @roberto-hernandez "Roberto Hernandez"
+      campaign @stephen-torres "Stephen Torres"
+      campaign @jaime-gutierrez "Jaime Gutierrez"
+      campaign @julian-bermudez "Julian Bermudez"
+      campaign @h-brown "H. Brown"
+
+      recommend
+        support @trevor-chandler @roberto-hernandez
+
+    contest @sf-d11 "San Francisco Board of Supervisors, District 11" ranked
+
+      campaign @michael-lai "Michael Lai"
+      campaign @chyanne-chen "Chyanne Chen"
+      campaign @ernest-jones "Ernest Jones"
+      campaign @oscar-flores "Oscar Flores"
+      campaign @adlah-chisti "Adlah Chisti"
+      campaign @jose-morales "Jose Morales"
+      campaign @roger-marenco "Roger Marenco"
+
+      recommend
+        support @michael-lai
+
+  section "San Francisco Board of Education"
+
+    contest @sf-board-of-education "Members of the Board" multiple 4
+
+      campaign incumbent @matt-alexander "Matt Alexander"
+      campaign @jaime-huling "Jaime Huling"
+      campaign @parag-gupta "Parag Gupta"
+      campaign @supryia-ray "Supryia Ray"
+      campaign @john-jersin "John Jersin"
+      campaign @virginia-cheung "Virginia Cheung"
+      campaign @ann-hsu "Ann Hsu"
+      campaign @min-chang "Min Chang"
+      campaign @laurance-lem-lee "Laurance Lem Lee"
+      campaign @maddy-krantz "Maddy Krantz"
+      campaign @lefteris-eleftheriou "Lefteris Eleftheriou"
+
+      recommend
+        support @parag-gupta @jaime-huling @john-jersin @supryia-ray
+
+  section "Trustees of the City College of San Francisco"
+
+    contest @ccsf-trustees "College Trustees" multiple 4
+
+      campaign incumbent @alan-wong "Alan Wong"
+      campaign incumbent @aliya-chisti "Aliya Chisti"
+      campaign incumbent @luis-zamora "Luis Zamora"
+      campaign @heather-mccarty "Heather McCarty"
+      campaign @ruth-ferguson "Ruth Ferguson"
+      campaign @leanna-louie "Leanna Louie"
+      campaign @ben-kaplan "Ben Kaplan"
+      campaign @julio-ramos "Julio Ramos"
+
+      recommend
+        support @aliya-chisti @ruth-ferguson @heather-mccarty @luis-zamora
+
+  section "San Francisco Ballot Measures"
+
+    measure @sf-prop-a "Proposition A"
+      subtitle "School improvement bond"
+      recommend yes
+        justification:
+          This is quite similar to the state-wide Proposition 2, but is specific for San
+          Francisco public schools, which typically face cost challenges of their own due
+          to the high costs of the city.
+
+    measure @sf-prop-b "Proposition B"
+      subtitle "Health care, shelter, and street safety bond"
+      recommend yes
+        justification:
+          San Francisco's public hospitals and public spaces could use the funding. We
+          have extremely limited staff for street and sidewalk repair, and our public
+          hospitals are in major need of renovation.
+
+    measure @sf-prop-c "Proposition C"
+      subtitle "Inspector general"
+      recommend no-position
+        justification:
+          This ballot proposal creates an inspector general position in the controller's
+          office. Such a position would be extremely redundant with the existing office of
+          the City Attorney, the office of the District Attorney, the Sheriff's Office,
+          and the Ethics Commission. Additionally, this new role does not bestow any new
+          functional powers to the IG or any of the existing regulatory bodies, and adds
+          at best an additional layer for coordination. You can vote for it if you want,
+          but it doesn't really do anything significant and is mostly just blustering
+          from Aaron Peskin. I personally will be voting no.
+
+    measure @sf-prop-d "Proposition D"
+      subtitle "City commissions and mayoral authority"
+      recommend yes
+        justification:
+          San Francisco's insane public commission system is home to more than a hundred
+          different public commissions staffed by well over a thousand commissioners.
+          Commissioners are not elected officials. They're appointed, often politically,
+          and cannot be effectively managed by the mayor's office or even the board of
+          supervisors. This ballot proposition fundamentally retools the public
+          commission system, instates a hard limit of 65 commissions, and adds
+          considerable accountability to the functioning of these bodies by making them
+          easier to regulate. The mayor and the board of supervisors should be the ones
+          doing this stuff (and they're subject to the best form of public
+          accountability: elections!)
+
+    measure @sf-prop-e "Proposition E"
+      subtitle "Commission streamlining task force"
+      note:
+        Proposition D and Proposition E are mutually exclusive measures. In the event
+        that both of them cross the 50% threshold, the proposition with more votes will
+        become law, and the other will be discarded.
+      recommend no
+        justification:
+          Proposition E is a competing measure to Proposition D, and like Proposition C
+          was placed on the ballot by mayoral candidate Supervisor Aaron Peskin.
+          Proposition E attempts to reform the public commission system, but does so
+          instead by forming a "Task Force" to study the various commissions and present
+          recommendations to the public. It is a feckless regulation that does absolutely
+          nothing. The "task force" is accountable to nobody, and there is no legal
+          mechanism that ensures that what, if any, recommendations it produces are
+          actually implemented.
+
+    measure @sf-prop-f "Proposition F"
+      subtitle "Deferred police retirement"
+      recommend yes
+        justification:
+          San Francisco is facing a well documented police staffing shortage, and this
+          proposal is a novel if temporary way to expand staffing by enabling police
+          officers to defer retirement in exchange for additional overtime pay. I do not
+          expect this law to make a significant dent in the staffing shortage, or to fix
+          the numerous problems with police performance in San Francisco, but it's better
+          than nothing.
+
+    measure @sf-prop-g "Proposition G"
+      subtitle "Rental subsidies for affordable housing"
+      recommend yes
+        justification:
+          The existing low-income housing subsidies are not nearly enough, and this
+          modest increase will provide more people with more access to housing in the
+          city. Like Proposition F, I do not expect this law to make any serious
+          improvements to housing subsidies or effectively combat the high costs of
+          housing in San Francisco in general, but it's a relatively cheap fix that is
+          better than doing nothing.
+
+    measure @sf-prop-h "Proposition H"
+      subtitle "Firefighter retirement age"
+      recommend yes
+        justification:
+          This brings the retirement age for San Francisco's firefighters back to 55,
+          the age it was in 2012. Firefighters have difficult jobs with elevated health
+          risks such as cancer, and we're not facing nearly the staffing shortage here as
+          we are with the police.
+
+    measure @sf-prop-i "Proposition I"
+      subtitle "Retirement benefits for nurses and 911 dispatchers"
+      recommend yes
+        justification:
+          Gives 911 dispatchers, who do incredible work, access to retirement benefits.
+          In general we need far more of these people and we should make their jobs as
+          attractive as we can make them. This law does other good things for nurses and
+          other public health workers as well, but the retirement benefits for 911
+          dispatchers is why you should vote yes.
+
+    measure @sf-prop-j "Proposition J"
+      subtitle "Children and youth fund consolidation"
+      recommend yes
+        justification:
+          San Francisco currently houses six different youth related activity
+          departments, in addition to the San Francisco Unified School District. Funding
+          for these things is spread needlessly thin and has tons of extra cost built in
+          because of the redundancy. This law unifies these systems into a single
+          council, which should reduce costs, improve quality of service, and increase
+          oversight.
+
+    measure @sf-prop-k "Proposition K"
+      subtitle "Close the Upper Great Highway to cars"
+      recommend yes
+        justification:
+          Bans cars on the Great Highway. Cars are bad.
+
+    measure @sf-prop-l "Proposition L"
+      subtitle "Ride-hail tax for Muni"
+      recommend no-position
+        justification:
+          Look, I'm an Uber employee and cannot in good faith tell you that my
+          explanation for this isn't at least partially self interested, but I will just
+          say that gross receipt taxes in general are not a great funding system, and
+          this nominal tax increase will barely put a dent in Muni's funding cliff. To
+          properly fix Muni's funding problem, you need a massive investment like 2022's
+          Proposition A which unfortunately did not pass. This measure seems pretty
+          obviously motivated by populist rage at self-driving cars, and it will not
+          actually lead to significant changes to ride-sharing consumption or Muni's
+          budget crisis. It will make things cost more, though.
+
+    measure @sf-prop-m "Proposition M"
+      subtitle "Business tax restructuring"
+      recommend yes
+        justification:
+          San Francisco's increased office vacancy means the existing focus on low
+          payroll taxes doesn't really work for us anymore. This system expands the
+          availability of gross receipts tax exemptions to a larger number of businesses
+          (annual sales of $5M instead of the previous $2.1M) and ensures that companies
+          with a high number of remote workers are still paying their share. This
+          restructuring is a necessary and fair reflection of the realities of the city's
+          current budget and the new post-covid environment in which we can no longer
+          reliably count exclusively on massive downtown employers for revenue at scale.
+
+    measure @sf-prop-n "Proposition N"
+      subtitle "First responder student loan forgiveness"
+      recommend yes
+        justification:
+          This proposal is a novel way of forgiving student loans for first responders
+          who work in the city and does so without an additional penny in extra public
+          spending. EMTs, 911 dispatchers, and many others do critical work in our city,
+          and we have critical staffing shortages for all of them. I don't think this law
+          will actually do much in the way of addressing that shortage, but it's better
+          than nothing and could help on the margin. It might also tell us whether such
+          an approach could work at scale.
+
+    measure @sf-prop-o "Proposition O"
+      subtitle "Reproductive freedom"
+      recommend yes
+        justification:
+          Enshrines the legal right to reproductive freedom in the city's health code.
+          Reproductive freedom is good. The government telling you what to do with your
+          body is bad.
+
+# ======================================================================
+ballot @oakland "City of Oakland"
+
+  section "Oakland Executive Offices"
+
+    contest @oak-city-attorney "City Attorney" single
+
+      campaign @ryan-richardson "Ryan Richardson"
+      campaign @brenda-harbin-forte "Brenda Harbin-Forte"
+
+      recommend
+        support @ryan-richardson
+
+  section "Oakland City Council"
+
+    contest @oak-council-at-large "Oakland City Council, At-Large" ranked
+
+      campaign @rowena-brown "Rowena Brown"
+      campaign @leronne-armstrong "LeRonne Armstrong"
+      campaign @charlene-wang "Charlene Wang"
+      campaign @shawn-danino "Shawn Danino"
+      campaign @kanitha-matoury "Kanitha Matoury"
+      campaign @tina-tostado "Cristina \"Tina\" Tostado"
+      campaign @mindy-ruth-pechenuk "Mindy Ruth Pechenuk"
+      campaign @fabian-robinson "Fabian Robinson"
+      campaign @nancy-sidebotham "Nancy Sidebotham"
+      campaign @selika-thomas "Selika Thomas"
+
+      recommend
+        support @rowena-brown
+
+    contest @oak-d1 "Oakland City Council, District 1" ranked
+
+      campaign @zac-unger "Zac Unger"
+      campaign @len-raphael "Len Raphael"
+      campaign @edward-c-frank "Edward C. Frank"
+
+      recommend
+        support @zac-unger
+
+    contest @oak-d3 "Oakland City Council, District 3" ranked
+
+      campaign incumbent @carroll-fife "Carroll Fife"
+      campaign @warren-mitchell-logan "Warren Mitchell Logan"
+      campaign @baba-afolabi "Baba Afolabi"
+      campaign @michelle-d-hailey "Michelle D. Hailey"
+      campaign @meron-semedar "Meron Semedar"
+      campaign @shan-m-hirsch "Shan M. Hirsch"
+
+      recommend
+        support @carroll-fife
+
+    contest @oak-d5 "Oakland City Council, District 5" ranked
+
+      campaign incumbent @noel-gallo "Noel Gallo"
+      campaign @erin-armstrong "Erin Armstrong"
+      campaign @dominic-prado "Dominic Prado"
+
+      recommend
+        support @noel-gallo
+
+    contest @oak-d7 "Oakland City Council, District 7" ranked
+
+      campaign @ken-houston "Ken Houston"
+      campaign @iris-merriouns "Iris Merriouns"
+      campaign @marcie-hodge "Marcie Hodge"
+      campaign @merika-goolsby "Merika Goolsby"
+
+      recommend
+        support @iris-merriouns
+
+  section "Oakland Unified School District"
+
+    contest @ousd-1 "OUSD Director, District 1" ranked
+
+      campaign @rachel-latta "Rachel Latta"
+      campaign @benjamin-salop "Benjamin Salop"
+
+      recommend
+        support @rachel-latta
+
+    contest @ousd-3 "OUSD Director, District 3" ranked
+
+      campaign incumbent @vancedric-williams "VanCedric Williams"
+      campaign @dwayne-aikens-jr "Dwayne Aikens Jr."
+
+      recommend
+        support @vancedric-williams
+
+  section "Recall Elections"
+    note:
+      Recalls are written as measures here because Oval does not yet have a Recall
+      entity. Each is a yes-or-no question on removing the officeholder.
+
+    measure @thao-recall "The Recall of Oakland Mayor Sheng Thao"
+      recommend no-position
+
+    measure @price-recall "The Recall of District Attorney Pamela Price"
+      recommend no
+
+  section "East Bay Municipal Utility District"
+
+    contest @ebmud-5 "EBMUD Director, Ward 5" single
+
+      campaign @jim-oddie "Jim Oddie"
+      campaign @john-e-lewis "John E. Lewis"
+      campaign @alex-spehr "Alex Spehr"
+
+      recommend
+        support @jim-oddie
+
+    contest @ebmud-6 "EBMUD Director, Ward 6" single
+
+      campaign @valerie-lewis "Valerie Lewis"
+      campaign @richard-de-vera "Richard De Vera"
+
+      recommend
+        support @valerie-lewis
+
+  section "East Bay Regional Park District"
+
+    contest @ebrpd-2 "EBRPD Director, Ward 2" single
+
+      campaign @lynda-deschambault "Lynda Deschambault"
+      campaign @casey-farmer "Casey Farmer"
+      campaign @shane-reisman "Shane Reisman"
+
+      recommend
+        support @casey-farmer
+
+    contest @ebrpd-4 "EBRPD Director, Ward 4" single
+
+      campaign @luana-espana "Luana España"
+      campaign @taryn-edwards "Taryn Edwards"
+      campaign @susan-gonzales "Susan Gonzales"
+      campaign @tim-mcmahon "Tim McMahon"
+
+      recommend
+        support @luana-espana
+
+# ======================================================================
+ballot @palo-alto "City of Palo Alto"
+
+  section "Palo Alto City Council"
+
+    contest @pa-council "Council Members" multiple 4
+
+      campaign incumbent @pat-burt "Pat Burt"
+      campaign @katie-causey "Katie Causey"
+      campaign @anne-cribbs "Anne Cribbs"
+      campaign @henry-etzkowitz "Henry Etzkowitz"
+      campaign @george-lu "George Lu"
+      campaign @keith-reckdahl "Keith Reckdahl"
+      campaign incumbent @greer-stone "Greer Stone"
+      campaign @doria-summa "Doria Summa"
+      campaign @cari-templeton "Cari Templeton"
+
+      recommend
+        support @katie-causey @george-lu @cari-templeton
+
+  section "Palo Alto Unified School District"
+
+    contest @pausd "Board Members" multiple 3
+
+      campaign @rowena-chiu "Rowena Chiu"
+      campaign @nicole-chiu-wang "Nicole Chiu-Wang"
+      campaign @chris-colohan "Chris Colohan"
+      campaign @mazhar-hussain "Mazhar Hussain"
+      campaign @alison-kamhi "Alison Kamhi"
+      campaign @josh-salcman "Josh Salcman"
+
+      recommend
+        support @rowena-chiu @nicole-chiu-wang @josh-salcman
+
+  section "Palo Alto Ballot Measure"
+
+    measure @pa-measure-d "Measure D"
+      subtitle "Transit center connector road"
+      recommend yes
+        justification:
+          Funds the construction of a new road that connects the Palo Alto Transit Center
+          to El Camino Real. Public transit infrastructure is good. Making stations more
+          useful is good.
+
+# ======================================================================
+# The source listed BART District 7 under both San Francisco and Oakland.
+# BART districts cross city lines, so they are their own root here.
+ballot @bart "Bay Area Rapid Transit Board of Directors"
+  eligibility "BART director districts cross city and county lines. Your sample ballot shows which district, if any, you vote in."
+
+  contest @bart-5 "BART Director, District 5" single
+    subtitle "Oakland"
+
+    campaign incumbent @melissa-hernandez "Melissa Hernandez"
+    campaign @joseph-grcar "Joseph Grcar"
+
+    recommend
+      support @melissa-hernandez
+
+  contest @bart-7 "BART Director, District 7" single
+    subtitle "San Francisco and Oakland"
+
+    campaign @victor-flores "Victor Flores"
+    campaign @dana-lang "Dana Lang"
+
+    recommend
+      support @victor-flores
+
+  contest @bart-9 "BART Director, District 9" single
+    subtitle "San Francisco"
+
+    campaign @edward-wright "Edward Wright"
+    campaign @joe-sangirardi "Joe Sangirardi"
+
+    recommend
+      support @joe-sangirardi
+
+# ----------------------------------------------------------------------
+# On an electorate-faithful tree. The model's tree is about who sees what.
+# A faithful version of this guide would be: root "United States" holding the
+# President and both Senate contests and all state propositions (every reader
+# sees those), with sub-ballots per city, and under each city further
+# sub-ballots for its congressional, assembly, state senate, and supervisor
+# districts. That is around twenty ballots instead of six, and it moves every
+# House and legislative contest out of the "Federal" and "California" groupings
+# the author chose. The author's organization is by level of government, which
+# is how official sample ballots are also laid out. Reconciling the two is a
+# renderer question (group by level, filter by electorate), not a data one, but
+# it means a Section cannot today hold sub-ballots, which is what "House of
+# Representatives, then one block per district" would need.

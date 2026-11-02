@@ -1,0 +1,102 @@
+Oval grammar, working draft 0.1.
+Extracted verbatim from Appendix A of SPEC.md; edit the spec, not this file.
+Notation is described in SPEC.md section 1.1. Layout tokens (Newline, Indent,
+Dedent) are produced from indentation as described in SPEC.md section 2.4.
+
+— Lexical —
+
+sourceCharacter  : any Unicode code point except U+0000
+lineTerminator   : U+000A | U+000D U+000A | U+000D
+
+Token            : Keyword | Identifier | String | Integer | Date | Url | Punctuator | MarkdownBlock
+Ignored          : Comment | Whitespace | BlankLine
+LayoutToken      : Newline | Indent | Dedent
+
+Keyword          : one of (Appendix B)
+Identifier       : `@` identifierName
+identifierName   : identifierStart identifierPart*
+identifierStart  : letter
+identifierPart   : letter | digit | `-` | `_`
+letter           : U+0041–U+005A | U+0061–U+007A
+digit            : U+0030–U+0039
+String           : `"` stringCharacter* `"`
+stringCharacter  : sourceCharacter but not `"` or `\` or lineTerminator | escapedCharacter
+escapedCharacter : `\"` | `\\`
+Integer          : digit+
+Date             : digit digit digit digit `-` digit digit `-` digit digit
+Url              : urlScheme `://` urlCharacter+
+urlScheme        : `https` | `http`
+urlCharacter     : sourceCharacter but not whitespace or lineTerminator
+Punctuator       : one of `:` `,`
+MarkdownBlock    : Keyword `:` lineTerminator markdownBody
+Comment          : `#` commentCharacter*
+commentCharacter : sourceCharacter but not lineTerminator
+Whitespace       : U+0020+
+
+— Field templates —
+
+StringField(k)     : k String Newline
+IntegerField(k)    : k Integer Newline
+DateField(k)       : k Date Newline
+UrlField(k)        : k Url Newline
+MarkdownField(k)   : k MarkdownBlock
+StringListField(k) : k String (`,` String)* Newline | k `none` Newline
+Flags              : Flag*
+Flag               : one of `incumbent` `withdrawn`
+Reference          : Identifier
+
+— Document —
+
+Document         : GuideField* Declaration* Ballot+
+GuideField       : StringField(guide) | StringField(election) | DateField(date) | MarkdownField(note)
+Declaration      : Party | Candidate
+
+Party            : `party` Identifier String Newline PartyBlock?
+PartyBlock       : Indent PartyField+ Dedent
+PartyField       : StringField(abbreviation) | UrlField(website) | MarkdownField(note)
+
+Candidate        : `candidate` Identifier String Newline CandidateBlock?
+CandidateBlock   : Indent CandidateField+ Dedent
+CandidateField   : StringField(designation) | PartyRef | MarkdownField(note)
+PartyRef         : `party` Identifier Newline
+                 | `party` Identifier String Newline PartyBlock?
+
+Ballot           : `ballot` Identifier String Newline BallotBlock
+BallotBlock      : Indent (BallotField | BallotItem)+ Dedent
+BallotField      : StringField(eligibility) | MarkdownField(note)
+BallotItem       : Section | Contest | Measure | Ballot
+
+Section          : `section` String Newline SectionBlock
+SectionBlock     : Indent (SectionField | SectionItem)+ Dedent
+SectionField     : MarkdownField(note)
+SectionItem      : Contest | Measure
+
+Contest          : `contest` Identifier String ContestKind Newline ContestBlock
+ContestKind      : `single` | `multiple` Integer | `ranked` (`max` Integer)? | `retention`
+ContestBlock     : Indent (ContestField | Campaign | ContestRecommend)+ Dedent
+ContestField     : StringField(subtitle) | StringField(tabulation) | MarkdownField(note)
+
+Campaign         : `campaign` Flags Member Newline CampaignBlock?
+                 | `campaign` Flags Newline CampaignBlock
+CampaignBlock    : Indent (Member Newline MemberBlock? | CampaignField)+ Dedent
+Member           : Identifier String? (`as` String)?
+MemberBlock      : Indent CandidateField+ Dedent
+CampaignField    : UrlField(website) | MarkdownField(note) | StringField(designation) | PartyRef
+
+ContestRecommend : `recommend` Newline RecommendBlock
+                 | `recommend` `no-position` Newline RecommendNoteBlock?
+RecommendBlock   : Indent (Support | Oppose | RecommendField)+ Dedent
+Support          : `support` Reference+ Newline
+Oppose           : `oppose` Reference+ Newline
+RecommendField   : MarkdownField(justification) | MarkdownField(note)
+RecommendNoteBlock : Indent RecommendField+ Dedent
+
+Measure          : `measure` Identifier String Newline MeasureBlock
+MeasureBlock     : Indent (MeasureField | MeasureRecommend)+ Dedent
+MeasureField     : StringField(subtitle) | MarkdownField(description) | MarkdownField(if_yes)
+                 | MarkdownField(if_no) | StringField(placement) | StringField(tabulation)
+                 | StringField(fiscal_impact) | StringListField(supporters)
+                 | StringListField(opponents) | MarkdownField(note)
+
+MeasureRecommend : `recommend` MeasurePosition Newline RecommendNoteBlock?
+MeasurePosition  : one of `yes` `no` `no-position`
