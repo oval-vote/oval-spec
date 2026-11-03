@@ -1,0 +1,389 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oval.vote/schema/0.1/guide.schema.json",
+  "title": "Oval compiled guide",
+  "description": "The canonical output of compiling an Oval document: the data model with every reference resolved, plus derived fields for renderers. Keys mirror the language's keywords.",
+  "type": "object",
+  "required": ["oval", "guide", "parties", "candidates", "ballots", "questions", "counts"],
+  "additionalProperties": false,
+  "properties": {
+    "oval": {
+      "description": "The version of the Oval specification the document was compiled under.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "guide": { "$ref": "#/$defs/guide" },
+    "parties": { "type": "array", "items": { "$ref": "#/$defs/party" } },
+    "candidates": { "type": "array", "items": { "$ref": "#/$defs/candidate" } },
+    "ballots": {
+      "description": "Root ballots, in presentation order.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ballot" }
+    },
+    "questions": {
+      "description": "Derived. Every contest and measure in ballot order, with where it sits in the tree.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/question_entry" }
+    },
+    "counts": { "$ref": "#/$defs/counts" }
+  },
+  "$defs": {
+    "identifier": {
+      "description": "An entity identifier without its leading @.",
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+    },
+    "markdown": {
+      "description": "A Markdown body with its common indentation removed, line terminators normalized to \\n, and no trailing terminator.",
+      "type": "string"
+    },
+    "guide": {
+      "type": "object",
+      "required": ["name", "election", "date"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "election": { "type": "string" },
+        "date": { "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "note": { "$ref": "#/$defs/markdown" }
+      }
+    },
+    "party": {
+      "type": "object",
+      "required": ["id", "name", "candidates"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "name": { "type": "string" },
+        "abbreviation": { "type": "string" },
+        "website": { "type": "string", "format": "uri" },
+        "note": { "$ref": "#/$defs/markdown" },
+        "candidates": {
+          "description": "Derived. Identifiers of every candidate whose party this is, in document order.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" }
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "required": ["id", "name", "contests"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "name": { "type": "string" },
+        "designation": { "type": "string" },
+        "party": { "$ref": "#/$defs/identifier" },
+        "note": { "$ref": "#/$defs/markdown" },
+        "contests": {
+          "description": "Derived. Identifiers of every contest in which the candidate is a campaign member, in ballot order.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" }
+        }
+      }
+    },
+    "ballot": {
+      "type": "object",
+      "required": ["kind", "id", "title", "path", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "ballot" },
+        "id": { "$ref": "#/$defs/identifier" },
+        "title": { "type": "string" },
+        "eligibility": { "type": "string" },
+        "note": { "$ref": "#/$defs/markdown" },
+        "path": {
+          "description": "Derived. Identifiers of the enclosing ballots, outermost first, not including this one. Empty for a root.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ballot_item" }
+        }
+      }
+    },
+    "ballot_item": {
+      "oneOf": [
+        { "$ref": "#/$defs/section" },
+        { "$ref": "#/$defs/contest" },
+        { "$ref": "#/$defs/measure" },
+        { "$ref": "#/$defs/ballot" }
+      ]
+    },
+    "section": {
+      "type": "object",
+      "required": ["kind", "title", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "section" },
+        "title": { "type": "string" },
+        "note": { "$ref": "#/$defs/markdown" },
+        "items": {
+          "type": "array",
+          "items": {
+            "oneOf": [{ "$ref": "#/$defs/contest" }, { "$ref": "#/$defs/measure" }]
+          }
+        }
+      }
+    },
+    "location": {
+      "description": "Derived. Where a question sits in the ballot tree.",
+      "type": "object",
+      "required": ["ballot", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "ballot": {
+          "description": "Identifier of the innermost enclosing ballot.",
+          "$ref": "#/$defs/identifier"
+        },
+        "section": {
+          "description": "Title of the enclosing section, when there is one.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Identifiers of every enclosing ballot, outermost first, ending with `ballot`.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" }
+        }
+      }
+    },
+    "method": {
+      "description": "The voting method, from the contest header.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": { "kind": { "const": "single" } }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "seats"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "multiple" },
+            "seats": { "type": "integer", "minimum": 2 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "ranked" },
+            "max": { "type": "integer", "minimum": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": { "kind": { "const": "retention" } }
+        }
+      ]
+    },
+    "contest": {
+      "type": "object",
+      "required": ["kind", "id", "title", "method", "location", "campaigns", "recommendation"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "contest" },
+        "id": { "$ref": "#/$defs/identifier" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "method": { "$ref": "#/$defs/method" },
+        "tabulation": { "type": "string" },
+        "note": { "$ref": "#/$defs/markdown" },
+        "location": { "$ref": "#/$defs/location" },
+        "campaigns": {
+          "description": "In ballot order. A campaign is referred to by its index in this array.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/campaign" }
+        },
+        "recommendation": { "$ref": "#/$defs/contest_recommendation" }
+      }
+    },
+    "campaign": {
+      "type": "object",
+      "required": ["index", "label", "head", "members", "incumbent", "withdrawn", "stance"],
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "description": "Derived. Position in the contest's campaigns array.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "label": {
+          "description": "Derived. The members' names joined with \" / \", head of ticket first.",
+          "type": "string"
+        },
+        "head": {
+          "description": "Derived. Identifier of the first member: the head of the ticket, and the name the recommendation uses for this campaign.",
+          "$ref": "#/$defs/identifier"
+        },
+        "party": {
+          "description": "Derived. The party shared by every member, when all members have the same one.",
+          "$ref": "#/$defs/identifier"
+        },
+        "members": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/member" }
+        },
+        "incumbent": { "type": "boolean" },
+        "withdrawn": { "type": "boolean" },
+        "website": { "type": "string", "format": "uri" },
+        "note": { "$ref": "#/$defs/markdown" },
+        "stance": { "$ref": "#/$defs/stance" }
+      }
+    },
+    "member": {
+      "type": "object",
+      "required": ["candidate"],
+      "additionalProperties": false,
+      "properties": {
+        "candidate": { "$ref": "#/$defs/identifier" },
+        "role": { "type": "string" },
+        "note": { "$ref": "#/$defs/markdown" }
+      }
+    },
+    "stance": {
+      "description": "Derived. What the contest's recommendation says about this campaign.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["position", "tier"],
+          "additionalProperties": false,
+          "properties": {
+            "position": { "const": "support" },
+            "tier": {
+              "description": "Zero-based index of the support tier the campaign appears in.",
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["position"],
+          "additionalProperties": false,
+          "properties": { "position": { "const": "oppose" } }
+        },
+        {
+          "type": "object",
+          "required": ["position"],
+          "additionalProperties": false,
+          "properties": { "position": { "const": "none" } }
+        }
+      ]
+    },
+    "contest_recommendation": {
+      "type": "object",
+      "required": ["no_position", "support", "oppose", "support_campaigns", "oppose_campaigns"],
+      "additionalProperties": false,
+      "properties": {
+        "no_position": { "type": "boolean" },
+        "support": {
+          "description": "Tiers as written: candidate identifiers, most preferred tier first. Empty when no_position.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/$defs/identifier" }
+          }
+        },
+        "oppose": {
+          "description": "Candidate identifiers as written. Empty when no_position.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "support_campaigns": {
+          "description": "Derived. The same tiers resolved to campaign indices.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "oppose_campaigns": {
+          "description": "Derived. The opposed campaigns as indices.",
+          "type": "array",
+          "items": { "type": "integer", "minimum": 0 }
+        },
+        "justification": { "$ref": "#/$defs/markdown" },
+        "note": { "$ref": "#/$defs/markdown" }
+      }
+    },
+    "measure": {
+      "type": "object",
+      "required": ["kind", "id", "title", "location", "recommendation"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "measure" },
+        "id": { "$ref": "#/$defs/identifier" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "description": { "$ref": "#/$defs/markdown" },
+        "if_yes": { "$ref": "#/$defs/markdown" },
+        "if_no": { "$ref": "#/$defs/markdown" },
+        "placement": { "type": "string" },
+        "tabulation": { "type": "string" },
+        "fiscal_impact": { "type": "string" },
+        "supporters": {
+          "description": "Omitted when not researched; empty when researched and none known.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "opponents": {
+          "description": "Omitted when not researched; empty when researched and none known.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "note": { "$ref": "#/$defs/markdown" },
+        "location": { "$ref": "#/$defs/location" },
+        "recommendation": { "$ref": "#/$defs/measure_recommendation" }
+      }
+    },
+    "measure_recommendation": {
+      "type": "object",
+      "required": ["position"],
+      "additionalProperties": false,
+      "properties": {
+        "position": { "enum": ["yes", "no", "no-position"] },
+        "justification": { "$ref": "#/$defs/markdown" },
+        "note": { "$ref": "#/$defs/markdown" }
+      }
+    },
+    "question_entry": {
+      "type": "object",
+      "required": ["kind", "id", "title", "location"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["contest", "measure"] },
+        "id": { "$ref": "#/$defs/identifier" },
+        "title": { "type": "string" },
+        "location": { "$ref": "#/$defs/location" }
+      }
+    },
+    "counts": {
+      "description": "Derived. Totals across the whole document.",
+      "type": "object",
+      "required": ["ballots", "sections", "contests", "measures", "campaigns", "candidates", "parties"],
+      "additionalProperties": false,
+      "properties": {
+        "ballots": { "type": "integer", "minimum": 1 },
+        "sections": { "type": "integer", "minimum": 0 },
+        "contests": { "type": "integer", "minimum": 0 },
+        "measures": { "type": "integer", "minimum": 0 },
+        "campaigns": { "type": "integer", "minimum": 0 },
+        "candidates": { "type": "integer", "minimum": 0 },
+        "parties": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

@@ -33,6 +33,7 @@ The format's name, extension, and media type are given in Section 1.2.
 3. [Validation](#3-validation)
 4. [Resolution](#4-resolution)
 5. [Conformance](#5-conformance)
+6. [Canonical Output](#6-canonical-output)
 - [Appendix A: Grammar Summary](#appendix-a-grammar-summary)
 - [Appendix B: Keywords](#appendix-b-keywords)
 
@@ -911,9 +912,88 @@ Three conformance levels are defined so that tools can claim what they implement
   tree from which Section 4 can be applied. Sufficient for a formatter.
 - **Validator-conformant.** Parser-conformant, and reports every Section 3 rule with its
   identifier and severity.
+- **Compiler-conformant.** Validator-conformant, and for every valid document produces the
+  canonical output of Section 6, byte-for-byte equal to the reference implementation's after JSON
+  normalization (key order and whitespace disregarded).
 
 A conformance test suite (not yet written) will consist of well-formed and malformed documents,
 and for each well-formed document the expected validation report and canonical resolved output.
+
+---
+
+## 6. Canonical Output
+
+Compiling a valid document produces one JSON value: the data model with every reference resolved,
+plus derived fields that any renderer would otherwise recompute. Its shape is fixed by
+`schema/guide.schema.json`, a JSON Schema (draft 2020-12), which is normative. This section
+explains the conventions the schema follows and defines the derived fields. The output is called
+*canonical* because two conformant implementations must produce the same value for the same
+document; it is a contract between implementations and consumers, not a document for people to
+read.
+
+The output is the semantic model, not the syntax tree. It carries no source positions, comments,
+or whitespace, so two parsers cannot disagree about it on formatting. Tools that need positions
+use the syntax tree or the diagnostics.
+
+### 6.1 Conventions
+
+- **Keys mirror the language.** Every field that comes from a keyword uses that keyword's exact
+  spelling: `if_yes`, `fiscal_impact`, `no_position`. Derived fields use the same snake_case
+  style. The one exception is the contest's voting method, which the language writes on the header
+  line without a keyword; it is the `method` object, because `kind` is the discriminator used by
+  every item object.
+- **Arrays, not maps.** Order is meaning in Oval, so parties, candidates, ballots, items, campaigns,
+  members, and tiers are arrays in document or ballot order. Entities carry an `id`, and references
+  are identifier strings without the leading `@`.
+- **Absent fields are omitted.** An optional field the author did not write is not present; it is
+  never `null`. `supporters` and `opponents` therefore have three states: omitted (not researched),
+  `[]` (researched, none), or a list.
+- **Booleans are always present.** `incumbent`, `withdrawn`, and `no_position` are written even
+  when false.
+- **Discriminated unions use `kind`.** Every item in a ballot or section has a `kind` of
+  `section`, `contest`, `measure`, or `ballot`, and root ballots carry `kind: "ballot"` too, so one
+  type describes a ballot anywhere. `method.kind` and `stance.position` discriminate the same way.
+- **Markdown is a string** with common indentation removed, terminators normalized to `\n`, and
+  no trailing terminator (the value of Section 2.2). Rendering it is the consumer's job.
+- **Campaigns are referred to by index** within their contest's `campaigns` array, since they have
+  no identifiers.
+- **Strict producers, tolerant consumers.** The schema forbids unknown keys so that a producer's
+  mistakes are caught. Consumers should ignore keys they do not recognize, because a later minor
+  version of this specification may add fields. Removing or renaming a field is a major version.
+
+### 6.2 Derived fields
+
+Everything below is computed from the document; none of it can disagree with the source.
+
+| Field | On | Definition |
+|---|---|---|
+| `oval` | root | The specification version, `MAJOR.MINOR`. |
+| `candidates` | party | Identifiers of every candidate whose party this is, in document order. |
+| `contests` | candidate | Identifiers of every contest in which the candidate is a campaign member, in ballot order. |
+| `path` | ballot | Identifiers of the enclosing ballots, outermost first, excluding the ballot itself. Empty for a root. |
+| `location` | contest, measure, question entry | `ballot`, the innermost enclosing ballot's identifier; `section`, the enclosing section's title if any; `path`, every enclosing ballot's identifier outermost first, ending with `ballot`. |
+| `index` | campaign | Position in the contest's `campaigns` array. |
+| `head` | campaign | Identifier of the first member: the head of the ticket, and the name recommendations use for this campaign. |
+| `label` | campaign | The members' names joined with `" / "`, head first. For a single candidate, their name. |
+| `party` | campaign | The party every member shares, when all members have the same party. Omitted otherwise, including when any member has none. |
+| `stance` | campaign | What the contest's recommendation says about this campaign: `support` with the zero-based `tier`, `oppose`, or `none`. In a `no_position` recommendation every campaign has `none`. |
+| `support_campaigns`, `oppose_campaigns` | contest recommendation | The written `support` tiers and `oppose` list resolved from candidate identifiers to campaign indices. |
+| `questions` | root | Every contest and measure in ballot order, each with `kind`, `id`, `title`, and `location`. A flat index for tables of contents and per-electorate views. |
+| `counts` | root | Totals of ballots (all, not only roots), sections, contests, measures, campaigns, candidates, and parties. |
+
+Resolution of candidate identifiers to campaigns follows Section 4.2. A valid document resolves
+every reference, so the derived fields are always complete.
+
+### 6.3 Example
+
+`examples/compiled.example.json` is the canonical output of a small guide with a ticket, a ranked
+contest with a withdrawn campaign, a measure, and a sub-ballot. It validates against the schema:
+
+```sh
+check-jsonschema --schemafile schema/guide.schema.json examples/compiled.example.json
+```
+
+The repository's `mise.toml` installs `check-jsonschema`.
 
 ---
 
