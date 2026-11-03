@@ -382,7 +382,7 @@ Lines inside a `MarkdownBlock` body do not participate in this process; the bloc
 ### 2.5 Document
 
 ```
-Document : VersionMarker GuideField* Declaration* Ballot+
+Document : VersionMarker? GuideField* Declaration* Ballot+
 VersionMarker : `oval` Version Newline
 ```
 
@@ -395,8 +395,10 @@ There is no closing token. The document ends at end of input.
 
 **Version marker.** `oval 0.1` names the version of this specification the document is written
 to. It is the first entry of every document; only blank lines and comments (Section 2.3) may
-precede it, and a document without one is not well-formed. Whether an implementation supports the
-declared version is a validation rule (V19), so that a parser need not know which versions exist.
+precede it. The grammar leaves it optional for the same reason it leaves `guide` optional (V2): a
+parser can then build a tree for a document that lacks it and say exactly what is missing, without
+knowing which versions exist. A document without a marker, or with one naming a version the
+implementation does not support, is invalid (V19).
 
 Versions are `MAJOR.MINOR` and are this specification's own version numbers. From major version 1
 onward, a minor version only adds constructs, so an implementation of `M.N` accepts every document
@@ -907,10 +909,11 @@ A `Measure` with exactly one of `if_yes` and `if_no`. (C14)
 
 ### V19 Supported version — error
 
-The version marker (Section 2.5) must name a version the implementation supports: the same major
-version as the implementation's, and a minor version no greater than it, or for major version 0
-exactly the implementation's version. An implementation that reports V19 may report nothing else,
-since the rest of the document may not have the meaning this specification gives it.
+The document must have a version marker (Section 2.5), and it must name a version the
+implementation supports: the same major version as the implementation's, and a minor version no
+greater than it, or for major version 0 exactly the implementation's version. An implementation
+that reports V19 may report nothing else, since the rest of the document may not have the meaning
+this specification gives it.
 
 ---
 
@@ -1162,7 +1165,7 @@ Reference          : Identifier
 
 — Document —
 
-Document         : VersionMarker GuideField* Declaration* Ballot+
+Document         : VersionMarker? GuideField* Declaration* Ballot+
 VersionMarker    : `oval` Version Newline
 GuideField       : StringField(guide) | StringField(election) | DateField(date) | MarkdownField(note)
 Declaration      : Party | Candidate

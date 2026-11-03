@@ -51,7 +51,7 @@ Reference          : Identifier
 
 — Document —
 
-Document         : VersionMarker GuideField* Declaration* Ballot+
+Document         : VersionMarker? GuideField* Declaration* Ballot+
 VersionMarker    : `oval` Version Newline
 GuideField       : StringField(guide) | StringField(election) | DateField(date) | MarkdownField(note)
 Declaration      : Party | Candidate
