@@ -988,11 +988,12 @@ every reference, so the derived fields are always complete.
 
 ### 6.3 Example
 
-`examples/compiled.example.json` is the canonical output of a small guide with a ticket, a ranked
-contest with a withdrawn campaign, a measure, and a sub-ballot. It validates against the schema:
+`examples/franklin.oval.json` is the canonical output of `examples/franklin.oval`, the fictional
+full-scale guide: six root ballots, forty-four contests, twenty-eight measures. It is produced by the
+reference implementation (`oval compile --pretty`) and validates against the schema:
 
 ```sh
-check-jsonschema --schemafile schema/guide.schema.json examples/compiled.example.json
+check-jsonschema --schemafile schema/guide.schema.json examples/franklin.oval.json
 ```
 
 The repository's `mise.toml` installs `check-jsonschema`.
