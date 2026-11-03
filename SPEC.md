@@ -3,7 +3,8 @@
 **Working draft 0.1.** This document specifies Oval, a plain-text file format for voting guides.
 It is derived from the data model in `DATA_MODEL.md` and the syntax prototypes in `prototypes/`.
 Where this document and the data model disagree, this document is wrong until the disagreement
-is resolved deliberately.
+is resolved deliberately. Documents written to this draft begin with the version marker `oval 0.1`
+(Section 2.5).
 
 The format's name, extension, and media type are given in Section 1.2.
 
@@ -87,6 +88,7 @@ The complete grammar is collected in Appendix A.
 | File extension | `.oval` |
 | Media type | `text/prs.oval` |
 | Encoding | UTF-8 (Section 2.1) |
+| Version marker | `oval 0.1`, the first entry of every document (Section 2.5) |
 
 **File extension.** Oval documents use the extension `.oval`. No other format is known to use it;
 it is unclaimed in GitHub Linguist and in file-extension registries. The name Oval is shared with
@@ -106,11 +108,12 @@ is no structured-syntax suffix: Oval is not JSON, XML, or any other registered s
 
 The unregistered form `text/x-oval` is not used. RFC 6648 deprecates the `x-` prefix.
 
-**Version marker.** This draft has no in-file version marker. One is under consideration, likely a
-first line of the form `oval 1`, so that future parsers can distinguish documents written to
-different major versions of this specification. If adopted, it will be a required first line and
-will be added to Section 2.5 before the first stable release, since adding it after documents
-exist in the wild is costly.
+**Version marker.** Every document begins with `oval` followed by the version of this
+specification it is written to, as `MAJOR.MINOR` (Section 2.5). A tool therefore knows which
+language a document is written in before it reads anything else, and a document can outlive the
+tools that wrote it: a future implementation declines a document it does not understand (V19)
+instead of misreading it. The marker names a version of this specification, never a version of a
+tool.
 
 ---
 
@@ -146,6 +149,7 @@ Token : Keyword
       | String
       | Integer
       | Date
+      | Version
       | Url
       | Punctuator
       | MarkdownBlock
@@ -211,8 +215,10 @@ Integer : digit+
 
 An unsigned whole number. Leading zeros are permitted and insignificant. There is no sign.
 
-A word that begins with a digit but is neither an `Integer` nor a `Date` (such as `12abc`,
-`3_000`, or `2026-11-5`) is a *malformed number* and becomes one `Error` token.
+A word that begins with a digit but is neither an `Integer`, a `Date`, nor a `Version` (such as
+`12abc`, `3_000`, `2026-11-5`, or `01.1`) is a *malformed number* and becomes one `Error` token.
+Within a word that begins with a digit, `.` is a word character, so `1.x` is one malformed number
+rather than an `Integer` followed by an unexpected character.
 
 #### Date
 
@@ -223,6 +229,17 @@ Date : digit digit digit digit `-` digit digit `-` digit digit
 An ISO 8601 calendar date. The lexer and parser match the shape only. Whether the date exists on
 the calendar is a validation rule (V13), so `2026-02-30` is a well-formed `Date` and an invalid
 document.
+
+#### Version
+
+```
+Version : versionPart `.` versionPart
+versionPart : `0` | nonZeroDigit digit*
+nonZeroDigit : U+0031–U+0039
+```
+
+A version of this specification, `MAJOR.MINOR`. Neither part has leading zeros, so every version
+has exactly one spelling. The only place a `Version` appears is the version marker (Section 2.5).
 
 #### Url
 
@@ -365,14 +382,28 @@ Lines inside a `MarkdownBlock` body do not participate in this process; the bloc
 ### 2.5 Document
 
 ```
-Document : GuideField* Declaration* Ballot+
+Document : VersionMarker GuideField* Declaration* Ballot+
+VersionMarker : `oval` Version Newline
 ```
 
-A document is a Guide (Section 2.8) written at indentation zero. The document's fields come first,
-then any top-level `Party` and `Candidate` declarations, then one or more root `Ballot`s. These
-three groups appear in that order; within the first two groups, order is free.
+A document is a Guide (Section 2.8) written at indentation zero. It opens with the version marker,
+then the document's fields, then any top-level `Party` and `Candidate` declarations, then one or
+more root `Ballot`s. These four groups appear in that order; within the fields and within the
+declarations, order is free.
 
 There is no closing token. The document ends at end of input.
+
+**Version marker.** `oval 0.1` names the version of this specification the document is written
+to. It is the first entry of every document; only blank lines and comments (Section 2.3) may
+precede it, and a document without one is not well-formed. Whether an implementation supports the
+declared version is a validation rule (V19), so that a parser need not know which versions exist.
+
+Versions are `MAJOR.MINOR` and are this specification's own version numbers. From major version 1
+onward, a minor version only adds constructs, so an implementation of `M.N` accepts every document
+declaring `M.0` through `M.N`. Major version 0 is the draft series: each `0.N` is a distinct
+language, and an implementation accepts exactly the one it implements. Once more than one version
+exists, this section will record which version introduced each construct, and Section 3 will gain
+a rule that a document uses only constructs of its declared version.
 
 ### 2.6 Fields and Blocks
 
@@ -457,6 +488,8 @@ GuideField : StringField(guide)
 ```
 
 ```
+oval 0.1
+
 guide "Franklin Voter Guide"
 election "November 3, 2026 General Election"
 date 2026-11-03
@@ -465,7 +498,8 @@ note:
   Written by the Franklin Civic Alliance.
 ```
 
-`guide`, `election`, and `date` are required (V2). `note` is optional.
+`guide`, `election`, and `date` are required (V2). `note` is optional. The version marker that
+precedes them belongs to the document (Section 2.5), not to the guide.
 
 ```
 Declaration : Party | Candidate
@@ -871,6 +905,13 @@ first member. The reference resolves correctly; the warning is stylistic. (C12)
 
 A `Measure` with exactly one of `if_yes` and `if_no`. (C14)
 
+### V19 Supported version — error
+
+The version marker (Section 2.5) must name a version the implementation supports: the same major
+version as the implementation's, and a minor version no greater than it, or for major version 0
+exactly the implementation's version. An implementation that reports V19 may report nothing else,
+since the rest of the document may not have the meaning this specification gives it.
+
 ---
 
 ## 4. Resolution
@@ -919,6 +960,9 @@ Three conformance levels are defined so that tools can claim what they implement
   canonical output of Section 6, byte-for-byte equal to the reference implementation's after JSON
   normalization (key order and whitespace disregarded).
 
+A conformance claim names the specification versions it covers (Section 2.5). An implementation
+reports documents outside them under V19 rather than attempting to process them.
+
 A conformance test suite (not yet written) will consist of well-formed and malformed documents,
 and for each well-formed document the expected validation report and canonical resolved output.
 
@@ -953,6 +997,9 @@ use the syntax tree or the diagnostics.
   `[]` (researched, none), or a list.
 - **Booleans are always present.** `incumbent`, `withdrawn`, and `no_position` are written even
   when false.
+- **The root echoes the version marker.** `oval` is the document's declared version as a string,
+  `"0.1"`. The output conforms to that version's schema, or to a later minor version's, which only
+  adds keys.
 - **Discriminated unions use `kind`.** Every item in a ballot or section has a `kind` of
   `section`, `contest`, `measure`, or `ballot`, and root ballots carry `kind: "ballot"` too, so one
   type describes a ballot anywhere. `method.kind` and `stance.position` discriminate the same way.
@@ -970,7 +1017,6 @@ Everything below is computed from the document; none of it can disagree with the
 
 | Field | On | Definition |
 |---|---|---|
-| `oval` | root | The specification version, `MAJOR.MINOR`. |
 | `candidates` | party | Identifiers of every candidate whose party this is, in document order. |
 | `contests` | candidate | Identifiers of every contest in which the candidate is a campaign member, in ballot order. |
 | `path` | ballot | Identifiers of the enclosing ballots, outermost first, excluding the ballot itself. Empty for a root. |
@@ -1045,6 +1091,7 @@ and kept in source order within a group:
 
 | Block | Order |
 |---|---|
+| Document | version marker; fields; then declarations; then ballots |
 | Ballot | fields; then sections, contests, measures, and sub-ballots |
 | Section | fields; then contests and measures |
 | Contest | fields; campaigns; recommendations |
@@ -1072,7 +1119,7 @@ Lexical productions match characters; syntactic productions match tokens. Layout
 sourceCharacter  : any Unicode code point except U+0000
 lineTerminator   : U+000A | U+000D U+000A | U+000D
 
-Token            : Keyword | Identifier | String | Integer | Date | Url | Punctuator | MarkdownBlock
+Token            : Keyword | Identifier | String | Integer | Date | Version | Url | Punctuator | MarkdownBlock
 Ignored          : Comment | Whitespace | BlankLine
 LayoutToken      : Newline | Indent | Dedent          — zero-length except Newline at a terminator
 
@@ -1088,6 +1135,9 @@ stringCharacter  : sourceCharacter but not `"` or `\` or lineTerminator | escape
 escapedCharacter : `\"` | `\\`
 Integer          : digit+
 Date             : digit digit digit digit `-` digit digit `-` digit digit
+Version          : versionPart `.` versionPart
+versionPart      : `0` | nonZeroDigit digit*
+nonZeroDigit     : U+0031–U+0039
 Url              : urlScheme `://` urlCharacter+
 urlScheme        : `https` | `http`
 urlCharacter     : sourceCharacter but not whitespace or lineTerminator
@@ -1112,7 +1162,8 @@ Reference          : Identifier
 
 — Document —
 
-Document         : GuideField* Declaration* Ballot+
+Document         : VersionMarker GuideField* Declaration* Ballot+
+VersionMarker    : `oval` Version Newline
 GuideField       : StringField(guide) | StringField(election) | DateField(date) | MarkdownField(note)
 Declaration      : Party | Candidate
 
@@ -1173,7 +1224,7 @@ All keywords are reserved in every position.
 
 | Group | Keywords |
 |---|---|
-| Document | `guide` `election` `date` `note` |
+| Document | `oval` `guide` `election` `date` `note` |
 | Entities | `party` `candidate` `ballot` `section` `contest` `campaign` `measure` |
 | Party fields | `abbreviation` `website` |
 | Candidate fields | `designation` |

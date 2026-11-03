@@ -8,7 +8,7 @@ Dedent) are produced from indentation as described in SPEC.md section 2.4.
 sourceCharacter  : any Unicode code point except U+0000
 lineTerminator   : U+000A | U+000D U+000A | U+000D
 
-Token            : Keyword | Identifier | String | Integer | Date | Url | Punctuator | MarkdownBlock
+Token            : Keyword | Identifier | String | Integer | Date | Version | Url | Punctuator | MarkdownBlock
 Ignored          : Comment | Whitespace | BlankLine
 LayoutToken      : Newline | Indent | Dedent          — zero-length except Newline at a terminator
 
@@ -24,6 +24,9 @@ stringCharacter  : sourceCharacter but not `"` or `\` or lineTerminator | escape
 escapedCharacter : `\"` | `\\`
 Integer          : digit+
 Date             : digit digit digit digit `-` digit digit `-` digit digit
+Version          : versionPart `.` versionPart
+versionPart      : `0` | nonZeroDigit digit*
+nonZeroDigit     : U+0031–U+0039
 Url              : urlScheme `://` urlCharacter+
 urlScheme        : `https` | `http`
 urlCharacter     : sourceCharacter but not whitespace or lineTerminator
@@ -48,7 +51,8 @@ Reference          : Identifier
 
 — Document —
 
-Document         : GuideField* Declaration* Ballot+
+Document         : VersionMarker GuideField* Declaration* Ballot+
+VersionMarker    : `oval` Version Newline
 GuideField       : StringField(guide) | StringField(election) | DateField(date) | MarkdownField(note)
 Declaration      : Party | Candidate
 

@@ -8,7 +8,7 @@
   "additionalProperties": false,
   "properties": {
     "oval": {
-      "description": "The version of the Oval specification the document was compiled under.",
+      "description": "The version of the Oval specification the document declares in its version marker, as MAJOR.MINOR.",
       "type": "string",
       "pattern": "^[0-9]+\\.[0-9]+$"
     },
