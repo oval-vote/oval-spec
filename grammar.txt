@@ -10,7 +10,7 @@ lineTerminator   : U+000A | U+000D U+000A | U+000D
 
 Token            : Keyword | Identifier | String | Integer | Date | Url | Punctuator | MarkdownBlock
 Ignored          : Comment | Whitespace | BlankLine
-LayoutToken      : Newline | Indent | Dedent
+LayoutToken      : Newline | Indent | Dedent          — zero-length except Newline at a terminator
 
 Keyword          : one of (Appendix B)
 Identifier       : `@` identifierName
@@ -28,10 +28,11 @@ Url              : urlScheme `://` urlCharacter+
 urlScheme        : `https` | `http`
 urlCharacter     : sourceCharacter but not whitespace or lineTerminator
 Punctuator       : one of `:` `,`
-MarkdownBlock    : Keyword `:` lineTerminator markdownBody
+MarkdownBlock    : bodyLine+                           — see 2.2; opened by a line ending `Keyword :`
 Comment          : `#` commentCharacter*
 commentCharacter : sourceCharacter but not lineTerminator
 Whitespace       : U+0020+
+BlankLine        : lineTerminator ending a line with no tokens but Whitespace and Comment
 
 — Field templates —
 

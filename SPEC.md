@@ -152,6 +152,11 @@ Token : Keyword
 Tokens are separated by whitespace within a line as necessary. Whitespace is never required
 between a `Punctuator` and an adjacent token.
 
+Every byte of the source belongs to exactly one token, counting the ignored tokens of Section 2.3
+and an `Error` token for any text that cannot be tokenized. The layout tokens of Section 2.4 are
+zero-length. This makes the token stream lossless: concatenating the tokens' text reproduces the
+source exactly, which is what allows a formatter to round-trip a document.
+
 #### Keyword
 
 ```
@@ -187,9 +192,14 @@ stringCharacter : sourceCharacter but not `"` or `\` or lineTerminator
 escapedCharacter : `\"` | `\\`
 ```
 
-A string is single-line display text. A line terminator inside a string is an error. Only two
-escapes exist: `\"` for a double quote and `\\` for a backslash. Strings carry no formatting; all
-multi-line or formatted text is a `MarkdownBlock`.
+A string is single-line display text. Only two escapes exist: `\"` for a double quote and `\\`
+for a backslash. Strings carry no formatting; all multi-line or formatted text is a
+`MarkdownBlock`.
+
+A line terminator or end of input before the closing quote is an *unterminated string*: the text
+from the opening quote to the end of the line becomes an `Error` token and lexing resumes on the
+next line. A backslash followed by anything other than `"` or `\\` is an *invalid escape*: the
+string is still a `String` token, and the error is reported on the two characters of the escape.
 
 #### Integer
 
@@ -198,6 +208,9 @@ Integer : digit+
 ```
 
 An unsigned whole number. Leading zeros are permitted and insignificant. There is no sign.
+
+A word that begins with a digit but is neither an `Integer` nor a `Date` (such as `12abc`,
+`3_000`, or `2026-11-5`) is a *malformed number* and becomes one `Error` token.
 
 #### Date
 
@@ -217,8 +230,10 @@ urlScheme : `https` | `http`
 urlCharacter : sourceCharacter but not whitespace or lineTerminator
 ```
 
-A URL is written bare, without quotes. It extends to the next whitespace. Only `http` and `https`
-are permitted.
+A URL is written bare, without quotes. It extends to the next space, tab, or line terminator, so
+`#` and `"` inside a URL are part of it. Only `http` and `https` are permitted. A scheme and `://`
+with nothing after them is a *malformed URL* and becomes one `Error` token. Any other word followed
+by `://` is lexed as an unknown word, a `:`, and whatever follows.
 
 #### Punctuator
 
@@ -230,25 +245,55 @@ Punctuator : one of `:` `,`
 
 #### MarkdownBlock
 
-A `MarkdownBlock` is produced when a `Keyword` is immediately followed by `:` and a line
-terminator. The lexer then collects the *block body*: every following line that is either blank or
-indented strictly more than the line containing the keyword, up to but not including the first
-non-blank line that is not. The body's common leading indentation (that of its least-indented
-non-blank line) is removed from every line, trailing blank lines are dropped, and the result is the
-token's value, a string containing line terminators.
+A `MarkdownBlock` is the body of a Markdown field: the lines following a line that ends in a
+`Keyword` and `:`.
 
 ```
-MarkdownBlock : Keyword `:` lineTerminator markdownBody
-markdownBody : (blankLine | indentedLine)*      — see prose above
+MarkdownBlock : bodyLine+
+bodyLine : a line indented strictly more than the opening line, or a blank line between two such lines
 ```
 
-The body is **opaque** to the lexer and parser. In particular, `#` inside a body is not a comment,
-and `@` and `"` are ordinary characters. The body is interpreted as Markdown by renderers; this
-specification does not define which Markdown constructs are allowed, and parsers do not inspect
-it beyond collecting it.
+The *opening line* is any line whose last two tokens, ignoring whitespace and comments, are a
+`Keyword` and `:`. After its `Newline`, the lexer looks ahead past any blank lines to the next line
+with content. If that line is indented strictly more than the opening line, the body begins there
+and extends over every following line that is either blank or indented strictly more than the
+opening line, ending after the terminator of the last such line with content. If the next content
+line is not indented more, there is no body and no token.
 
-A `Keyword` followed by `:` and then anything other than a line terminator is a syntax error. A
-`MarkdownBlock` whose body is empty is a syntax error; omit the field instead.
+The token covers the body's raw text, from the first content line's leading spaces through the
+last content line's terminator (or end of input). Blank lines before and after the body are not part
+of it; they lex as `BlankLine`. Blank lines inside the body are part of it. Body lines do not
+participate in layout (Section 2.4): they produce no `Newline`, `Indent`, or `Dedent`, and the
+indentation stack is unchanged after the body.
+
+The body is **opaque**. Inside it `#` is not a comment, `@`, `"`, and tabs are ordinary characters,
+and no other token is recognized. The body is interpreted as Markdown by renderers; this
+specification does not define which Markdown constructs are allowed.
+
+The token's *value* is derived from its text by removing the common leading indentation of its
+non-blank lines from every line. Parsers expose the value; the token itself keeps the raw text.
+
+A `Keyword` followed by `:` and then anything other than whitespace, a comment, or a line
+terminator does not open a body; whether that is valid is the parser's concern. A Markdown field
+whose opening line has no body is a syntax error, not a lexical one; omit the field instead.
+
+#### Lexical Errors
+
+Every lexical error has a range. Where the text cannot be tokenized at all it becomes an `Error`
+token spanned exactly by one error; where a token is recognizable but flawed, the token keeps its
+kind and the error points at the flaw within it. Lexing always continues.
+
+| Error | Range | Token | Recovery |
+|---|---|---|---|
+| Illegal tab | the run of tabs | `Error` | continue after the tabs |
+| Malformed identifier | `@` and the word after it | `Error` | continue after the word |
+| Unknown word | the word | `Error` | continue after the word |
+| Unexpected character | one character | `Error` | continue after it |
+| Unterminated string | opening quote to end of line | `Error` | resume at the line terminator |
+| Invalid escape | the backslash and the next character | `String` | continue inside the string |
+| Malformed number | the word | `Error` | continue after the word |
+| Malformed URL | scheme and `://` | `Error` | continue after `://` |
+| Inconsistent dedent | the line's leading spaces | `Whitespace` | treat the line as at the nearest enclosing level (Section 2.4) |
 
 ### 2.3 Ignored Tokens
 
@@ -262,14 +307,15 @@ Ignored : Comment
 Comment : `#` commentCharacter* (before lineTerminator)
 commentCharacter : sourceCharacter but not lineTerminator
 Whitespace : U+0020+
-BlankLine : a line containing only Whitespace and/or a Comment
+BlankLine : lineTerminator, when the line it ends contains no tokens other than Whitespace and Comment
 ```
 
 A `#` begins a comment that runs to the end of the line, **except inside a `MarkdownBlock` body or
 a `String`**, where it is an ordinary character. A comment may follow tokens on the same line.
 
-Blank lines are ignored everywhere except inside a `MarkdownBlock` body, where they separate
-paragraphs and are preserved.
+A line containing nothing but whitespace and a comment is a *blank line*. Its terminator lexes as
+`BlankLine` rather than `Newline`, so blank lines are ignored by the parser wherever they appear.
+Inside a `MarkdownBlock` body blank lines are part of the body and separate paragraphs.
 
 Horizontal tab (U+0009) is **not** whitespace. A tab anywhere outside a `String` or `MarkdownBlock`
 body is a lexical error. This rule exists so that indentation (Section 2.4) is unambiguous.
@@ -283,22 +329,36 @@ synthetic tokens, following the approach of Python.
 LayoutToken : Newline | Indent | Dedent
 ```
 
-For each non-blank line, its *indentation* is the number of U+0020 characters before its first
-other character. The lexer maintains a stack of indentation levels, initially `[0]`.
+All three are **zero-length** except `Newline` at a line terminator. `Indent` and `Dedent` are
+positioned at the first token of the line that triggers them, after that line's leading
+`Whitespace`. Because they have no text, the lossless property of Section 2.2 holds.
 
-- At the end of each non-blank line that is not part of a `MarkdownBlock` body, emit `Newline`.
-- Before the first token of a non-blank line, compare its indentation `n` to the top of the stack:
+A line's *indentation* is the number of U+0020 characters before its first other character. A tab
+is an "other character" (and an error, Section 2.3). The lexer maintains a stack of indentation
+levels, initially `[0]`.
+
+- At the end of each line with tokens, emit `Newline` covering the line terminator. A blank line
+  emits `BlankLine` instead (Section 2.3) and does not affect the stack.
+- Before the first token of a line with tokens, compare its indentation `n` to the top of the
+  stack:
   - If `n` is greater, push `n` and emit `Indent`.
-  - If `n` is less, pop the stack and emit `Dedent` for each level popped until the top equals
-    `n`. If no level equals `n`, the line is a lexical error (inconsistent dedent).
+  - If `n` is less, pop the stack and emit one `Dedent` per level popped until the top is less than
+    or equal to `n`. If the top is then not equal to `n`, report an *inconsistent dedent* over the
+    line's leading spaces and treat the line as being at the top's level.
   - If `n` is equal, emit nothing.
-- At end of input, emit `Dedent` for every level above 0.
+- At end of input, if the last line has tokens and no terminator, emit a zero-length `Newline`.
+  Then emit `Dedent` for every level above 0.
+
+So a block always closes with the sequence `Newline Dedent`, whether it is followed by another
+line or by end of input, and the grammar's productions can end in `Newline` without an end-of-input
+special case.
 
 The amount of indentation is not fixed; any increase opens a block. A formatter emits two spaces per
 level. A line indented more than its predecessor where the grammar does not permit a block is a
 syntax error.
 
-Lines inside a `MarkdownBlock` body do not participate in this process; the block is one token.
+Lines inside a `MarkdownBlock` body do not participate in this process; the block is one token
+(Section 2.2).
 
 ### 2.5 Document
 
@@ -832,8 +892,9 @@ responsibility.
 
 Three conformance levels are defined so that tools can claim what they implement.
 
-- **Lexer-conformant.** Tokenizes any input per Section 2.2–2.4, reporting lexical errors.
-  Sufficient for syntax highlighting.
+- **Lexer-conformant.** Tokenizes any input per Sections 2.2–2.4, producing tokens that cover
+  every byte, and reports lexical errors with the ranges and recovery of Section 2.2. Sufficient
+  for syntax highlighting.
 - **Parser-conformant.** Accepts exactly the well-formed documents of Section 2 and produces a
   tree from which Section 4 can be applied. Sufficient for a formatter.
 - **Validator-conformant.** Parser-conformant, and reports every Section 3 rule with its
@@ -857,7 +918,7 @@ lineTerminator   : U+000A | U+000D U+000A | U+000D
 
 Token            : Keyword | Identifier | String | Integer | Date | Url | Punctuator | MarkdownBlock
 Ignored          : Comment | Whitespace | BlankLine
-LayoutToken      : Newline | Indent | Dedent
+LayoutToken      : Newline | Indent | Dedent          — zero-length except Newline at a terminator
 
 Keyword          : one of (Appendix B)
 Identifier       : `@` identifierName
@@ -875,10 +936,11 @@ Url              : urlScheme `://` urlCharacter+
 urlScheme        : `https` | `http`
 urlCharacter     : sourceCharacter but not whitespace or lineTerminator
 Punctuator       : one of `:` `,`
-MarkdownBlock    : Keyword `:` lineTerminator markdownBody
+MarkdownBlock    : bodyLine+                           — see 2.2; opened by a line ending `Keyword :`
 Comment          : `#` commentCharacter*
 commentCharacter : sourceCharacter but not lineTerminator
 Whitespace       : U+0020+
+BlankLine        : lineTerminator ending a line with no tokens but Whitespace and Comment
 
 — Field templates —
 
