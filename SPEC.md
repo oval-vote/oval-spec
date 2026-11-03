@@ -218,9 +218,9 @@ A word that begins with a digit but is neither an `Integer` nor a `Date` (such a
 Date : digit digit digit digit `-` digit digit `-` digit digit
 ```
 
-An ISO 8601 calendar date. The lexer matches the shape; the parser rejects a date whose month is
-not 01–12 or whose day does not exist in that month. `2026-02-30` is a lexical `Date` and a syntax
-error.
+An ISO 8601 calendar date. The lexer and parser match the shape only. Whether the date exists on
+the calendar is a validation rule (V13), so `2026-02-30` is a well-formed `Date` and an invalid
+document.
 
 #### Url
 
@@ -598,9 +598,11 @@ The contest kind is written on the header line after the title:
 | `ranked` | Rank choices. | optional `max` `Integer`: how many may be ranked |
 | `retention` | Yes or no on one officeholder. | none |
 
-A contest contains one or more `Campaign`s in ballot order and exactly one `ContestRecommend`
-(V10). Campaigns and the recommendation may be interleaved with fields; a formatter places fields,
-then campaigns, then the recommendation.
+A contest's block holds its `Campaign`s in ballot order and its `ContestRecommend`s. The grammar
+accepts any number of each; validation requires at least one campaign except in a retention
+contest (V12) and exactly one recommendation (V10), so that a half-written contest still parses
+and the validator can name what is missing. Campaigns and the recommendation may be interleaved
+with fields; a formatter places fields, then campaigns, then the recommendation.
 
 ### 2.14 Campaign
 
@@ -769,11 +771,17 @@ Where a rule corresponds to a constraint in `DATA_MODEL.md`, the constraint is c
 
 Every `Identifier` used as a reference must be declared exactly once somewhere in the document.
 Every `Identifier` must be declared at most once. The namespace is shared across all entity kinds:
-a candidate and a measure may not share an identifier. (C1, C13)
+a candidate and a measure may not share an identifier. A reference must resolve to a declaration
+of the kind its position expects: a `party` line names a party, and a member or a `support` or
+`oppose` entry names a candidate. (C1, C13)
+
+When a name is declared more than once, the first declaration in source order is the one
+references resolve to, and each later declaration is the error.
 
 ### V2 Required guide fields — error
 
-`guide`, `election`, and `date` must each be present exactly once at the document level.
+`guide`, `election`, and `date` must each be present at the document level. (A repeated field is
+already a syntax error under Section 2.6.)
 
 ### V3 Member blocks only on declarations — error
 
@@ -827,16 +835,20 @@ Every `Contest` has exactly one `ContestRecommend`. Every `Measure` has exactly 
 
 ### V12 Ballot structure — error
 
-Every `Ballot` has at least one item (not counting fields). Every `Section` has at least one item.
-(C17, as error for sections; see V16 for the ballot warning)
+Every `Ballot` has at least one item, not counting fields. Every `Section` has at least one item.
+Every `Contest` whose kind is not `retention` has at least one campaign; a retention contest's
+campaign count is governed by V9. (C17)
 
 ### V13 Dates — error
 
-`date` is a real calendar date.
+`date` exists on the proleptic Gregorian calendar: the month is 1 through 12 and the day is within
+that month's length, with 29 February allowed only in leap years.
 
 ### V14 Unused declarations — warning
 
-A `Party` referenced by no candidate. A `Candidate` that is a member of no campaign. (C10, C20)
+A top-level `Party` declaration that no `party` line refers to. A top-level `Candidate` declaration
+that is a member of no campaign. Inline declarations are used by the construct that declares them
+and are never reported. (C10, C20)
 
 ### V15 Duplicate party names — warning
 
