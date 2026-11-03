@@ -1,4 +1,4 @@
-Oval grammar, working draft 0.1.
+Oval grammar, version 0.1.1.
 Extracted verbatim from Appendix A of SPEC.md; edit the spec, not this file.
 Notation is described in SPEC.md section 1.1. Layout tokens (Newline, Indent,
 Dedent) are produced from indentation as described in SPEC.md section 2.4.
