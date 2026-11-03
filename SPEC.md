@@ -838,7 +838,9 @@ Every `Contest` has exactly one `ContestRecommend`. Every `Measure` has exactly 
 
 Every `Ballot` has at least one item, not counting fields. Every `Section` has at least one item.
 Every `Contest` whose kind is not `retention` has at least one campaign; a retention contest's
-campaign count is governed by V9. (C17)
+campaign count is governed by V9. Every `Campaign` has at least one member: the grammar lets a
+block-form campaign hold only fields, and without a member there is no head of ticket for a
+recommendation to name. (C2, C17)
 
 ### V13 Dates — error
 
