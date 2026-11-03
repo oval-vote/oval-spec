@@ -34,6 +34,7 @@ The format's name, extension, and media type are given in Section 1.2.
 4. [Resolution](#4-resolution)
 5. [Conformance](#5-conformance)
 6. [Canonical Output](#6-canonical-output)
+7. [Formatting](#7-formatting)
 - [Appendix A: Grammar Summary](#appendix-a-grammar-summary)
 - [Appendix B: Keywords](#appendix-b-keywords)
 
@@ -399,8 +400,8 @@ These are grammar templates: `StringField(subtitle)` means `subtitle String Newl
 
 Within one block, **each field keyword may appear at most once**, and **fields may appear in any
 order**. A repeated field is a syntax error. **Children** (campaigns within a contest, items within
-a ballot) are ordered, and their order is significant. Fields and children may be interleaved; a
-formatter places fields first.
+a ballot) are ordered, and their order is significant. Fields and children may be interleaved in
+the source; Section 7 describes the order a formatter puts them in.
 
 A `StringListField` written as `none` denotes an empty list. This is distinct from omitting the
 field. Section 2.16 explains where the distinction matters.
@@ -603,7 +604,7 @@ A contest's block holds its `Campaign`s in ballot order and its `ContestRecommen
 accepts any number of each; validation requires at least one campaign except in a retention
 contest (V12) and exactly one recommendation (V10), so that a half-written contest still parses
 and the validator can name what is missing. Campaigns and the recommendation may be interleaved
-with fields; a formatter places fields, then campaigns, then the recommendation.
+with fields in the source; a formatter orders them fields, campaigns, recommendation (Section 7).
 
 ### 2.14 Campaign
 
@@ -997,6 +998,66 @@ check-jsonschema --schemafile schema/guide.schema.json examples/franklin.oval.js
 ```
 
 The repository's `mise.toml` installs `check-jsonschema`.
+
+---
+
+## 7. Formatting
+
+A formatter rewrites a well-formed document into the canonical style below. Formatting never
+changes meaning: the formatted document has the same significant tokens, the same Markdown values,
+and compiles to the same canonical output (Section 6) as the original. Formatting is idempotent.
+
+A formatter refuses a document with lexical or syntax errors and reports them instead. Recovery
+from errors produces a tree whose shape the author did not intend, and reformatting around it
+could move text in surprising ways.
+
+### 7.1 Whitespace
+
+- Line terminators become U+000A. The document ends with exactly one.
+- Trailing spaces are removed from every line, except content lines inside a `MarkdownBlock`, where
+  two trailing spaces are a hard line break in Markdown and are preserved. Whitespace-only lines
+  inside a body become empty.
+- Every line is indented two spaces per enclosing block, whatever the source used. A
+  `MarkdownBlock` body is indented one level deeper than its keyword line; each body line keeps its
+  indentation beyond the body's common minimum, so lists and continuation lines keep their shape.
+- Tokens on a line are separated by one space. `:` and `,` attach to the token before them. A
+  trailing comment is preceded by one space.
+
+### 7.2 Blank lines and comments
+
+- Runs of blank lines collapse to one. Blank lines at the start of the document are removed. Blank
+  lines inside a `MarkdownBlock` body are content and are kept exactly.
+- A single blank line stays where the author put it; a formatter never inserts one.
+- A comment line belongs to the next line with tokens: it is indented to that line's depth and
+  moves with that line when entries are reordered (Section 7.3). Blank lines between a comment and
+  the line it precedes move with it. Comments after the last line of the document are placed at
+  column zero.
+
+This attachment rule is a formatting decision, not a parsing one. The parser attaches a comment to
+whichever node is open when the next significant token is consumed, which puts a comment just
+before an indented block in the parent and a comment just before a dedent in the inner block.
+Neither is where a reader would say the comment belongs, so the formatter corrects both.
+
+### 7.3 Entry order
+
+Within a block, entries are grouped by kind in the order Appendix A lists the block's alternatives,
+and kept in source order within a group:
+
+| Block | Order |
+|---|---|
+| Ballot | fields; then sections, contests, measures, and sub-ballots |
+| Section | fields; then contests and measures |
+| Contest | fields; campaigns; recommendations |
+| Campaign | members; then fields |
+| Recommendation | `support` tiers; `oppose`; then `justification` and `note` |
+| Measure | fields; recommendations |
+| Party, Candidate, Member, inline Party | fields only |
+
+Fields keep their source order relative to one another. Children that carry meaning in their
+order (campaigns, members, tiers, items) are never reordered relative to one another.
+
+Whether a formatter should instead place fields first in every block, or impose an order among
+fields, is undecided and is expected to become a configurable option rather than a rule here.
 
 ---
 
