@@ -11,14 +11,15 @@ number. The first two components are the language version that documents declare
 
 ## Steps
 
-1. Start a branch from `main`. Set the version in two places: `package.json`, with
-   `npm version <version> --no-git-tag-version`, and the opening line of `SPEC.md`, which reads
-   `**Version <version>, a working draft.**`.
-2. Run `npm run release`. It checks that the two versions agree, that the specification files are
-   committed, and that `grammar.txt` is current, then renders `published/v<version>/` with the
+1. Start a branch from `main` and set the version in `package.json` with
+   `npm version <version> --no-git-tag-version`.
+2. Run `npm run release`. It checks that the specification files are committed and that
+   `grammar.txt` is current, rewrites the `_Working Draft_` line under the title of `SPEC.md` to
+   `_Version <version>, released <date>_`, and renders `published/v<version>/` from it with the
    specification, the schema, the examples, and the grammar, plus an `edition.json` recording the
    date. It refuses to overwrite an existing edition.
-3. Commit everything as `Release <version>`, open a pull request, and merge it.
+3. Commit everything as `Release <version>`, open a pull request, and merge it. The tagged commit
+   therefore names its own edition, and the edition's "edit on GitHub" links point at the tag.
 4. Tag the merge commit and create the GitHub release, whose page the versions index links to as
    the release notes:
 
@@ -27,10 +28,13 @@ number. The first two components are the language version that documents declare
    gh release create v<version> --target main --title v<version> --generate-notes
    ```
 
-The merge deploys the site. The new edition is at `spec.oval.vote/v<version>/`, and the language
-version alias `spec.oval.vote/<MAJOR.MINOR>/` moves to it, so links to the alias always reach the
-newest edition of that language version. The edition's "edit on GitHub" links point at the tag,
-which is why the tag name is fixed before rendering.
+5. Resume the draft: on a new branch run `npm run draft`, which puts `_Working Draft_` back under
+   the title, then commit it as `Resume the working draft` and merge. Until this merges, the
+   draft on the site shows the edition line; `npm run release` refuses to run while it is missing.
+
+The merge in step 3 deploys the site. The new edition is at `spec.oval.vote/v<version>/`, and the
+language version alias `spec.oval.vote/<MAJOR.MINOR>/` moves to it, so links to the alias always
+reach the newest edition of that language version.
 
 Release the other repositories with the same version number: `oval` by tagging `v<version>` on its
 `main`, and `vscode-oval` the same way, as their READMEs describe.
