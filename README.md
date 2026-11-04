@@ -14,8 +14,11 @@ specification and the implementation share one version number; see Section 2.5.
 ## The website
 
 The site is `SPEC.md` rendered with [spec-md](https://spec-md.com), the tool behind the GraphQL
-specification's site, and deployed to GitHub Pages on every push to `main`. Tooling is managed
-with [mise](https://mise.jdx.dev), which reads `.node-version`.
+specification's site, and deployed to GitHub Pages on every push to `main`. The build writes the
+working draft to `dist/draft/`, copies every released edition from `published/`, adds a
+`MAJOR.MINOR` alias for the newest edition of each language version, and generates the versions
+index at `dist/index.html`. Releases are described in `RELEASE.md`. Tooling is managed with
+[mise](https://mise.jdx.dev), which reads `.node-version`.
 
 ```sh
 npm ci
