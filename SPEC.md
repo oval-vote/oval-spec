@@ -35,17 +35,13 @@ Oval has three layers, specified in order in this document:
 
 ### 1.1. Notation
 
-Grammar productions are written as
-
-```
-Name : Alternative
-```
-
-with alternatives on separate lines or separated by `|`. `X?` is optional, `X*` is zero or more,
-`X+` is one or more. Literal text is in `backticks`. Token names are in UpperCamelCase. A production
-whose name begins with a lowercase letter is a lexical production and matches characters; one that
-begins with an uppercase letter is syntactic and matches tokens. `one of` introduces a list of
-single-token alternatives.
+Grammar productions use the notation of the GraphQL specification. A syntactic production,
+written `Name : Rule`, matches tokens; a lexical production, written `Name :: Rule`, matches
+characters. Alternatives are listed one per line. `X?` is optional, `X*` is zero or more, and `X+`
+is one or more. Literal text is in `backticks`, and prose that stands in for a rule is in double
+quotes. `one of` introduces alternatives that are each a single token, and `but not` excludes
+alternatives. Production names are UpperCamelCase, and on the website every name links to its
+definition.
 
 The complete grammar is collected in Appendix A.
 
@@ -95,17 +91,14 @@ tool.
 An Oval document is a sequence of Unicode code points encoded as UTF-8. A byte order mark, if
 present, is ignored.
 
-```
-sourceCharacter : any Unicode code point except U+0000
-```
+SourceCharacter :: "any Unicode code point except U+0000"
 
 A document is divided into *lines* by line terminators.
 
-```
-lineTerminator : U+000A
-               | U+000D U+000A
-               | U+000D
-```
+LineTerminator ::
+- "New Line (U+000A)"
+- "Carriage Return (U+000D)" "New Line (U+000A)"
+- "Carriage Return (U+000D)"
 
 All three forms are equivalent. A formatter emits U+000A.
 
@@ -114,17 +107,16 @@ not by brackets or closing keywords. Section 2.4 describes how indentation becom
 
 ### 2.2. Lexical Tokens
 
-```
-Token : Keyword
-      | Identifier
-      | String
-      | Integer
-      | Date
-      | Version
-      | Url
-      | Punctuator
-      | MarkdownBlock
-```
+Token ::
+- Keyword
+- Identifier
+- String
+- Integer
+- Date
+- Version
+- Url
+- Punctuator
+- MarkdownBlock
 
 Tokens are separated by whitespace within a line as necessary. Whitespace is never required
 between a `Punctuator` and an adjacent token.
@@ -136,38 +128,53 @@ source exactly, which is what allows a formatter to round-trip a document.
 
 #### Keyword
 
-```
-Keyword : one of the words listed in Appendix B
-```
+Keyword :: one of
+- `oval` `guide` `election` `date` `note`
+- `party` `candidate` `ballot` `section` `contest` `campaign` `measure`
+- `abbreviation` `website` `designation` `eligibility`
+- `single` `multiple` `ranked` `retention` `max`
+- `subtitle` `tabulation`
+- `incumbent` `withdrawn` `as`
+- `recommend` `support` `oppose` `justification` `yes` `no` `no-position`
+- `description` `if_yes` `if_no` `placement` `fiscal_impact` `supporters` `opponents`
+- `none`
 
 Keywords are reserved. They are matched case-sensitively and are all lowercase. A word that is not
 a keyword and does not begin with `@` is a lexical error; there are no free identifiers in Oval.
 
 #### Identifier
 
-```
-Identifier : `@` identifierName
-identifierName : identifierStart identifierPart*
-identifierStart : letter
-identifierPart : letter | digit | `-` | `_`
-letter : U+0041–U+005A | U+0061–U+007A
-digit : U+0030–U+0039
-```
+Identifier :: `@` IdentifierName
+
+IdentifierName :: IdentifierStart IdentifierPart*
+
+IdentifierStart :: Letter
+
+IdentifierPart ::
+- Letter
+- Digit
+- `-`
+- `_`
+
+Letter :: /[A-Za-z]/
+
+Digit :: /[0-9]/
 
 An identifier names an entity. The same token form is used both to declare an identifier and to
 refer to one; Section 2.7 explains which is which.
 
-Identifiers are case-sensitive. Two identifiers are the same if their `identifierName` parts are
+Identifiers are case-sensitive. Two identifiers are the same if their `IdentifierName` parts are
 identical.
 
 #### String
 
-```
-String : `"` stringCharacter* `"`
-stringCharacter : sourceCharacter but not `"` or `\` or lineTerminator
-                | escapedCharacter
-escapedCharacter : `\"` | `\\`
-```
+String :: `"` StringCharacter* `"`
+
+StringCharacter ::
+- SourceCharacter but not `"` or `\` or LineTerminator
+- EscapedCharacter
+
+EscapedCharacter :: one of `\"` `\\`
 
 A string is single-line display text. Only two escapes exist: `\"` for a double quote and `\\`
 for a backslash. Strings carry no formatting; all multi-line or formatted text is a
@@ -180,22 +187,18 @@ string is still a `String` token, and the error is reported on the two character
 
 #### Integer
 
-```
-Integer : digit+
-```
+Integer :: Digit+
 
 An unsigned whole number. Leading zeros are permitted and insignificant. There is no sign.
 
-A word that begins with a digit but is neither an `Integer`, a `Date`, nor a `Version` (such as
+A word that begins with a Digit but is neither an `Integer`, a `Date`, nor a `Version` (such as
 `12abc`, `3_000`, `2026-11-5`, or `01.1`) is a *malformed number* and becomes one `Error` token.
-Within a word that begins with a digit, `.` is a word character, so `1.x` is one malformed number
+Within a word that begins with a Digit, `.` is a word character, so `1.x` is one malformed number
 rather than an `Integer` followed by an unexpected character.
 
 #### Date
 
-```
-Date : digit digit digit digit `-` digit digit `-` digit digit
-```
+Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
 
 An ISO 8601 calendar date. The lexer and parser match the shape only. Whether the date exists on
 the calendar is a validation rule (V13), so `2026-02-30` is a well-formed `Date` and an invalid
@@ -203,22 +206,24 @@ document.
 
 #### Version
 
-```
-Version : versionPart `.` versionPart
-versionPart : `0` | nonZeroDigit digit*
-nonZeroDigit : U+0031–U+0039
-```
+Version :: VersionPart `.` VersionPart
+
+VersionPart ::
+- `0`
+- NonZeroDigit Digit*
+
+NonZeroDigit :: /[1-9]/
 
 A version of this specification, `MAJOR.MINOR`. Neither part has leading zeros, so every version
 has exactly one spelling. The only place a `Version` appears is the version marker (Section 2.5).
 
 #### Url
 
-```
-Url : urlScheme `://` urlCharacter+
-urlScheme : `https` | `http`
-urlCharacter : sourceCharacter but not whitespace or lineTerminator
-```
+Url :: UrlScheme `://` UrlCharacter+
+
+UrlScheme :: one of `https` `http`
+
+UrlCharacter :: SourceCharacter but not one of "Space (U+0020)", "Tab (U+0009)", LineTerminator
 
 A URL is written bare, without quotes. It extends to the next space, tab, or line terminator, so
 `#` and `"` inside a URL are part of it. Only `http` and `https` are permitted. A scheme and `://`
@@ -227,9 +232,7 @@ by `://` is lexed as an unknown word, a `:`, and whatever follows.
 
 #### Punctuator
 
-```
-Punctuator : one of `:` `,`
-```
+Punctuator :: one of `:` `,`
 
 `:` introduces a `MarkdownBlock` (Section 2.2, below). `,` separates strings in a list.
 
@@ -238,10 +241,9 @@ Punctuator : one of `:` `,`
 A `MarkdownBlock` is the body of a Markdown field: the lines following a line that ends in a
 `Keyword` and `:`.
 
-```
-MarkdownBlock : bodyLine+
-bodyLine : a line indented strictly more than the opening line, or a blank line between two such lines
-```
+MarkdownBlock :: BodyLine+
+
+BodyLine :: "a line indented strictly more than the opening line, or a blank line between two such lines"
 
 The *opening line* is any line whose last two tokens, ignoring whitespace and comments, are a
 `Keyword` and `:`. After its `Newline`, the lexer looks ahead past any blank lines to the next line
@@ -287,18 +289,18 @@ kind and the error points at the flaw within it. Lexing always continues.
 
 ### 2.3. Ignored Tokens
 
-```
-Ignored : Comment
-        | Whitespace
-        | BlankLine
-```
+Ignored ::
+- Comment
+- Whitespace
+- BlankLine
 
-```
-Comment : `#` commentCharacter* (before lineTerminator)
-commentCharacter : sourceCharacter but not lineTerminator
-Whitespace : U+0020+
-BlankLine : lineTerminator, when the line it ends contains no tokens other than Whitespace and Comment
-```
+Comment :: `#` CommentCharacter*
+
+CommentCharacter :: SourceCharacter but not LineTerminator
+
+Whitespace :: "Space (U+0020)"+
+
+BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespace and Comment"
 
 A `#` begins a comment that runs to the end of the line, **except inside a `MarkdownBlock` body or
 a `String`**, where it is an ordinary character. A comment may follow tokens on the same line.
@@ -315,9 +317,16 @@ body is a lexical error. This rule exists so that indentation (Section 2.4) is u
 Oval's block structure is expressed by indentation. The lexer converts indentation into three
 synthetic tokens, following the approach of Python.
 
-```
-LayoutToken : Newline | Indent | Dedent
-```
+LayoutToken ::
+- Newline
+- Indent
+- Dedent
+
+Newline :: "the end of a line that contains tokens"
+
+Indent :: "an increase in indentation, at the start of a line"
+
+Dedent :: "a return to an enclosing indentation, at the start of a line or at the end of input"
 
 All three are **zero-length** except `Newline` at a line terminator. `Indent` and `Dedent` are
 positioned at the first token of the line that triggers them, after that line's leading
@@ -352,10 +361,9 @@ Lines inside a `MarkdownBlock` body do not participate in this process; the bloc
 
 ### 2.5. Document
 
-```
 Document : VersionMarker? GuideField* Declaration* Ballot+
+
 VersionMarker : `oval` Version Newline
-```
 
 A document is a Guide (Section 2.8) written at indentation zero. It opens with the version marker,
 then the document's fields, then any top-level `Party` and `Candidate` declarations, then one or
@@ -383,39 +391,40 @@ a rule that a document uses only constructs of its declared version.
 Most constructs in Oval are a *header line* followed by an optional *block* of indented lines. The
 block holds *fields* and *children*.
 
-```
-Block : Indent BlockLine+ Dedent
-```
+Block : Indent BlockEntry+ Dedent
 
-A **field** is a `Keyword` and a value on one line, or a `MarkdownBlock`:
+BlockEntry :: "a field or a child of the construct, as its section lists"
 
-```
-StringField(k)   : k String Newline
-IntegerField(k)  : k Integer Newline
-DateField(k)     : k Date Newline
-UrlField(k)      : k Url Newline
-RefField(k)      : k Identifier Newline
-MarkdownField(k) : k MarkdownBlock
-StringListField(k) : k String (`,` String)* Newline
-                   | k `none` Newline
-```
+A **field** is a keyword followed by its value and a `Newline`, or, for Markdown, a keyword and a
+colon on one line followed by a `MarkdownBlock`:
 
-These are grammar templates: `StringField(subtitle)` means `subtitle String Newline`.
+MarkdownBody : `:` Newline MarkdownBlock
+
+A value is a `String`, `Integer`, `Date`, `Url`, `Identifier`, or string list:
+
+StringList :
+- `none`
+- Strings
+
+Strings :
+- String
+- Strings `,` String
+
+Each construct's section lists the fields it accepts and the value each takes.
 
 Within one block, **each field keyword may appear at most once**, and **fields may appear in any
 order**. A repeated field is a syntax error. **Children** (campaigns within a contest, items within
 a ballot) are ordered, and their order is significant. Fields and children may be interleaved in
 the source; Section 7 describes the order a formatter puts them in.
 
-A `StringListField` written as `none` denotes an empty list. This is distinct from omitting the
+A `StringList` written as `none` denotes an empty list. This is distinct from omitting the
 field. Section 2.16 explains where the distinction matters.
 
 A **flag** is a keyword on a header line whose presence means `true`:
 
-```
 Flags : Flag*
+
 Flag : one of `incumbent` `withdrawn`
-```
 
 There is no `false` spelling; omit the flag.
 
@@ -424,10 +433,7 @@ There is no `false` spelling; omit the flag.
 Entities (Party, Candidate, Ballot, Contest, Measure) are *declared* exactly once each and may be
 *referred to* any number of times.
 
-```
-Declaration(k) : k Identifier String
 Reference : Identifier
-```
 
 A declaration is an `Identifier` **followed immediately by a `String`**, after the entity's
 keyword; the string is the entity's name or title. A reference is a bare `Identifier`. This is the
@@ -453,12 +459,11 @@ Identifiers share one namespace across all entity kinds (V1).
 
 The Guide is the document. Its fields are written at indentation zero.
 
-```
-GuideField : StringField(guide)
-           | StringField(election)
-           | DateField(date)
-           | MarkdownField(note)
-```
+GuideField :
+- `guide` String Newline
+- `election` String Newline
+- `date` Date Newline
+- `note` MarkdownBody
 
 ```oval example
 oval 0.1
@@ -474,22 +479,23 @@ note:
 `guide`, `election`, and `date` are required (V2). `note` is optional. The version marker that
 precedes them belongs to the document (Section 2.5), not to the guide.
 
-```
-Declaration : Party | Candidate
-```
+Declaration :
+- Party
+- Candidate
 
 Top-level declarations follow the guide fields. They are for parties and candidates referenced from
 more than one place; anything referenced once may be declared inline instead (Sections 2.10, 2.14).
 
 ### 2.9. Party
 
-```
 Party : `party` Identifier String Newline PartyBlock?
+
 PartyBlock : Indent PartyField+ Dedent
-PartyField : StringField(abbreviation)
-           | UrlField(website)
-           | MarkdownField(note)
-```
+
+PartyField :
+- `abbreviation` String Newline
+- `website` Url Newline
+- `note` MarkdownBody
 
 ```oval example
 party @dem "Democratic"
@@ -500,15 +506,18 @@ A party may be declared at the top level or inline in a candidate's `party` fiel
 
 ### 2.10. Candidate
 
-```
 Candidate : `candidate` Identifier String Newline CandidateBlock?
+
 CandidateBlock : Indent CandidateField+ Dedent
-CandidateField : StringField(designation)
-               | PartyRef
-               | MarkdownField(note)
-PartyRef : `party` Identifier Newline
-         | `party` Identifier String Newline PartyBlock?
-```
+
+CandidateField :
+- `designation` String Newline
+- PartyRef
+- `note` MarkdownBody
+
+PartyRef :
+- `party` Identifier Newline
+- `party` Identifier String Newline PartyBlock?
 
 ```oval example
 candidate @nreyes "Nadia Reyes"
@@ -526,16 +535,23 @@ Declare at the top level when the person appears in more than one contest.
 
 ### 2.11. Ballot
 
-```
 Ballot : `ballot` Identifier String Newline BallotBlock
-BallotBlock : Indent (BallotField | BallotItem)+ Dedent
-BallotField : StringField(eligibility)
-            | MarkdownField(note)
-BallotItem : Section
-           | Contest
-           | Measure
-           | Ballot
-```
+
+BallotBlock : Indent BallotEntry+ Dedent
+
+BallotEntry :
+- BallotField
+- BallotItem
+
+BallotField :
+- `eligibility` String Newline
+- `note` MarkdownBody
+
+BallotItem :
+- Section
+- Contest
+- Measure
+- Ballot
 
 ```oval example
 ballot @franklin "State of Franklin"
@@ -556,12 +572,19 @@ requires an item).
 
 ### 2.12. Section
 
-```
 Section : `section` String Newline SectionBlock
-SectionBlock : Indent (SectionField | SectionItem)+ Dedent
-SectionField : MarkdownField(note)
-SectionItem : Contest | Measure
-```
+
+SectionBlock : Indent SectionEntry+ Dedent
+
+SectionEntry :
+- SectionField
+- SectionItem
+
+SectionField : `note` MarkdownBody
+
+SectionItem :
+- Contest
+- Measure
 
 A section is a titled group of questions within a ballot, matching a heading on the printed
 ballot. It has no identifier and no eligibility meaning. Sections do not nest and do not contain
@@ -569,17 +592,27 @@ sub-ballots.
 
 ### 2.13. Contest
 
-```
 Contest : `contest` Identifier String ContestKind Newline ContestBlock
-ContestKind : `single`
-            | `multiple` Integer
-            | `ranked` (`max` Integer)?
-            | `retention`
-ContestBlock : Indent (ContestField | Campaign | ContestRecommend)+ Dedent
-ContestField : StringField(subtitle)
-             | StringField(tabulation)
-             | MarkdownField(note)
-```
+
+ContestKind :
+- `single`
+- `multiple` Integer
+- `ranked` RankedMax?
+- `retention`
+
+RankedMax : `max` Integer
+
+ContestBlock : Indent ContestEntry+ Dedent
+
+ContestEntry :
+- ContestField
+- Campaign
+- ContestRecommend
+
+ContestField :
+- `subtitle` String Newline
+- `tabulation` String Newline
+- `note` MarkdownBody
 
 ```oval example
 contest @mayor "Mayor" ranked max 5
@@ -615,17 +648,27 @@ with fields in the source; a formatter orders them fields, campaigns, recommenda
 
 ### 2.14. Campaign
 
-```
-Campaign : `campaign` Flags Member Newline CampaignBlock?
-         | `campaign` Flags Newline CampaignBlock
-CampaignBlock : Indent (Member Newline MemberBlock? | CampaignField)+ Dedent
-Member : Identifier (String)? (`as` String)?
+Campaign :
+- `campaign` Flags Member Newline CampaignBlock?
+- `campaign` Flags Newline CampaignBlock
+
+CampaignBlock : Indent CampaignEntry+ Dedent
+
+CampaignEntry :
+- Member Newline MemberBlock?
+- CampaignField
+
+Member : Identifier String? MemberRole?
+
+MemberRole : `as` String
+
 MemberBlock : Indent CandidateField+ Dedent
-CampaignField : UrlField(website)
-              | MarkdownField(note)
-              | StringField(designation)
-              | PartyRef
-```
+
+CampaignField :
+- `website` Url Newline
+- `note` MarkdownBody
+- `designation` String Newline
+- PartyRef
 
 A campaign is one or more candidates running together for the contest. It has no identifier; it
 is identified by its candidates (Section 4).
@@ -674,24 +717,34 @@ Member order is significant: the first member is the head of the ticket. In bloc
 `designation` and `PartyRef` are not permitted at the campaign level (V4); they belong under a
 member.
 
-Flags: `incumbent` means this campaign holds the office being contested; `withdrawn` means the
+**Flags.** `incumbent` means this campaign holds the office being contested; `withdrawn` means the
 campaign has ended but remains on the ballot. Both default to false. They may appear in either
 order and each at most once.
 
 ### 2.15. Contest Recommendation
 
-```
-ContestRecommend : `recommend` Newline RecommendBlock
-                 | `recommend` `no-position` Newline RecommendNoteBlock?
-RecommendBlock : Indent (Support | Oppose | RecommendField)+ Dedent
-Support : `support` Reference+ Newline
-Oppose : `oppose` Reference+ Newline
-RecommendField : MarkdownField(justification)
-               | MarkdownField(note)
-RecommendNoteBlock : Indent RecommendField+ Dedent
-```
+ContestRecommend :
+- `recommend` Newline RecommendBlock
+- `recommend` `no-position` Newline RecommendNoteBlock?
 
-```
+RecommendBlock : Indent RecommendEntry+ Dedent
+
+RecommendEntry :
+- Support
+- Oppose
+- RecommendField
+
+Support : `support` Reference+ Newline
+
+Oppose : `oppose` Reference+ Newline
+
+RecommendField :
+- `justification` MarkdownBody
+- `note` MarkdownBody
+
+RecommendNoteBlock : Indent RecommendField+ Dedent
+
+```oval example
 recommend
   support @aokafor
   support @bsantos @dwright
@@ -714,20 +767,25 @@ nor `oppose` is a syntax error; write `no-position` instead.
 
 ### 2.16. Measure
 
-```
 Measure : `measure` Identifier String Newline MeasureBlock
-MeasureBlock : Indent (MeasureField | MeasureRecommend)+ Dedent
-MeasureField : StringField(subtitle)
-             | MarkdownField(description)
-             | MarkdownField(if_yes)
-             | MarkdownField(if_no)
-             | StringField(placement)
-             | StringField(tabulation)
-             | StringField(fiscal_impact)
-             | StringListField(supporters)
-             | StringListField(opponents)
-             | MarkdownField(note)
-```
+
+MeasureBlock : Indent MeasureEntry+ Dedent
+
+MeasureEntry :
+- MeasureField
+- MeasureRecommend
+
+MeasureField :
+- `subtitle` String Newline
+- `description` MarkdownBody
+- `if_yes` MarkdownBody
+- `if_no` MarkdownBody
+- `placement` String Newline
+- `tabulation` String Newline
+- `fiscal_impact` String Newline
+- `supporters` StringList Newline
+- `opponents` StringList Newline
+- `note` MarkdownBody
 
 ```oval example
 measure @prop1 "Proposition 1"
@@ -755,12 +813,11 @@ and a list. A measure contains exactly one `MeasureRecommend` (V10).
 
 ### 2.17. Measure Recommendation
 
-```
 MeasureRecommend : `recommend` MeasurePosition Newline RecommendNoteBlock?
-MeasurePosition : one of `yes` `no` `no-position`
-```
 
-```
+MeasurePosition : one of `yes` `no` `no-position`
+
+```oval example
 recommend no-position
   justification:
     Two board members recused and the rest were split.
@@ -1084,113 +1141,287 @@ fields, is undecided and is expected to become a configurable option rather than
 
 ## A. Appendix: Grammar Summary
 
-Lexical productions match characters; syntactic productions match tokens. Layout tokens
-(`Newline`, `Indent`, `Dedent`) are produced as described in Section 2.4.
+Every production of Section 2, collected. Lexical productions match characters; syntactic
+productions match tokens. Layout tokens (`Newline`, `Indent`, `Dedent`) are produced as described
+in Section 2.4.
 
-```
-— Lexical —
+**Lexical productions**
 
-sourceCharacter  : any Unicode code point except U+0000
-lineTerminator   : U+000A | U+000D U+000A | U+000D
+SourceCharacter :: "any Unicode code point except U+0000"
 
-Token            : Keyword | Identifier | String | Integer | Date | Version | Url | Punctuator | MarkdownBlock
-Ignored          : Comment | Whitespace | BlankLine
-LayoutToken      : Newline | Indent | Dedent          — zero-length except Newline at a terminator
+LineTerminator ::
+- "New Line (U+000A)"
+- "Carriage Return (U+000D)" "New Line (U+000A)"
+- "Carriage Return (U+000D)"
 
-Keyword          : one of (Appendix B)
-Identifier       : `@` identifierName
-identifierName   : identifierStart identifierPart*
-identifierStart  : letter
-identifierPart   : letter | digit | `-` | `_`
-letter           : U+0041–U+005A | U+0061–U+007A
-digit            : U+0030–U+0039
-String           : `"` stringCharacter* `"`
-stringCharacter  : sourceCharacter but not `"` or `\` or lineTerminator | escapedCharacter
-escapedCharacter : `\"` | `\\`
-Integer          : digit+
-Date             : digit digit digit digit `-` digit digit `-` digit digit
-Version          : versionPart `.` versionPart
-versionPart      : `0` | nonZeroDigit digit*
-nonZeroDigit     : U+0031–U+0039
-Url              : urlScheme `://` urlCharacter+
-urlScheme        : `https` | `http`
-urlCharacter     : sourceCharacter but not whitespace or lineTerminator
-Punctuator       : one of `:` `,`
-MarkdownBlock    : bodyLine+                           — see 2.2; opened by a line ending `Keyword :`
-Comment          : `#` commentCharacter*
-commentCharacter : sourceCharacter but not lineTerminator
-Whitespace       : U+0020+
-BlankLine        : lineTerminator ending a line with no tokens but Whitespace and Comment
+Token ::
+- Keyword
+- Identifier
+- String
+- Integer
+- Date
+- Version
+- Url
+- Punctuator
+- MarkdownBlock
 
-— Field templates —
+Ignored ::
+- Comment
+- Whitespace
+- BlankLine
 
-StringField(k)     : k String Newline
-IntegerField(k)    : k Integer Newline
-DateField(k)       : k Date Newline
-UrlField(k)        : k Url Newline
-MarkdownField(k)   : k MarkdownBlock
-StringListField(k) : k String (`,` String)* Newline | k `none` Newline
-Flags              : Flag*
-Flag               : one of `incumbent` `withdrawn`
-Reference          : Identifier
+LayoutToken ::
+- Newline
+- Indent
+- Dedent
 
-— Document —
+Newline :: "the end of a line that contains tokens"
 
-Document         : VersionMarker? GuideField* Declaration* Ballot+
-VersionMarker    : `oval` Version Newline
-GuideField       : StringField(guide) | StringField(election) | DateField(date) | MarkdownField(note)
-Declaration      : Party | Candidate
+Indent :: "an increase in indentation, at the start of a line"
 
-Party            : `party` Identifier String Newline PartyBlock?
-PartyBlock       : Indent PartyField+ Dedent
-PartyField       : StringField(abbreviation) | UrlField(website) | MarkdownField(note)
+Dedent :: "a return to an enclosing indentation, at the start of a line or at the end of input"
 
-Candidate        : `candidate` Identifier String Newline CandidateBlock?
-CandidateBlock   : Indent CandidateField+ Dedent
-CandidateField   : StringField(designation) | PartyRef | MarkdownField(note)
-PartyRef         : `party` Identifier Newline
-                 | `party` Identifier String Newline PartyBlock?
+Keyword :: one of
+- `oval` `guide` `election` `date` `note`
+- `party` `candidate` `ballot` `section` `contest` `campaign` `measure`
+- `abbreviation` `website` `designation` `eligibility`
+- `single` `multiple` `ranked` `retention` `max`
+- `subtitle` `tabulation`
+- `incumbent` `withdrawn` `as`
+- `recommend` `support` `oppose` `justification` `yes` `no` `no-position`
+- `description` `if_yes` `if_no` `placement` `fiscal_impact` `supporters` `opponents`
+- `none`
 
-Ballot           : `ballot` Identifier String Newline BallotBlock
-BallotBlock      : Indent (BallotField | BallotItem)+ Dedent
-BallotField      : StringField(eligibility) | MarkdownField(note)
-BallotItem       : Section | Contest | Measure | Ballot
+Identifier :: `@` IdentifierName
 
-Section          : `section` String Newline SectionBlock
-SectionBlock     : Indent (SectionField | SectionItem)+ Dedent
-SectionField     : MarkdownField(note)
-SectionItem      : Contest | Measure
+IdentifierName :: IdentifierStart IdentifierPart*
 
-Contest          : `contest` Identifier String ContestKind Newline ContestBlock
-ContestKind      : `single` | `multiple` Integer | `ranked` (`max` Integer)? | `retention`
-ContestBlock     : Indent (ContestField | Campaign | ContestRecommend)+ Dedent
-ContestField     : StringField(subtitle) | StringField(tabulation) | MarkdownField(note)
+IdentifierStart :: Letter
 
-Campaign         : `campaign` Flags Member Newline CampaignBlock?
-                 | `campaign` Flags Newline CampaignBlock
-CampaignBlock    : Indent (Member Newline MemberBlock? | CampaignField)+ Dedent
-Member           : Identifier String? (`as` String)?
-MemberBlock      : Indent CandidateField+ Dedent
-CampaignField    : UrlField(website) | MarkdownField(note) | StringField(designation) | PartyRef
+IdentifierPart ::
+- Letter
+- Digit
+- `-`
+- `_`
 
-ContestRecommend : `recommend` Newline RecommendBlock
-                 | `recommend` `no-position` Newline RecommendNoteBlock?
-RecommendBlock   : Indent (Support | Oppose | RecommendField)+ Dedent
-Support          : `support` Reference+ Newline
-Oppose           : `oppose` Reference+ Newline
-RecommendField   : MarkdownField(justification) | MarkdownField(note)
+Letter :: /[A-Za-z]/
+
+Digit :: /[0-9]/
+
+String :: `"` StringCharacter* `"`
+
+StringCharacter ::
+- SourceCharacter but not `"` or `\` or LineTerminator
+- EscapedCharacter
+
+EscapedCharacter :: one of `\"` `\\`
+
+Integer :: Digit+
+
+Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
+
+Version :: VersionPart `.` VersionPart
+
+VersionPart ::
+- `0`
+- NonZeroDigit Digit*
+
+NonZeroDigit :: /[1-9]/
+
+Url :: UrlScheme `://` UrlCharacter+
+
+UrlScheme :: one of `https` `http`
+
+UrlCharacter :: SourceCharacter but not one of "Space (U+0020)", "Tab (U+0009)", LineTerminator
+
+Punctuator :: one of `:` `,`
+
+MarkdownBlock :: BodyLine+
+
+BodyLine :: "a line indented strictly more than the opening line, or a blank line between two such lines"
+
+Comment :: `#` CommentCharacter*
+
+CommentCharacter :: SourceCharacter but not LineTerminator
+
+Whitespace :: "Space (U+0020)"+
+
+BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespace and Comment"
+
+**Syntactic productions**
+
+Document : VersionMarker? GuideField* Declaration* Ballot+
+
+VersionMarker : `oval` Version Newline
+
+GuideField :
+- `guide` String Newline
+- `election` String Newline
+- `date` Date Newline
+- `note` MarkdownBody
+
+Declaration :
+- Party
+- Candidate
+
+MarkdownBody : `:` Newline MarkdownBlock
+
+StringList :
+- `none`
+- Strings
+
+Strings :
+- String
+- Strings `,` String
+
+Flags : Flag*
+
+Flag : one of `incumbent` `withdrawn`
+
+Reference : Identifier
+
+Party : `party` Identifier String Newline PartyBlock?
+
+PartyBlock : Indent PartyField+ Dedent
+
+PartyField :
+- `abbreviation` String Newline
+- `website` Url Newline
+- `note` MarkdownBody
+
+Candidate : `candidate` Identifier String Newline CandidateBlock?
+
+CandidateBlock : Indent CandidateField+ Dedent
+
+CandidateField :
+- `designation` String Newline
+- PartyRef
+- `note` MarkdownBody
+
+PartyRef :
+- `party` Identifier Newline
+- `party` Identifier String Newline PartyBlock?
+
+Ballot : `ballot` Identifier String Newline BallotBlock
+
+BallotBlock : Indent BallotEntry+ Dedent
+
+BallotEntry :
+- BallotField
+- BallotItem
+
+BallotField :
+- `eligibility` String Newline
+- `note` MarkdownBody
+
+BallotItem :
+- Section
+- Contest
+- Measure
+- Ballot
+
+Section : `section` String Newline SectionBlock
+
+SectionBlock : Indent SectionEntry+ Dedent
+
+SectionEntry :
+- SectionField
+- SectionItem
+
+SectionField : `note` MarkdownBody
+
+SectionItem :
+- Contest
+- Measure
+
+Contest : `contest` Identifier String ContestKind Newline ContestBlock
+
+ContestKind :
+- `single`
+- `multiple` Integer
+- `ranked` RankedMax?
+- `retention`
+
+RankedMax : `max` Integer
+
+ContestBlock : Indent ContestEntry+ Dedent
+
+ContestEntry :
+- ContestField
+- Campaign
+- ContestRecommend
+
+ContestField :
+- `subtitle` String Newline
+- `tabulation` String Newline
+- `note` MarkdownBody
+
+Campaign :
+- `campaign` Flags Member Newline CampaignBlock?
+- `campaign` Flags Newline CampaignBlock
+
+CampaignBlock : Indent CampaignEntry+ Dedent
+
+CampaignEntry :
+- Member Newline MemberBlock?
+- CampaignField
+
+Member : Identifier String? MemberRole?
+
+MemberRole : `as` String
+
+MemberBlock : Indent CandidateField+ Dedent
+
+CampaignField :
+- `website` Url Newline
+- `note` MarkdownBody
+- `designation` String Newline
+- PartyRef
+
+ContestRecommend :
+- `recommend` Newline RecommendBlock
+- `recommend` `no-position` Newline RecommendNoteBlock?
+
+RecommendBlock : Indent RecommendEntry+ Dedent
+
+RecommendEntry :
+- Support
+- Oppose
+- RecommendField
+
+Support : `support` Reference+ Newline
+
+Oppose : `oppose` Reference+ Newline
+
+RecommendField :
+- `justification` MarkdownBody
+- `note` MarkdownBody
+
 RecommendNoteBlock : Indent RecommendField+ Dedent
 
-Measure          : `measure` Identifier String Newline MeasureBlock
-MeasureBlock     : Indent (MeasureField | MeasureRecommend)+ Dedent
-MeasureField     : StringField(subtitle) | MarkdownField(description) | MarkdownField(if_yes)
-                 | MarkdownField(if_no) | StringField(placement) | StringField(tabulation)
-                 | StringField(fiscal_impact) | StringListField(supporters)
-                 | StringListField(opponents) | MarkdownField(note)
+Measure : `measure` Identifier String Newline MeasureBlock
+
+MeasureBlock : Indent MeasureEntry+ Dedent
+
+MeasureEntry :
+- MeasureField
+- MeasureRecommend
+
+MeasureField :
+- `subtitle` String Newline
+- `description` MarkdownBody
+- `if_yes` MarkdownBody
+- `if_no` MarkdownBody
+- `placement` String Newline
+- `tabulation` String Newline
+- `fiscal_impact` String Newline
+- `supporters` StringList Newline
+- `opponents` StringList Newline
+- `note` MarkdownBody
 
 MeasureRecommend : `recommend` MeasurePosition Newline RecommendNoteBlock?
-MeasurePosition  : one of `yes` `no` `no-position`
-```
+
+MeasurePosition : one of `yes` `no` `no-position`
 
 ## B. Appendix: Keywords
 
