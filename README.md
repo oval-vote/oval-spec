@@ -20,6 +20,7 @@ with [mise](https://mise.jdx.dev), which reads `.node-version`.
 ```sh
 npm ci
 npm run build    # writes dist/
+npm run grammar  # regenerates grammar.txt from Appendix A; CI checks it is current
 ```
 
 spec-md is stricter than GitHub's Markdown. The conventions that matter when editing `SPEC.md`:
@@ -27,7 +28,9 @@ spec-md is stricter than GitHub's Markdown. The conventions that matter when edi
 - Section headings carry their own numbers with a trailing dot (`### 2.5. Document`) so the site
   and GitHub agree; appendices are `## A. Appendix: Title`. There is no hand-written table of
   contents.
-- Grammar productions are fenced code for now. Oval examples are fenced as `oval example`.
+- Grammar productions are written in spec-md's paragraph form, one production per paragraph
+  with alternatives as list items, so the site renders them with every name linked. Oval examples
+  are fenced as `oval example`.
 - Words containing underscores go in backticks.
 
 The `site` job in CI builds the site on every pull request, so a document that spec-md cannot
