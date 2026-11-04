@@ -1,0 +1,15 @@
+{
+  "name": "oval-spec",
+  "private": true,
+  "version": "0.1.1",
+  "license": "MIT",
+  "description": "The Oval specification and its website",
+  "repository": "github:oval-vote/oval-spec",
+  "homepage": "https://spec.oval.vote",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "spec-md": "3.1.0"
+  }
+}
