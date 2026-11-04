@@ -1,3 +1,6 @@
+[settings]
+idiomatic_version_file_enable_tools = ["node"]
+
 [tools]
 "pipx:check-jsonschema" = "0.39.0"
 uv = "0.13"

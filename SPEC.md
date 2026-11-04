@@ -1,45 +1,16 @@
 # Oval Specification
 
-**Working draft 0.1.** This document specifies Oval, a plain-text file format for voting guides.
-It is derived from the data model in `DATA_MODEL.md` and the syntax prototypes in `prototypes/`.
-Where this document and the data model disagree, this document is wrong until the disagreement
-is resolved deliberately. Documents written to this draft begin with the version marker `oval 0.1`
-(Section 2.5).
+**Version 0.1.1, a working draft.** This document specifies Oval, a plain-text file format for
+voting guides. It is derived from the data model in `DATA_MODEL.md` and the syntax prototypes in
+`prototypes/`. Where this document and the data model disagree, this document is wrong until the
+disagreement is resolved deliberately.
+
+The specification and its tools are released together under one version number. The first two
+components are the *language version*, which documents declare with the version marker
+(`oval 0.1`, Section 2.5); the third is a patch level for editorial fixes and tool releases that
+leave the language unchanged.
 
 The format's name, extension, and media type are given in Section 1.2.
-
-## Contents
-
-1. [Overview](#1-overview)
-   1. [Notation](#11-notation)
-   2. [Identity](#12-identity)
-2. [Language](#2-language)
-   1. [Source Text](#21-source-text)
-   2. [Lexical Tokens](#22-lexical-tokens)
-   3. [Ignored Tokens](#23-ignored-tokens)
-   4. [Layout Tokens](#24-layout-tokens)
-   5. [Document](#25-document)
-   6. [Fields and Blocks](#26-fields-and-blocks)
-   7. [Declarations and References](#27-declarations-and-references)
-   8. [Guide](#28-guide)
-   9. [Party](#29-party)
-   10. [Candidate](#210-candidate)
-   11. [Ballot](#211-ballot)
-   12. [Section](#212-section)
-   13. [Contest](#213-contest)
-   14. [Campaign](#214-campaign)
-   15. [Contest Recommendation](#215-contest-recommendation)
-   16. [Measure](#216-measure)
-   17. [Measure Recommendation](#217-measure-recommendation)
-3. [Validation](#3-validation)
-4. [Resolution](#4-resolution)
-5. [Conformance](#5-conformance)
-6. [Canonical Output](#6-canonical-output)
-7. [Formatting](#7-formatting)
-- [Appendix A: Grammar Summary](#appendix-a-grammar-summary)
-- [Appendix B: Keywords](#appendix-b-keywords)
-
----
 
 ## 1. Overview
 
@@ -62,7 +33,7 @@ Oval has three layers, specified in order in this document:
 - **Resolution** (Section 4): how the parsed document becomes the data model's entities, in
   particular how a campaign is identified by one of its candidates.
 
-### 1.1 Notation
+### 1.1. Notation
 
 Grammar productions are written as
 
@@ -78,7 +49,7 @@ single-token alternatives.
 
 The complete grammar is collected in Appendix A.
 
-### 1.2 Identity
+### 1.2. Identity
 
 | | |
 |---|---|
@@ -119,7 +90,7 @@ tool.
 
 ## 2. Language
 
-### 2.1 Source Text
+### 2.1. Source Text
 
 An Oval document is a sequence of Unicode code points encoded as UTF-8. A byte order mark, if
 present, is ignored.
@@ -141,7 +112,7 @@ All three forms are equivalent. A formatter emits U+000A.
 Oval is **layout-sensitive**: the structure of a document is given by the indentation of its lines,
 not by brackets or closing keywords. Section 2.4 describes how indentation becomes tokens.
 
-### 2.2 Lexical Tokens
+### 2.2. Lexical Tokens
 
 ```
 Token : Keyword
@@ -314,7 +285,7 @@ kind and the error points at the flaw within it. Lexing always continues.
 | Malformed URL | scheme and `://` | `Error` | continue after `://` |
 | Inconsistent dedent | the line's leading spaces | `Whitespace` | treat the line as at the nearest enclosing level (Section 2.4) |
 
-### 2.3 Ignored Tokens
+### 2.3. Ignored Tokens
 
 ```
 Ignored : Comment
@@ -339,7 +310,7 @@ Inside a `MarkdownBlock` body blank lines are part of the body and separate para
 Horizontal tab (U+0009) is **not** whitespace. A tab anywhere outside a `String` or `MarkdownBlock`
 body is a lexical error. This rule exists so that indentation (Section 2.4) is unambiguous.
 
-### 2.4 Layout Tokens
+### 2.4. Layout Tokens
 
 Oval's block structure is expressed by indentation. The lexer converts indentation into three
 synthetic tokens, following the approach of Python.
@@ -379,7 +350,7 @@ syntax error.
 Lines inside a `MarkdownBlock` body do not participate in this process; the block is one token
 (Section 2.2).
 
-### 2.5 Document
+### 2.5. Document
 
 ```
 Document : VersionMarker? GuideField* Declaration* Ballot+
@@ -407,7 +378,7 @@ language, and an implementation accepts exactly the one it implements. Once more
 exists, this section will record which version introduced each construct, and Section 3 will gain
 a rule that a document uses only constructs of its declared version.
 
-### 2.6 Fields and Blocks
+### 2.6. Fields and Blocks
 
 Most constructs in Oval are a *header line* followed by an optional *block* of indented lines. The
 block holds *fields* and *children*.
@@ -448,7 +419,7 @@ Flag : one of `incumbent` `withdrawn`
 
 There is no `false` spelling; omit the flag.
 
-### 2.7 Declarations and References
+### 2.7. Declarations and References
 
 Entities (Party, Candidate, Ballot, Contest, Measure) are *declared* exactly once each and may be
 *referred to* any number of times.
@@ -478,7 +449,7 @@ document, wherever that is.
 
 Identifiers share one namespace across all entity kinds (V1).
 
-### 2.8 Guide
+### 2.8. Guide
 
 The Guide is the document. Its fields are written at indentation zero.
 
@@ -489,7 +460,7 @@ GuideField : StringField(guide)
            | MarkdownField(note)
 ```
 
-```
+```oval example
 oval 0.1
 
 guide "Franklin Voter Guide"
@@ -510,7 +481,7 @@ Declaration : Party | Candidate
 Top-level declarations follow the guide fields. They are for parties and candidates referenced from
 more than one place; anything referenced once may be declared inline instead (Sections 2.10, 2.14).
 
-### 2.9 Party
+### 2.9. Party
 
 ```
 Party : `party` Identifier String Newline PartyBlock?
@@ -520,14 +491,14 @@ PartyField : StringField(abbreviation)
            | MarkdownField(note)
 ```
 
-```
+```oval example
 party @dem "Democratic"
   abbreviation "D"
 ```
 
 A party may be declared at the top level or inline in a candidate's `party` field (Section 2.10).
 
-### 2.10 Candidate
+### 2.10. Candidate
 
 ```
 Candidate : `candidate` Identifier String Newline CandidateBlock?
@@ -539,7 +510,7 @@ PartyRef : `party` Identifier Newline
          | `party` Identifier String Newline PartyBlock?
 ```
 
-```
+```oval example
 candidate @nreyes "Nadia Reyes"
   designation "United States Senator"
   party @dem
@@ -553,7 +524,7 @@ candidate @nreyes "Nadia Reyes"
 A candidate may be declared at the top level, as above, or inline in a campaign (Section 2.14).
 Declare at the top level when the person appears in more than one contest.
 
-### 2.11 Ballot
+### 2.11. Ballot
 
 ```
 Ballot : `ballot` Identifier String Newline BallotBlock
@@ -566,7 +537,7 @@ BallotItem : Section
            | Ballot
 ```
 
-```
+```oval example
 ballot @franklin "State of Franklin"
   section "Federal Offices"
     ...
@@ -583,7 +554,7 @@ least one.
 A ballot with no items is a syntax error (the `BallotBlock` requires at least one line and V12
 requires an item).
 
-### 2.12 Section
+### 2.12. Section
 
 ```
 Section : `section` String Newline SectionBlock
@@ -596,7 +567,7 @@ A section is a titled group of questions within a ballot, matching a heading on 
 ballot. It has no identifier and no eligibility meaning. Sections do not nest and do not contain
 sub-ballots.
 
-### 2.13 Contest
+### 2.13. Contest
 
 ```
 Contest : `contest` Identifier String ContestKind Newline ContestBlock
@@ -610,7 +581,7 @@ ContestField : StringField(subtitle)
              | MarkdownField(note)
 ```
 
-```
+```oval example
 contest @mayor "Mayor" ranked max 5
   subtitle "Rank up to five candidates"
   tabulation "Instant runoff; majority of continuing ballots wins"
@@ -642,7 +613,7 @@ contest (V12) and exactly one recommendation (V10), so that a half-written conte
 and the validator can name what is missing. Campaigns and the recommendation may be interleaved
 with fields in the source; a formatter orders them fields, campaigns, recommendation (Section 7).
 
-### 2.14 Campaign
+### 2.14. Campaign
 
 ```
 Campaign : `campaign` Flags Member Newline CampaignBlock?
@@ -668,7 +639,7 @@ The two forms of `Campaign`:
 
 **One-line form.** The single member is on the header line.
 
-```
+```oval example
 campaign incumbent @bsantos "Beatriz Santos"
   designation "Mayor of Ashford"
   website https://santosformayor.example
@@ -684,7 +655,7 @@ for a single-candidate campaign the reader sees both notes together regardless.
 **Block form.** Members are lines in the block, each optionally followed by its own
 `MemberBlock` of candidate fields.
 
-```
+```oval example
 campaign incumbent
   @jlee "Jordan Lee" as "Governor"
     designation "Governor of Franklin"
@@ -707,7 +678,7 @@ Flags: `incumbent` means this campaign holds the office being contested; `withdr
 campaign has ended but remains on the ballot. Both default to false. They may appear in either
 order and each at most once.
 
-### 2.15 Contest Recommendation
+### 2.15. Contest Recommendation
 
 ```
 ContestRecommend : `recommend` Newline RecommendBlock
@@ -741,7 +712,7 @@ Every reference in `support` or `oppose` names a campaign *by one of its candida
 `justification` and `note` but no `support` or `oppose`. A `recommend` block with neither `support`
 nor `oppose` is a syntax error; write `no-position` instead.
 
-### 2.16 Measure
+### 2.16. Measure
 
 ```
 Measure : `measure` Identifier String Newline MeasureBlock
@@ -758,7 +729,7 @@ MeasureField : StringField(subtitle)
              | MarkdownField(note)
 ```
 
-```
+```oval example
 measure @prop1 "Proposition 1"
   subtitle "Affordable Housing Bond"
   description:
@@ -782,7 +753,7 @@ measure @prop1 "Proposition 1"
 `opponents` have three states: **absent** (not researched), **`none`** (researched; none known),
 and a list. A measure contains exactly one `MeasureRecommend` (V10).
 
-### 2.17 Measure Recommendation
+### 2.17. Measure Recommendation
 
 ```
 MeasureRecommend : `recommend` MeasurePosition Newline RecommendNoteBlock?
@@ -921,27 +892,27 @@ this specification gives it.
 
 Resolution turns the parsed document into the entities of `DATA_MODEL.md`.
 
-### 4.1 Declarations
+### 4.1. Declarations
 
 Each `Declaration` and each inline declaration produces one entity with the given identifier and
 name. The position of the declaration in the document has no effect on the entity, except that an
 inline candidate declaration also makes that candidate a member of the enclosing campaign, and an
 inline party declaration also sets the enclosing candidate's `party`.
 
-### 4.2 Campaign identity
+### 4.2. Campaign identity
 
 Campaigns have no identifiers. A reference in a `ContestRecommend` is a **candidate** identifier.
 It resolves to the one campaign, among the enclosing contest's campaigns, whose members include
 that candidate. V7 guarantees there is at most one; V6 requires there to be exactly one.
 
-### 4.3 Fields
+### 4.3. Fields
 
 Each field sets the corresponding attribute of the enclosing entity. A one-line campaign's
 `designation` and `party` set attributes of its (inline-declared) candidate; its other fields set
 attributes of the campaign. In block form, a `MemberBlock`'s fields set attributes of that member's
 candidate.
 
-### 4.4 Markdown
+### 4.4. Markdown
 
 `MarkdownBlock` values are passed through unchanged. Interpreting them is the renderer's
 responsibility.
@@ -985,10 +956,10 @@ The output is the semantic model, not the syntax tree. It carries no source posi
 or whitespace, so two parsers cannot disagree about it on formatting. Tools that need positions
 use the syntax tree or the diagnostics.
 
-### 6.1 Conventions
+### 6.1. Conventions
 
 - **Keys mirror the language.** Every field that comes from a keyword uses that keyword's exact
-  spelling: `if_yes`, `fiscal_impact`, `no_position`. Derived fields use the same snake_case
+  spelling: `if_yes`, `fiscal_impact`, `no_position`. Derived fields use the same `snake_case`
   style. The one exception is the contest's voting method, which the language writes on the header
   line without a keyword; it is the `method` object, because `kind` is the discriminator used by
   every item object.
@@ -1014,7 +985,7 @@ use the syntax tree or the diagnostics.
   mistakes are caught. Consumers should ignore keys they do not recognize, because a later minor
   version of this specification may add fields. Removing or renaming a field is a major version.
 
-### 6.2 Derived fields
+### 6.2. Derived fields
 
 Everything below is computed from the document; none of it can disagree with the source.
 
@@ -1036,7 +1007,7 @@ Everything below is computed from the document; none of it can disagree with the
 Resolution of candidate identifiers to campaigns follows Section 4.2. A valid document resolves
 every reference, so the derived fields are always complete.
 
-### 6.3 Example
+### 6.3. Example
 
 `examples/franklin.oval.json` is the canonical output of `examples/franklin.oval`, the fictional
 full-scale guide: six root ballots, forty-four contests, twenty-eight measures. It is produced by the
@@ -1060,7 +1031,7 @@ A formatter refuses a document with lexical or syntax errors and reports them in
 from errors produces a tree whose shape the author did not intend, and reformatting around it
 could move text in surprising ways.
 
-### 7.1 Whitespace
+### 7.1. Whitespace
 
 - Line terminators become U+000A. The document ends with exactly one.
 - Trailing spaces are removed from every line, except content lines inside a `MarkdownBlock`, where
@@ -1072,7 +1043,7 @@ could move text in surprising ways.
 - Tokens on a line are separated by one space. `:` and `,` attach to the token before them. A
   trailing comment is preceded by one space.
 
-### 7.2 Blank lines and comments
+### 7.2. Blank lines and comments
 
 - Runs of blank lines collapse to one. Blank lines at the start of the document are removed. Blank
   lines inside a `MarkdownBlock` body are content and are kept exactly.
@@ -1087,7 +1058,7 @@ whichever node is open when the next significant token is consumed, which puts a
 before an indented block in the parent and a comment just before a dedent in the inner block.
 Neither is where a reader would say the comment belongs, so the formatter corrects both.
 
-### 7.3 Entry order
+### 7.3. Entry order
 
 Within a block, entries are grouped by kind in the order Appendix A lists the block's alternatives,
 and kept in source order within a group:
@@ -1111,7 +1082,7 @@ fields, is undecided and is expected to become a configurable option rather than
 
 ---
 
-## Appendix A: Grammar Summary
+## A. Appendix: Grammar Summary
 
 Lexical productions match characters; syntactic productions match tokens. Layout tokens
 (`Newline`, `Indent`, `Dedent`) are produced as described in Section 2.4.
@@ -1221,7 +1192,7 @@ MeasureRecommend : `recommend` MeasurePosition Newline RecommendNoteBlock?
 MeasurePosition  : one of `yes` `no` `no-position`
 ```
 
-## Appendix B: Keywords
+## B. Appendix: Keywords
 
 All keywords are reserved in every position.
 
