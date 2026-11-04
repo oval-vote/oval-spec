@@ -47,7 +47,7 @@ The complete grammar is collected in Appendix A.
 
 ### 1.2. Identity
 
-| | |
+| Property | Value |
 |---|---|
 | Name | Oval |
 | Home | https://oval.vote |
