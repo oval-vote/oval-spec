@@ -108,10 +108,10 @@ This document defines Oval in four parts, each building on the one before it:
 The appendices collect the complete grammar and the list of keywords.
 
 This document does not define the interface of any tool. The names of commands, the wording and
-layout of diagnostics, and how an editor presents them belong to the tools. It does not interpret
-Markdown; notes and justifications pass through to the output unchanged, and the dialect a renderer
-accepts is between the renderer and the author. And it does not say how guides are published,
-distributed, or kept current once written.
+layout of diagnostics, and how an editor presents them belong to the tools. It does not render
+Markdown; notes and justifications pass through to the output unchanged, limited to the Markdown
+profile of Section 2.2 so that every renderer shows them the same way. And it does not say how
+guides are published, distributed, or kept current once written.
 
 Every Oval document begins with a version marker naming the major version of the language it was
 written in, so a tool knows how to read it before reading anything else. Within a major version,
@@ -309,8 +309,8 @@ participate in layout (Section 2.4): they produce no `Newline`, `Indent`, or `De
 indentation stack is unchanged after the body.
 
 The body is **opaque**. Inside it `#` is not a comment, `@`, `"`, and tabs are ordinary characters,
-and no other token is recognized. The body is interpreted as Markdown by renderers; this
-specification does not define which Markdown constructs are allowed.
+and no other token is recognized. The body is Markdown; the Markdown profile below says which
+constructs it may use, and validation (V20) enforces it. The lexer does not inspect the body.
 
 The token's _value_ is derived from its text by removing the common leading indentation of its
 non-blank lines from every line. Parsers expose the value; the token itself keeps the raw text.
@@ -319,6 +319,49 @@ A `:` followed on its line by anything other than whitespace, a comment, or a li
 not open a body; whether that is valid, and whether the word before the `:` is one that takes a
 Markdown body, is the parser's concern. A Markdown field whose opening line has no body is a syntax
 error, not a lexical one; omit the field instead.
+
+#### Markdown Profile
+
+The value of a `MarkdownBlock` is Markdown as defined by
+[CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/), extended with tables as defined by the
+[GitHub Flavored Markdown tables extension](https://github.github.com/gfm/#tables-extension-). Oval
+permits a subset of that language, the **Markdown profile**, so that every renderer shows a body the
+same way. A body that uses a construct outside the profile is invalid (V20). The profile is not part
+of the token: the lexer and parser never inspect a body, validation checks it, and the body reaches
+the canonical output unchanged.
+
+A body may contain these block constructs:
+
+- Paragraphs.
+- ATX and setext headings. A heading in a body is subordinate to the construct the field belongs to;
+  a renderer places it under its own heading for that construct and may change its level.
+- Block quotes.
+- Bullet lists and ordered lists, nested to any depth.
+- Tables.
+- Hard line breaks, written as two trailing spaces or a backslash before the line terminator.
+
+And these inline constructs:
+
+- Emphasis and strong emphasis.
+- Links: inline links, reference links with their link reference definitions in the same body, and
+  autolinks. Every link destination is an absolute `http` or `https` URL.
+- Backslash escapes, and entity and numeric character references.
+
+A body may not contain:
+
+- Code, in any form: indented code blocks, fenced code blocks, and code spans.
+- Raw HTML, as blocks or inline.
+- Images.
+- Thematic breaks.
+
+Everything CommonMark does not recognize is plain text. Strikethrough, task list items, footnotes,
+and bare URLs are extensions outside the profile, and a body containing them is valid but shows them
+as the characters written; write a URL as a link.
+
+Four or more spaces of indentation beyond the body's common minimum begin an indented code block in
+CommonMark. A paragraph or list item indented that far is therefore an error under V20; reduce the
+indentation. A formatter preserves relative indentation inside a body (Section 7.1), so it never
+introduces or removes one.
 
 #### Lexical Errors
 
@@ -1027,6 +1070,13 @@ The document must have a version marker (Section 2.5), and it must name a major 
 implementation supports. An implementation that reports V19 may report nothing else, since the rest
 of the document may not have the meaning this specification gives it.
 
+### V20 Markdown profile — error
+
+Every `MarkdownBlock` value, parsed as described in Section 2.2 (Markdown Profile), contains only
+the constructs the profile permits, and every link destination is an absolute `http` or `https` URL.
+Each construct outside the profile is reported once, over its extent within the body. Checking this
+rule requires a CommonMark parser with the tables extension; no other rule does.
+
 ---
 
 ## 4. Resolution
@@ -1055,8 +1105,10 @@ candidate.
 
 ### 4.4. Markdown
 
-`MarkdownBlock` values are passed through unchanged. Interpreting them is the renderer's
-responsibility.
+`MarkdownBlock` values are passed through unchanged. Rendering them is the renderer's
+responsibility. In a valid document every body is within the Markdown profile (Section 2.2), so a
+renderer needs only CommonMark with the tables extension and shows every body the same way as any
+other renderer.
 
 ---
 
@@ -1119,7 +1171,8 @@ syntax tree or the diagnostics.
   `contest`, `measure`, or `ballot`, and root ballots carry `kind: "ballot"` too, so one type
   describes a ballot anywhere. `method.kind` and `stance.position` discriminate the same way.
 - **Markdown is a string** with common indentation removed, terminators normalized to `\n`, and no
-  trailing terminator (the value of Section 2.2). Rendering it is the consumer's job.
+  trailing terminator (the value of Section 2.2). It is within the Markdown profile. Rendering it is
+  the consumer's job.
 - **Campaigns are referred to by index** within their contest's `campaigns` array, since they have
   no identifiers.
 - **Strict producers, tolerant consumers.** The schema forbids unknown keys so that a producer's
