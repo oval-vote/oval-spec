@@ -6,18 +6,9 @@ on:
   pull_request:
 
 jobs:
-  schema:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: jdx/mise-action@v2
-      - run: check-jsonschema --check-metaschema schema/guide.schema.json
-      - run: check-jsonschema --schemafile schema/guide.schema.json examples/franklin.oval.json
-
-  site:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: jdx/mise-action@v5
-      - run: npm ci
-      - run: npm test
+      - run: mise run ci
