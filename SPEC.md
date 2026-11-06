@@ -419,7 +419,7 @@ Dedent :: "a return to an enclosing indentation, at the start of a line or at th
 
 All three are **zero-length** except `Newline` at a line terminator. `Indent` and `Dedent` are
 positioned at the first token of the line that triggers them, after that line's leading
-`Whitespace`. Because they have no text, the lossless property of Section 2.2 holds.
+`Whitespace`. Because they have no text, the lossless property of Section 2.2 is preserved.
 
 A line's _indentation_ is the number of U+0020 characters before its first other character. A tab is
 an "other character" (and an error, Section 2.3). The lexer maintains a stack of indentation levels,
@@ -477,7 +477,7 @@ rule that a document uses only constructs of its declared version.
 ### 2.6. Fields and Blocks
 
 Most constructs in Oval are a _header line_ followed by an optional _block_ of indented lines. The
-block holds _fields_ and _children_.
+block contains _fields_ and _children_.
 
 Block : Indent BlockEntry+ Dedent
 
@@ -743,7 +743,7 @@ The contest kind is written on the header line after the title:
 | `ranked`       | Rank choices.                    | optional `max` `Integer`: how many may be ranked |
 | `retention`    | Yes or no on one officeholder.   | none                                             |
 
-A contest's block holds its `Campaign`s in ballot order and its `ContestRecommend`s. The grammar
+A contest's block contains its `Campaign`s in ballot order and its `ContestRecommend`s. The grammar
 accepts any number of each; validation requires at least one campaign except in a retention contest
 (V12) and exactly one recommendation (V10), so that a half-written contest still parses and the
 validator can name what is missing. Campaigns and the recommendation may be interleaved with fields
@@ -796,7 +796,7 @@ campaign incumbent @bsantos "Beatriz Santos"
     Two-term incumbent.
 ```
 
-In this form the block holds campaign fields _and_, when the member is an inline declaration, the
+In this form the block contains campaign fields _and_, when the member is an inline declaration, the
 candidate's `designation` and `party`. The block's `note` is the **campaign's** note. A candidate
 note for a one-line campaign requires the block form below. This is a deliberate simplification: for
 a single-candidate campaign the reader sees both notes together regardless.
@@ -823,9 +823,9 @@ Member order is significant: the first member is the head of the ticket. In bloc
 `designation` and `PartyRef` are not permitted at the campaign level (V4); they belong under a
 member.
 
-**Flags.** `incumbent` means this campaign holds the office being contested; `withdrawn` means the
-campaign has ended but remains on the ballot. Both default to false. They may appear in either order
-and each at most once.
+**Flags.** `incumbent` means this campaign currently occupies the office being contested;
+`withdrawn` means the campaign has ended but remains on the ballot. Both default to false. They may
+appear in either order and each at most once.
 
 ### 2.15. Contest Recommendation
 

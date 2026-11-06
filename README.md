@@ -22,9 +22,12 @@ index at `dist/index.html`. Releases are described in `RELEASE.md`. Tooling is m
 
 ```sh
 npm ci
+npm test         # builds the site and runs every check; CI runs this
+npm run check    # formatting, grammar extract, and spelling
 npm run build    # writes dist/
-npm run grammar  # regenerates grammar.txt from Appendix A; CI checks it is current
-npm run format   # wraps prose at 100 columns with Prettier; CI checks it
+npm run grammar  # regenerates grammar.txt from Appendix A
+npm run format   # wraps prose at 100 columns with Prettier
+npm run spell    # spell-checks the Markdown files and LICENSE with cspell
 ```
 
 spec-md is stricter than GitHub's Markdown. The conventions that matter when editing `SPEC.md`:

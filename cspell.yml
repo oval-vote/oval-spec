@@ -1,0 +1,19 @@
+version: "0.2"
+language: en-US
+files:
+  - "**/*.md"
+  - LICENSE
+ignorePaths:
+  - node_modules
+  - dist
+  - published
+ignoreRegExpList:
+  - /[a-z]{2,}'s/
+  - /@[a-z0-9-]+/
+words:
+  - creativecommons
+  - schemafile
+  - sublicensable
+  - waivable
+  - Kwame
+  - Okafor
