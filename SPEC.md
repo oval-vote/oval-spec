@@ -2,14 +2,9 @@
 
 _Working Draft_
 
-This document specifies Oval, a plain-text file format for voting guides. It is derived from the
-data model in `DATA_MODEL.md` and the syntax prototypes in `prototypes/`. Where this document and
-the data model disagree, this document is wrong until the disagreement is resolved deliberately.
+**Introduction**
 
-The specification and its tools are released together under one version number. The first two
-components are the *language version*, which documents declare with the version marker
-(`oval 0.1`, Section 2.5); the third is a patch level for editorial fixes and tool releases that
-leave the language unchanged.
+This document contains the specification for oval, a plain-text file format for voting guides.
 
 This specification is developed at [oval-vote/oval-spec](https://github.com/oval-vote/oval-spec).
 The working draft, rendered from the `main` branch, is at
