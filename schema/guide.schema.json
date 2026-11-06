@@ -8,9 +8,9 @@
   "additionalProperties": false,
   "properties": {
     "oval": {
-      "description": "The version of the Oval specification the document declares in its version marker, as MAJOR.MINOR.",
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+$"
+      "description": "The major version of the Oval language the document declares in its version marker.",
+      "type": "integer",
+      "minimum": 1
     },
     "guide": { "$ref": "#/$defs/guide" },
     "parties": { "type": "array", "items": { "$ref": "#/$defs/party" } },

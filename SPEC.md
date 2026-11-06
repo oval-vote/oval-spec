@@ -38,7 +38,7 @@ position on each question. Structure is expressed with keywords and indentation.
 written as Markdown under the question it concerns.
 
 ```oval
-oval 0.1
+oval 1
 
 guide "Ashford Voter Guide"
 election "November 3, 2026 General Election"
@@ -125,8 +125,9 @@ construct rather than being misread.
 Grammar productions use the notation of the GraphQL specification. A syntactic production, written
 `Name : Rule`, matches tokens; a lexical production, written `Name :: Rule`, matches characters.
 Alternatives are listed one per line. `X?` is optional, `X*` is zero or more, and `X+` is one or
-more. Literal text is in `backticks`, and prose that stands in for a rule is in double quotes.
-`one of` introduces alternatives that are each a single token, and `but not` excludes alternatives.
+more. Literal text is in `backticks`; in a syntactic production it matches a `Word` or `Punctuator`
+token with exactly that text. Prose that stands in for a rule is in double quotes. `one of`
+introduces alternatives that are each a single token, and `but not` excludes alternatives.
 Production names are UpperCamelCase, and on the website every name links to its definition.
 
 The complete grammar is collected in Appendix A.
@@ -188,12 +189,10 @@ not by brackets or closing keywords. Section 2.4 describes how indentation becom
 
 Token ::
 
-- Keyword
-- Identifier
+- Word
 - String
 - Integer
 - Date
-- Version
 - Url
 - Punctuator
 - MarkdownBlock
@@ -206,28 +205,11 @@ and an `Error` token for any text that cannot be tokenized. The layout tokens of
 zero-length. This makes the token stream lossless: concatenating the tokens' text reproduces the
 source exactly, which is what allows a formatter to round-trip a document.
 
-#### Keyword
+#### Word
 
-Keyword :: one of
+Word :: Letter WordPart*
 
-- `oval` `guide` `election` `date` `note` `party` `candidate` `ballot` `section` `contest`
-  `campaign` `measure` `abbreviation` `website` `designation` `eligibility` `single` `multiple`
-  `ranked` `retention` `max` `subtitle` `tabulation` `incumbent` `withdrawn` `as` `recommend`
-  `support` `oppose` `justification` `yes` `no` `no-position` `description` `if_yes` `if_no`
-  `placement` `fiscal_impact` `supporters` `opponents` `none`
-
-Keywords are reserved. They are matched case-sensitively and are all lowercase. A word that is not a
-keyword and does not begin with `@` is a lexical error; there are no free identifiers in Oval.
-
-#### Identifier
-
-Identifier :: `@` IdentifierName
-
-IdentifierName :: IdentifierStart IdentifierPart*
-
-IdentifierStart :: Letter
-
-IdentifierPart ::
+WordPart ::
 
 - Letter
 - Digit
@@ -238,11 +220,13 @@ Letter :: /[A-Za-z]/
 
 Digit :: /[0-9]/
 
-An identifier names an entity. The same token form is used both to declare an identifier and to
-refer to one; Section 2.7 explains which is which.
-
-Identifiers are case-sensitive. Two identifiers are the same if their `IdentifierName` parts are
-identical.
+A `Word` is a bare run of letters, digits, hyphens, and underscores that begins with a letter. The
+lexer accepts every such run; which words may appear where is decided by the syntactic grammar. A
+literal in backticks in a syntactic production, such as `ballot`, matches a `Word` whose text is
+exactly that, case-sensitively. A word the syntactic grammar names this way is a **keyword**;
+Appendix B lists them. A word in a position where the grammar does not expect it is a syntax error,
+not a lexical one. Words have no other use: Oval has no free identifiers, and every name an author
+chooses is an `Identifier` (Section 2.7), a word after `@`.
 
 #### String
 
@@ -270,10 +254,10 @@ Integer :: Digit+
 An unsigned whole number. Leading zeros are permitted, but are insignificant. Integers cannot be
 signed.
 
-A word that begins with a Digit but is neither an `Integer`, a `Date`, nor a `Version` (such as
-`12abc`, `3_000`, `2026-11-5`, or `01.1`) is a _malformed number_ and becomes one `Error` token.
-Within a word that begins with a Digit, `.` is a word character, so `1.x` is one malformed number
-rather than an `Integer` followed by an unexpected character.
+A word that begins with a Digit but is neither an `Integer` nor a `Date` (such as `12abc`, `3_000`,
+`2026-11-5`, or `1.1`) is a _malformed number_ and becomes one `Error` token. Within a word that
+begins with a Digit, `.` is a word character, so `1.x` is one malformed number rather than an
+`Integer` followed by an unexpected character.
 
 #### Date
 
@@ -282,20 +266,6 @@ Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
 An ISO 8601 calendar date. The lexer and parser match the shape only. Whether the date exists on the
 calendar is a validation rule (V13), so `2026-02-30` is a well-formed `Date` and an invalid
 document.
-
-#### Version
-
-Version :: VersionPart `.` VersionPart
-
-VersionPart ::
-
-- `0`
-- NonZeroDigit Digit*
-
-NonZeroDigit :: /[1-9]/
-
-A version of this specification, `MAJOR.MINOR`. Neither part has leading zeros, so every version has
-exactly one spelling. The only place a `Version` appears is the version marker (Section 2.5).
 
 #### Url
 
@@ -308,29 +278,29 @@ UrlCharacter :: SourceCharacter but not one of "Space (U+0020)", "Tab (U+0009)",
 A URL is written bare, without quotes. It extends to the next space, tab, or line terminator, so `#`
 and `"` inside a URL are part of it. Only `http` and `https` are permitted. A scheme and `://` with
 nothing after them is a _malformed URL_ and becomes one `Error` token. Any other word followed by
-`://` is lexed as an unknown word, a `:`, and whatever follows.
+`://` is lexed as a `Word`, a `:`, and whatever follows, and fails in the parser.
 
 #### Punctuator
 
-Punctuator :: one of `:` `,`
+Punctuator :: one of `@` `:` `,`
 
-`:` introduces a `MarkdownBlock` (Section 2.2, below). `,` separates strings in a list.
+`@` begins an `Identifier` (Section 2.7). `:` introduces a `MarkdownBlock` (Section 2.2, below). `,`
+separates strings in a list.
 
 #### MarkdownBlock
 
-A `MarkdownBlock` is the body of a Markdown field: the lines following a line that ends in a
-`Keyword` and `:`.
+A `MarkdownBlock` is the body of a Markdown field: the lines following a line that ends in `:`.
 
 MarkdownBlock :: BodyLine+
 
 BodyLine :: "a line indented more than the opening line, or a blank line between two such lines"
 
-The _opening line_ is any line whose last two tokens, ignoring whitespace and comments, are a
-`Keyword` and `:`. After its `Newline`, the lexer looks ahead past any blank lines to the next line
-with content. If that line is indented strictly more than the opening line, the body begins there
-and extends over every following line that is either blank or indented strictly more than the
-opening line, ending after the terminator of the last such line with content. If the next content
-line is not indented more, there is no body and no token.
+The _opening line_ is any line whose last token, ignoring whitespace and comments, is `:`. After its
+`Newline`, the lexer looks ahead past any blank lines to the next line with content. If that line is
+indented strictly more than the opening line, the body begins there and extends over every following
+line that is either blank or indented strictly more than the opening line, ending after the
+terminator of the last such line with content. If the next content line is not indented more, there
+is no body and no token.
 
 The token covers the body's raw text, from the first content line's leading spaces through the last
 content line's terminator (or end of input). Blank lines before and after the body are not part of
@@ -345,27 +315,32 @@ specification does not define which Markdown constructs are allowed.
 The token's _value_ is derived from its text by removing the common leading indentation of its
 non-blank lines from every line. Parsers expose the value; the token itself keeps the raw text.
 
-A `Keyword` followed by `:` and then anything other than whitespace, a comment, or a line terminator
-does not open a body; whether that is valid is the parser's concern. A Markdown field whose opening
-line has no body is a syntax error, not a lexical one; omit the field instead.
+A `:` followed on its line by anything other than whitespace, a comment, or a line terminator does
+not open a body; whether that is valid, and whether the word before the `:` is one that takes a
+Markdown body, is the parser's concern. A Markdown field whose opening line has no body is a syntax
+error, not a lexical one; omit the field instead.
 
 #### Lexical Errors
 
 Every lexical error has a range. Where the text cannot be tokenized at all it becomes an `Error`
 token spanned exactly by one error; where a token is recognizable but flawed, the token keeps its
-kind and the error points at the flaw within it. Lexing always continues.
+kind and the error points at the flaw within it.
 
-| Error                | Range                                | Token        | Recovery                                                       |
-| -------------------- | ------------------------------------ | ------------ | -------------------------------------------------------------- |
-| Illegal tab          | the run of tabs                      | `Error`      | continue after the tabs                                        |
-| Malformed identifier | `@` and the word after it            | `Error`      | continue after the word                                        |
-| Unknown word         | the word                             | `Error`      | continue after the word                                        |
-| Unexpected character | one character                        | `Error`      | continue after it                                              |
-| Unterminated string  | opening quote to end of line         | `Error`      | resume at the line terminator                                  |
-| Invalid escape       | the backslash and the next character | `String`     | continue inside the string                                     |
-| Malformed number     | the word                             | `Error`      | continue after the word                                        |
-| Malformed URL        | scheme and `://`                     | `Error`      | continue after `://`                                           |
-| Inconsistent dedent  | the line's leading spaces            | `Whitespace` | treat the line as at the nearest enclosing level (Section 2.4) |
+If possible, implementers should continue lexing after encountering an error using the recovery
+strategy described in the table below. This allows a tool to provide better, more usable diagnostics
+to the user. It also allows multiple errors to be reported in a single pass.
+
+However, implementations that stop at the first error are also considered spec compliant.
+
+| Error                | Range                                | Token        | Recovery                                                                                                                        |
+| -------------------- | ------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Illegal tab          | the run of tabs                      | `Error`      | swallow all the tabs and continue after the tabs                                                                                |
+| Unexpected character | one character                        | `Error`      | swallow the unexpected character, and continue                                                                                  |
+| Unterminated string  | opening quote to end of line         | `Error`      | swallow the rest of the line up to, but not including, the line terminator, then continue so that the terminator lexes normally |
+| Invalid escape       | the backslash and the next character | `String`     | keep both characters in the string, report the error on them, and continue lexing the string after them                         |
+| Malformed number     | the word                             | `Error`      | swallow the whole word, including any `.`, and continue after it                                                                |
+| Malformed URL        | scheme and `://`                     | `Error`      | swallow the scheme and `://`, and continue with the character after `://`                                                       |
+| Inconsistent dedent  | the line's leading spaces            | `Whitespace` | emit `Dedent` tokens down to the nearest enclosing level, treat the line as at that level, and continue (Section 2.4)           |
 
 ### 2.3. Ignored Tokens
 
@@ -444,7 +419,7 @@ Lines inside a `MarkdownBlock` body do not participate in this process; the bloc
 
 Document : VersionMarker? GuideField* Declaration* Ballot+
 
-VersionMarker : `oval` Version Newline
+VersionMarker : `oval` Integer Newline
 
 A document is a Guide (Section 2.8) written at indentation zero. It opens with the version marker,
 then the document's fields, then any top-level `Party` and `Candidate` declarations, then one or
@@ -453,19 +428,19 @@ declarations, order is free.
 
 There is no closing token. The document ends at end of input.
 
-**Version marker.** `oval 0.1` names the version of this specification the document is written to.
-It is the first entry of every document; only blank lines and comments (Section 2.3) may precede it.
+**Version marker.** `oval 1` names the major version of the language the document is written in. It
+is the first entry of every document; only blank lines and comments (Section 2.3) may precede it.
 The grammar leaves it optional for the same reason it leaves `guide` optional (V2): a parser can
-then build a tree for a document that lacks it and say exactly what is missing, without knowing
-which versions exist. A document without a marker, or with one naming a version the implementation
-does not support, is invalid (V19).
+then build a tree for a document that lacks it and say exactly what is missing. A document without a
+marker, or whose marker names a major version the implementation does not support, is invalid (V19).
+The `Integer` is written without leading zeros; a formatter removes them.
 
-Versions are `MAJOR.MINOR` and are this specification's own version numbers. From major version 1
-onward, a minor version only adds constructs, so an implementation of `M.N` accepts every document
-declaring `M.0` through `M.N`. Major version 0 is the draft series: each `0.N` is a distinct
-language, and an implementation accepts exactly the one it implements. Once more than one version
-exists, this section will record which version introduced each construct, and Section 3 will gain a
-rule that a document uses only constructs of its declared version.
+This specification defines major version 1. Within a major version, each edition of this
+specification only adds to the language, so an implementation of a later edition accepts every
+document written to an earlier one. A construct that an implementation does not know is a lexical or
+syntax error at that construct, which is how an older implementation reports a document that needs a
+newer edition. A new major version is reserved for a change that removes a construct or alters the
+meaning of one.
 
 ### 2.6. Fields and Blocks
 
@@ -516,7 +491,14 @@ There is no `false` spelling; omit the flag.
 Entities (Party, Candidate, Ballot, Contest, Measure) are _declared_ exactly once each and may be
 _referred to_ any number of times.
 
+Identifier : `@` Word
+
 Reference : Identifier
+
+An identifier names an entity. It is the punctuator `@` followed by a `Word`, written without
+whitespace between them; a formatter removes any. Identifiers are case-sensitive, and two
+identifiers are the same if their words are identical. Because every identifier begins with `@`, no
+word is reserved: `@ballot` is an ordinary identifier.
 
 A declaration is an `Identifier` **followed immediately by a `String`**, after the entity's keyword;
 the string is the entity's name or title. A reference is a bare `Identifier`. This is the single
@@ -550,7 +532,7 @@ GuideField :
 - `note` MarkdownBody
 
 ```oval example
-oval 0.1
+oval 1
 
 guide "Franklin Voter Guide"
 election "November 3, 2026 General Election"
@@ -1041,11 +1023,9 @@ A `Measure` with exactly one of `if_yes` and `if_no`. (C14)
 
 ### V19 Supported version — error
 
-The document must have a version marker (Section 2.5), and it must name a version the implementation
-supports: the same major version as the implementation's, and a minor version no greater than it, or
-for major version 0 exactly the implementation's version. An implementation that reports V19 may
-report nothing else, since the rest of the document may not have the meaning this specification
-gives it.
+The document must have a version marker (Section 2.5), and it must name a major version the
+implementation supports. An implementation that reports V19 may report nothing else, since the rest
+of the document may not have the meaning this specification gives it.
 
 ---
 
@@ -1095,8 +1075,9 @@ Three conformance levels are defined so that tools can claim what they implement
   output of Section 6, byte-for-byte equal to the reference implementation's after JSON
   normalization (key order and whitespace disregarded).
 
-A conformance claim names the specification versions it covers (Section 2.5). An implementation
-reports documents outside them under V19 rather than attempting to process them.
+A conformance claim names the major version of the language and the edition of this specification it
+implements. An implementation reports documents of another major version under V19 rather than
+attempting to process them.
 
 A conformance test suite (not yet written) will consist of well-formed and malformed documents, and
 for each well-formed document the expected validation report and canonical resolved output.
@@ -1131,9 +1112,9 @@ syntax tree or the diagnostics.
   `[]` (researched, none), or a list.
 - **Booleans are always present.** `incumbent`, `withdrawn`, and `no_position` are written even when
   false.
-- **The root echoes the version marker.** `oval` is the document's declared version as a string,
-  `"0.1"`. The output conforms to that version's schema, or to a later minor version's, which only
-  adds keys.
+- **The root echoes the version marker.** `oval` is the document's declared major version as an
+  integer, `1`. Later editions of the same major version only add keys to the output, so a consumer
+  written to an earlier edition reads the output of a later one.
 - **Discriminated unions use `kind`.** Every item in a ballot or section has a `kind` of `section`,
   `contest`, `measure`, or `ballot`, and root ballots carry `kind: "ballot"` too, so one type
   describes a ballot anywhere. `method.kind` and `stance.position` discriminate the same way.
@@ -1200,8 +1181,8 @@ text in surprising ways.
 - Every line is indented two spaces per enclosing block, whatever the source used. A `MarkdownBlock`
   body is indented one level deeper than its keyword line; each body line keeps its indentation
   beyond the body's common minimum, so lists and continuation lines keep their shape.
-- Tokens on a line are separated by one space. `:` and `,` attach to the token before them. A
-  trailing comment is preceded by one space.
+- Tokens on a line are separated by one space. `:` and `,` attach to the token before them, and `@`
+  to the word after it. A trailing comment is preceded by one space.
 
 ### 7.2. Blank lines and comments
 
@@ -1260,12 +1241,10 @@ LineTerminator ::
 
 Token ::
 
-- Keyword
-- Identifier
+- Word
 - String
 - Integer
 - Date
-- Version
 - Url
 - Punctuator
 - MarkdownBlock
@@ -1288,25 +1267,9 @@ Indent :: "an increase in indentation, at the start of a line"
 
 Dedent :: "a return to an enclosing indentation, at the start of a line or at the end of input"
 
-Keyword :: one of
+Word :: Letter WordPart*
 
-- `oval` `guide` `election` `date` `note`
-- `party` `candidate` `ballot` `section` `contest` `campaign` `measure`
-- `abbreviation` `website` `designation` `eligibility`
-- `single` `multiple` `ranked` `retention` `max`
-- `subtitle` `tabulation`
-- `incumbent` `withdrawn` `as`
-- `recommend` `support` `oppose` `justification` `yes` `no` `no-position`
-- `description` `if_yes` `if_no` `placement` `fiscal_impact` `supporters` `opponents`
-- `none`
-
-Identifier :: `@` IdentifierName
-
-IdentifierName :: IdentifierStart IdentifierPart*
-
-IdentifierStart :: Letter
-
-IdentifierPart ::
+WordPart ::
 
 - Letter
 - Digit
@@ -1330,22 +1293,13 @@ Integer :: Digit+
 
 Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
 
-Version :: VersionPart `.` VersionPart
-
-VersionPart ::
-
-- `0`
-- NonZeroDigit Digit*
-
-NonZeroDigit :: /[1-9]/
-
 Url :: UrlScheme `://` UrlCharacter+
 
 UrlScheme :: one of `https` `http`
 
 UrlCharacter :: SourceCharacter but not one of "Space (U+0020)", "Tab (U+0009)", LineTerminator
 
-Punctuator :: one of `:` `,`
+Punctuator :: one of `@` `:` `,`
 
 MarkdownBlock :: BodyLine+
 
@@ -1363,7 +1317,7 @@ BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespac
 
 Document : VersionMarker? GuideField* Declaration* Ballot+
 
-VersionMarker : `oval` Version Newline
+VersionMarker : `oval` Integer Newline
 
 GuideField :
 
@@ -1392,6 +1346,8 @@ Strings :
 Flags : Flag*
 
 Flag : one of `incumbent` `withdrawn`
+
+Identifier : `@` Word
 
 Reference : Identifier
 
@@ -1559,7 +1515,8 @@ MeasurePosition : one of `yes` `no` `no-position`
 
 ## B. Appendix: Keywords
 
-All keywords are reserved in every position.
+A keyword is a `Word` that a syntactic production in Section 2 names literally. This list is derived
+from the grammar; nothing is reserved, since identifiers begin with `@`.
 
 | Group            | Keywords                                                                                         |
 | ---------------- | ------------------------------------------------------------------------------------------------ |
