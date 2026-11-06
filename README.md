@@ -14,8 +14,8 @@ specification and the implementation share one version number; see Section 2.5.
 ## The website
 
 The site is `SPEC.md` rendered with [spec-md](https://spec-md.com), the tool behind the GraphQL
-specification's site, and deployed to GitHub Pages on every push to `main`. The build writes the
-working draft to `dist/draft/`, copies every released edition from `published/`, adds a
+specification's site, and deployed to GitHub Pages from `main` once the checks pass. The build
+writes the working draft to `dist/draft/`, copies every released edition from `published/`, adds a
 `MAJOR.MINOR` alias for the newest edition of each language version, and generates the versions
 index at `dist/index.html`. Releases are described in `RELEASE.md`. Tooling is managed with
 [mise](https://mise.jdx.dev), which reads `.node-version`.
@@ -41,8 +41,9 @@ spec-md is stricter than GitHub's Markdown. The conventions that matter when edi
 - Prettier rewraps paragraphs at 100 columns, so a grammar production must fit on one line; the
   build fails on one that wraps.
 
-The `site` job in CI builds the site on every pull request, so a document that spec-md cannot parse
-fails the check.
+CI runs `mise run ci` on every pull request and push to `main`, which validates the schema and runs
+`npm test`, so a document that spec-md cannot parse fails the check. On `main`, the deploy job runs
+only after that job passes.
 
 ## License
 
