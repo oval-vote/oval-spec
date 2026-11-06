@@ -40,3 +40,8 @@ spec-md is stricter than GitHub's Markdown. The conventions that matter when edi
 
 The `site` job in CI builds the site on every pull request, so a document that spec-md cannot parse
 fails the check.
+
+## License
+
+The specification and everything published with it are licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); see `LICENSE`.

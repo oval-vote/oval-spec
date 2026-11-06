@@ -1,8 +1,10 @@
 {
   "name": "oval-spec",
   "private": true,
-  "version": "0.1.1",
-  "license": "MIT",
+  "contributors": [
+    "Varun Santhanam <talkto@vsanthanam.com> (https://www.vsanthanam.com/)"
+  ],
+  "license": "CC-BY-4.0",
   "description": "The Oval specification and its website",
   "repository": "github:oval-vote/oval-spec",
   "homepage": "https://spec.oval.vote",

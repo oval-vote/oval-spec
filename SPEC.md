@@ -5,12 +5,17 @@ _Working Draft_
 **Introduction**
 
 This is the specification for Oval, a plain-text file format for voting guides. It defines the Oval
-language: its characters, tokens, and grammar, and the meaning of each construct. For the tools that
-implement the language it also spells out what a conforming implementation does at each stage: how a
-lexer tokenizes source text and recovers from a malformed token, which documents a parser accepts
-and which it rejects, which rules a validator checks and whether each is an error or a warning, the
-style a formatter rewrites a document in, and the JSON a compiler produces from a valid document,
-with every reference resolved.
+language, its characters, tokens, grammar, and the meaning of each construct. For prospective
+implementers, it also describes how a conforming lexer, parser, validator, formatter, and compiler
+should behave.
+
+**Copyright notice**
+
+Copyright © 2026 Oval contributors.
+
+This specification, including its grammar, schema, and examples, is licensed under the
+[Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+The license text is distributed with the specification as `LICENSE`.
 
 ## 1. Overview
 
