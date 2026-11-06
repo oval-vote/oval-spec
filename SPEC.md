@@ -201,9 +201,9 @@ Tokens are separated by whitespace within a line as necessary. Whitespace is nev
 a `Punctuator` and an adjacent token.
 
 Every byte of the source belongs to exactly one token, counting the ignored tokens of Section 2.3
-and an `Error` token for any text that cannot be tokenized. The layout tokens of Section 2.4 are
-zero-length. This makes the token stream lossless: concatenating the tokens' text reproduces the
-source exactly, which is what allows a formatter to round-trip a document.
+and an `Error` token for any text that cannot be tokenized (Section 3.1). The layout tokens of
+Section 2.4 are zero-length. This makes the token stream lossless: concatenating the tokens' text
+reproduces the source exactly, which is what allows a formatter to round-trip a document.
 
 #### Word
 
@@ -242,10 +242,11 @@ EscapedCharacter :: one of `\"` `\\`
 A string is single-line display text. Only two escapes exist: `\"` for a double quote and `\\` for a
 backslash. Strings carry no formatting; all multi-line or formatted text is a `MarkdownBlock`.
 
-A line terminator or end of input before the closing quote is an _unterminated string_: the text
-from the opening quote to the end of the line becomes an `Error` token and lexing resumes on the
-next line. A backslash followed by anything other than `"` or `\\` is an _invalid escape_: the
-string is still a `String` token, and the error is reported on the two characters of the escape.
+A line terminator or end of input before the closing quote is an _unterminated string_
+(`unterminated-string`): the text from the opening quote to the end of the line becomes an `Error`
+token and lexing resumes on the next line. A backslash followed by anything other than `"` or `\\`
+is an _invalid escape_ (`invalid-escape`): the string is still a `String` token, and the error is
+reported on the two characters of the escape.
 
 #### Integer
 
@@ -255,9 +256,9 @@ An unsigned whole number. Leading zeros are permitted, but are insignificant. In
 signed.
 
 A word that begins with a Digit but is neither an `Integer` nor a `Date` (such as `12abc`, `3_000`,
-`2026-11-5`, or `1.1`) is a _malformed number_ and becomes one `Error` token. Within a word that
-begins with a Digit, `.` is a word character, so `1.x` is one malformed number rather than an
-`Integer` followed by an unexpected character.
+`2026-11-5`, or `1.1`) is a _malformed number_ (`malformed-number`) and becomes one `Error` token.
+Within a word that begins with a Digit, `.` is a word character, so `1.x` is one malformed number
+rather than an `Integer` followed by an unexpected character.
 
 #### Date
 
@@ -277,8 +278,8 @@ UrlCharacter :: SourceCharacter but not one of "Space (U+0020)", "Tab (U+0009)",
 
 A URL is written bare, without quotes. It extends to the next space, tab, or line terminator, so `#`
 and `"` inside a URL are part of it. Only `http` and `https` are permitted. A scheme and `://` with
-nothing after them is a _malformed URL_ and becomes one `Error` token. Any other word followed by
-`://` is lexed as a `Word`, a `:`, and whatever follows, and fails in the parser.
+nothing after them is a _malformed URL_ (`malformed-url`) and becomes one `Error` token. Any other
+word followed by `://` is lexed as a `Word`, a `:`, and whatever follows, and fails in the parser.
 
 #### Punctuator
 
@@ -363,28 +364,6 @@ CommonMark. A paragraph or list item indented that far is therefore an error und
 indentation. A formatter preserves relative indentation inside a body (Section 7.1), so it never
 introduces or removes one.
 
-#### Lexical Errors
-
-Every lexical error has a range. Where the text cannot be tokenized at all it becomes an `Error`
-token spanned exactly by one error; where a token is recognizable but flawed, the token keeps its
-kind and the error points at the flaw within it.
-
-If possible, implementers should continue lexing after encountering an error using the recovery
-strategy described in the table below. This allows a tool to provide better, more usable diagnostics
-to the user. It also allows multiple errors to be reported in a single pass.
-
-However, implementations that stop at the first error are also considered spec compliant.
-
-| Error                | Range                                | Token        | Recovery                                                                                                                        |
-| -------------------- | ------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| Illegal tab          | the run of tabs                      | `Error`      | swallow all the tabs and continue after the tabs                                                                                |
-| Unexpected character | one character                        | `Error`      | swallow the unexpected character, and continue                                                                                  |
-| Unterminated string  | opening quote to end of line         | `Error`      | swallow the rest of the line up to, but not including, the line terminator, then continue so that the terminator lexes normally |
-| Invalid escape       | the backslash and the next character | `String`     | keep both characters in the string, report the error on them, and continue lexing the string after them                         |
-| Malformed number     | the word                             | `Error`      | swallow the whole word, including any `.`, and continue after it                                                                |
-| Malformed URL        | scheme and `://`                     | `Error`      | swallow the scheme and `://`, and continue with the character after `://`                                                       |
-| Inconsistent dedent  | the line's leading spaces            | `Whitespace` | emit `Dedent` tokens down to the nearest enclosing level, treat the line as at that level, and continue (Section 2.4)           |
-
 ### 2.3. Ignored Tokens
 
 Ignored ::
@@ -408,8 +387,9 @@ A line containing nothing but whitespace and a comment is a _blank line_. Its te
 `BlankLine` rather than `Newline`, so blank lines are ignored by the parser wherever they appear.
 Inside a `MarkdownBlock` body blank lines are part of the body and separate paragraphs.
 
-Horizontal tab (U+0009) is **not** whitespace. A tab anywhere outside a `String` or `MarkdownBlock`
-body is a lexical error. This rule exists so that indentation (Section 2.4) is unambiguous.
+Horizontal tab (U+0009) is **not** whitespace. A tab anywhere outside a `String`, a `Comment`, or a
+`MarkdownBlock` body is a lexical error (`illegal-tab`). This rule exists so that indentation
+(Section 2.4) is unambiguous.
 
 ### 2.4. Layout Tokens
 
@@ -441,8 +421,9 @@ initially `[0]`.
 - Before the first token of a line with tokens, compare its indentation `n` to the top of the stack:
   - If `n` is greater, push `n` and emit `Indent`.
   - If `n` is less, pop the stack and emit one `Dedent` per level popped until the top is less than
-    or equal to `n`. If the top is then not equal to `n`, report an _inconsistent dedent_ over the
-    line's leading spaces and treat the line as being at the top's level.
+    or equal to `n`. If the top is then not equal to `n`, report an _inconsistent dedent_
+    (`inconsistent-dedent`) over the line's leading spaces and treat the line as being at the top's
+    level.
   - If `n` is equal, emit nothing.
 - At end of input, if the last line has tokens and no terminator, emit a zero-length `Newline`. Then
   emit `Dedent` for every level above 0.
@@ -956,13 +937,295 @@ recommend no-position
 
 ## 3. Validation
 
+Validating a document is three stages run in order, each on the output of the one before:
+
+1. **Lexing** turns the source text into the tokens of Sections 2.2 through 2.4. Text that cannot be
+   tokenized becomes an `Error` token and a lexical error (Section 3.1). Lexing covers every byte of
+   the input, so the token stream is complete even when it contains errors.
+2. **Parsing** matches the token stream against the syntactic grammar of Sections 2.5 through 2.17
+   and builds a tree. A token the grammar does not expect is a syntax error. A document that lexes
+   and parses without error is _well-formed_.
+3. **Validation** checks the tree against the rules of Section 3.2. A well-formed document that
+   breaks no rule marked _error_ is _valid_. Rules marked _warning_ do not affect validity, but a
+   validator reports them.
+
+Every error at every stage has an identifier and a range in the source. Identifiers are stable
+across editions; tools report errors by identifier. A validator reports every lexical error, every
+syntax error, and every rule the document breaks, in source order, so that an author sees all of
+them in one pass.
+
+### 3.1. Lexical Errors
+
+Where the text cannot be tokenized at all it becomes an `Error` token spanned exactly by one error;
+where a token is recognizable but flawed, the token keeps its kind and the error points at the flaw
+within it.
+
+If possible, implementers should continue lexing after encountering an error using the recovery
+strategy given for each error below. This allows a tool to provide better, more usable diagnostics
+to the user. It also allows multiple errors to be reported in a single pass.
+
+However, implementations that stop at the first error are also considered spec compliant.
+
+Each error below is followed by an example that lexes without error and a counter-example that
+produces the error, each with its token sequence: every token in order, with its kind and its text.
+A space is shown as ␣, a tab as ⇥, and a line terminator as ↵. Zero-length tokens have no text.
+
+#### Illegal Tab
+
+Occurs when a tab (U+0009) appears outside a `String`, a `Comment`, or a `MarkdownBlock` body; a run
+of consecutive tabs is one error. The error is reported as `illegal-tab` and spans the run of tabs,
+which become one `Error` token. To recover, swallow the tabs and continue after them.
+
+```oval example
+subtitle "Vote for one"
+```
+
+```tokens
+Word «subtitle»
+Whitespace «␣»
+String «"Vote for one"»
+Newline «↵»
+```
+
+```oval counter-example
+subtitle	"Vote for one"
+```
+
+```tokens
+Word «subtitle»
+Error «⇥»
+String «"Vote for one"»
+Newline «↵»
+```
+
+#### Unexpected Character
+
+Occurs when, at a position where a token or an ignored token begins, the character cannot begin one:
+anything other than a letter, a digit, `@`, `"`, `:`, `,`, `#`, a space, a line terminator, or a
+tab. This includes `-`, `_`, `\`, and every character outside ASCII, since `Letter` is ASCII only;
+such characters are permitted inside strings, comments, and bodies. The error is reported as
+`unexpected-character` and spans that one character, which becomes an `Error` token. To recover,
+swallow the character and continue.
+
+```oval example
+candidate @dana-lombardi "Dana Lombardi"
+```
+
+```tokens
+Word «candidate»
+Whitespace «␣»
+Punctuator «@»
+Word «dana-lombardi»
+Whitespace «␣»
+String «"Dana Lombardi"»
+Newline «↵»
+```
+
+```oval counter-example
+candidate @-lombardi "Dana Lombardi"
+```
+
+```tokens
+Word «candidate»
+Whitespace «␣»
+Punctuator «@»
+Error «-»
+Word «lombardi»
+Whitespace «␣»
+String «"Dana Lombardi"»
+Newline «↵»
+```
+
+#### Unterminated String
+
+Occurs when a line terminator or end of input appears between an opening `"` and its closing `"`. A
+backslash immediately before the line terminator is part of this error, not an invalid escape. The
+error is reported as `unterminated-string` and spans the opening quote to the end of the line, which
+becomes one `Error` token. To recover, swallow the rest of the line up to, but not including, the
+line terminator, then continue so that the terminator lexes normally.
+
+```oval example
+election "November 3, 2026 General Election"
+date 2026-11-03
+```
+
+```tokens
+Word «election»
+Whitespace «␣»
+String «"November 3, 2026 General Election"»
+Newline «↵»
+Word «date»
+Whitespace «␣»
+Date «2026-11-03»
+Newline «↵»
+```
+
+```oval counter-example
+election "November 3, 2026 General Election
+date 2026-11-03
+```
+
+```tokens
+Word «election»
+Whitespace «␣»
+Error «"November 3, 2026 General Election»
+Newline «↵»
+Word «date»
+Whitespace «␣»
+Date «2026-11-03»
+Newline «↵»
+```
+
+#### Invalid Escape
+
+Occurs when, inside a string, `\` is followed by any character other than `"` or `\`. The error is
+reported as `invalid-escape` and spans the backslash and the character after it; the string remains
+a `String` token. To recover, keep both characters in the string and continue lexing the string
+after them.
+
+```oval example
+subtitle "The \"People's\" Measure"
+```
+
+```tokens
+Word «subtitle»
+Whitespace «␣»
+String «"The \"People's\" Measure"»
+Newline «↵»
+```
+
+```oval counter-example
+subtitle "Measure \#3"
+```
+
+```tokens
+Word «subtitle»
+Whitespace «␣»
+String «"Measure \#3"»
+Newline «↵»
+```
+
+The token sequence is the same in both cases; the error is reported on the two characters `\#`
+inside the `String`.
+
+#### Malformed Number
+
+Occurs when a run of letters, digits, `-`, `_`, and `.` begins with a digit and is neither an
+`Integer` nor a `Date`. The error is reported as `malformed-number` and spans the run, which becomes
+one `Error` token. To recover, swallow the run and continue after it.
+
+```oval example
+date 2026-11-03
+```
+
+```tokens
+Word «date»
+Whitespace «␣»
+Date «2026-11-03»
+Newline «↵»
+```
+
+```oval counter-example
+date 2026-11-3
+```
+
+```tokens
+Word «date»
+Whitespace «␣»
+Error «2026-11-3»
+Newline «↵»
+```
+
+#### Malformed URL
+
+Occurs when `http://` or `https://` is followed immediately by a space, a tab, a line terminator, or
+end of input. The error is reported as `malformed-url` and spans the scheme and `://`, which become
+one `Error` token. To recover, swallow them and continue with the character after `://`.
+
+```oval example
+website https://santosformayor.example
+```
+
+```tokens
+Word «website»
+Whitespace «␣»
+Url «https://santosformayor.example»
+Newline «↵»
+```
+
+```oval counter-example
+website https://
+```
+
+```tokens
+Word «website»
+Whitespace «␣»
+Error «https://»
+Newline «↵»
+```
+
+#### Inconsistent Dedent
+
+Occurs when a line with tokens is indented less than the enclosing block and equal to no enclosing
+level (Section 2.4). The error is reported as `inconsistent-dedent` and spans the line's leading
+spaces, which remain a `Whitespace` token. To recover, emit `Dedent` tokens down to the nearest
+enclosing level, treat the line as at that level, and continue.
+
+```oval example
+ballot @city "City of Ashford"
+  section "Offices"
+    contest @mayor "Mayor" single
+  measure @prop-a "Proposition A"
+```
+
+The last line returns to the section's level, so it lexes as:
+
+```tokens
+Dedent
+Whitespace «␣␣»
+Word «measure»
+Whitespace «␣»
+Punctuator «@»
+Word «prop-a»
+Whitespace «␣»
+String «"Proposition A"»
+Newline «↵»
+Dedent
+Dedent
+```
+
+```oval counter-example
+ballot @city "City of Ashford"
+  section "Offices"
+    contest @mayor "Mayor" single
+   measure @prop-a "Proposition A"
+```
+
+Three spaces match no enclosing level. The nearest enclosing level is the section's, so the line is
+treated as if indented two spaces and lexes as:
+
+```tokens
+Dedent
+Whitespace «␣␣␣»
+Word «measure»
+Whitespace «␣»
+Punctuator «@»
+Word «prop-a»
+Whitespace «␣»
+String «"Proposition A"»
+Newline «↵»
+Dedent
+Dedent
+```
+
+### 3.2. Validation Errors
+
 A well-formed document is **valid** if it satisfies every rule marked _error_ below. Rules marked
-_warning_ do not affect validity but a validator must report them. Rule identifiers are stable;
-tools report them by identifier.
+_warning_ do not affect validity but a validator must report them.
 
 Where a rule corresponds to a constraint in `DATA_MODEL.md`, the constraint is cited.
 
-### V1 Identifiers — error
+#### V1 Identifiers — error
 
 Every `Identifier` used as a reference must be declared exactly once somewhere in the document.
 Every `Identifier` must be declared at most once. The namespace is shared across all entity kinds: a
@@ -973,51 +1236,51 @@ entry names a candidate. (C1, C13)
 When a name is declared more than once, the first declaration in source order is the one references
 resolve to, and each later declaration is the error.
 
-### V2 Required guide fields — error
+#### V2 Required guide fields — error
 
 `guide`, `election`, and `date` must each be present at the document level. (A repeated field is
 already a syntax error under Section 2.6.)
 
-### V3 Member blocks only on declarations — error
+#### V3 Member blocks only on declarations — error
 
 A `MemberBlock` may follow a `Member` only when that member is an inline declaration (has a
 `String`). A reference followed by an indented block is an error.
 
-### V4 Candidate fields in the right place — error
+#### V4 Candidate fields in the right place — error
 
 In block-form campaigns, `designation` and `party` are not permitted at the campaign level. In
 one-line campaigns whose member is a reference (not a declaration), `designation` and `party` are
 not permitted at all, since the candidate is declared elsewhere.
 
-### V5 Recommendation shape — error
+#### V5 Recommendation shape — error
 
 Within a `RecommendBlock`, `oppose` appears at most once. No candidate appears more than once across
 all `support` lines and the `oppose` line. (C5)
 
-### V6 Recommendation references are campaigns in this contest — error
+#### V6 Recommendation references are campaigns in this contest — error
 
 Every reference in `support` or `oppose` must resolve (Section 4) to a campaign of the enclosing
 contest. (C4)
 
-### V7 One campaign per candidate per contest — error
+#### V7 One campaign per candidate per contest — error
 
 Within one contest, no candidate may be a member of more than one campaign. (C11)
 
-### V8 No duplicate members — error
+#### V8 No duplicate members — error
 
 Within one campaign, no candidate appears twice. (C2)
 
-### V9 Contest kind arguments — error
+#### V9 Contest kind arguments — error
 
 `multiple` requires an `Integer` of at least 2. `max` on `ranked`, if present, is at least 1. A
 `retention` contest has exactly one campaign. (C9)
 
-### V10 Every question has a recommendation — error
+#### V10 Every question has a recommendation — error
 
 Every `Contest` has exactly one `ContestRecommend`. Every `Measure` has exactly one
 `MeasureRecommend`. (C7)
 
-### V11 Kind-specific recommendation rules — error / warning
+#### V11 Kind-specific recommendation rules — error / warning
 
 | Kind                    | Rule                                                                                   | Severity |
 | ----------------------- | -------------------------------------------------------------------------------------- | -------- |
@@ -1028,7 +1291,7 @@ Every `Contest` has exactly one `ContestRecommend`. Every `Measure` has exactly 
 
 (C8)
 
-### V12 Ballot structure — error
+#### V12 Ballot structure — error
 
 Every `Ballot` has at least one item, not counting fields. Every `Section` has at least one item.
 Every `Contest` whose kind is not `retention` has at least one campaign; a retention contest's
@@ -1036,41 +1299,41 @@ campaign count is governed by V9. Every `Campaign` has at least one member: the 
 block-form campaign hold only fields, and without a member there is no head of ticket for a
 recommendation to name. (C2, C17)
 
-### V13 Dates — error
+#### V13 Dates — error
 
 `date` exists on the proleptic Gregorian calendar: the month is 1 through 12 and the day is within
 that month's length, with 29 February allowed only in leap years.
 
-### V14 Unused declarations — warning
+#### V14 Unused declarations — warning
 
 A top-level `Party` declaration that no `party` line refers to. A top-level `Candidate` declaration
 that is a member of no campaign. Inline declarations are used by the construct that declares them
 and are never reported. (C10, C20)
 
-### V15 Duplicate party names — warning
+#### V15 Duplicate party names — warning
 
 Two `Party` declarations with the same `name` and different identifiers. (C20)
 
-### V16 Suspicious ballots — warning
+#### V16 Suspicious ballots — warning
 
 Sibling ballots, or root ballots, with identical titles. (C18)
 
-### V17 Head-of-ticket references — warning
+#### V17 Head-of-ticket references — warning
 
 A `support` or `oppose` reference that names a member of a multi-member campaign other than its
 first member. The reference resolves correctly; the warning is stylistic. (C12)
 
-### V18 Paired yes/no statements — warning
+#### V18 Paired yes/no statements — warning
 
 A `Measure` with exactly one of `if_yes` and `if_no`. (C14)
 
-### V19 Supported version — error
+#### V19 Supported version — error
 
 The document must have a version marker (Section 2.5), and it must name a major version the
 implementation supports. An implementation that reports V19 may report nothing else, since the rest
 of the document may not have the meaning this specification gives it.
 
-### V20 Markdown profile — error
+#### V20 Markdown profile — error
 
 Every `MarkdownBlock` value, parsed as described in Section 2.2 (Markdown Profile), contains only
 the constructs the profile permits, and every link destination is an absolute `http` or `https` URL.
@@ -1117,7 +1380,7 @@ other renderer.
 Three conformance levels are defined so that tools can claim what they implement.
 
 - **Lexer-conformant.** Tokenizes any input per Sections 2.2–2.4, producing tokens that cover every
-  byte, and reports lexical errors with the ranges and recovery of Section 2.2. Sufficient for
+  byte, and reports lexical errors with the ranges and recovery of Section 3.1. Sufficient for
   syntax highlighting.
 - **Parser-conformant.** Accepts exactly the well-formed documents of Section 2 and produces a tree
   from which Section 4 can be applied. Sufficient for a formatter.

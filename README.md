@@ -39,6 +39,9 @@ spec-md is stricter than GitHub's Markdown. The conventions that matter when edi
   alternatives as list items, so the site renders them with every name linked. Oval examples are
   fenced as `oval example`.
 - Words containing underscores go in backticks.
+- A `tokens` fence lists a token sequence, one token per line as the kind followed by its text
+  between `«` and `»`, or the kind alone for a zero-length token. The build renders each into a
+  strip of boxes, with `Error` tokens tinted.
 - Prettier rewraps paragraphs at 100 columns, so a grammar production must fit on one line; the
   build fails on one that wraps.
 
