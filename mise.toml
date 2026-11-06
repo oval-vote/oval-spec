@@ -4,3 +4,15 @@ idiomatic_version_file_enable_tools = ["node"]
 [tools]
 "pipx:check-jsonschema" = "0.39.0"
 uv = "0.13"
+
+[tasks.ci]
+description = "Validate repo"
+depends = ["ci:*"]
+
+[tasks."ci:site"]
+description = "Validate Website"
+run = "npm ci && npm test"
+
+[tasks."ci:schema"]
+description = "Validate Schema"
+run = "check-jsonschema --check-metaschema schema/guide.schema.json && check-jsonschema --schemafile schema/guide.schema.json examples/franklin.oval.json"
