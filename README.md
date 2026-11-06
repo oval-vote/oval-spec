@@ -25,6 +25,7 @@ npm ci
 npm test         # builds the site and runs every check; CI runs this
 npm run check    # formatting, grammar extract, and spelling
 npm run build    # writes dist/
+npm run dev      # builds, serves dist/ at http://localhost:8000, and reloads the browser on change
 npm run grammar  # regenerates grammar.txt from Appendix A
 npm run format   # wraps prose at 100 columns with Prettier
 npm run spell    # spell-checks the Markdown files and LICENSE with cspell
