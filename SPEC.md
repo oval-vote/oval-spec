@@ -290,7 +290,8 @@ MarkdownBlock :: BodyLine+
 BodyLine :: "a line indented more than the opening line, or a blank line between two such lines"
 
 The _opening line_ is any line whose last token, ignoring whitespace and comments, is `:`. After its
-`Newline`, the lexer looks ahead past any blank lines to the next line with content. If that line is
+`Newline`, the lexer looks ahead past any lines that are empty or contain only spaces to the next
+line with other content; a `#` is content here, since inside a body it is text. If that line is
 indented strictly more than the opening line, the body begins there and extends over every following
 line that is either blank or indented strictly more than the opening line, ending after the
 terminator of the last such line with content. If the next content line is not indented more, there
@@ -307,8 +308,10 @@ and no other token is recognized. The body is Markdown; the Markdown profile bel
 constructs it may use, and validation (`markdown-profile`) enforces it. The lexer does not inspect
 the body.
 
-The token's _value_ is derived from its text by removing the common leading indentation of its
-non-blank lines from every line. Parsers expose the value; the token itself keeps the raw text.
+The token's _value_ is derived from its text: the common leading indentation of its non-blank lines
+is removed from every line, lines containing only spaces become empty, every line terminator becomes
+U+000A, and the final terminator is dropped. Parsers expose the value; the token itself keeps the
+raw text.
 
 A `:` followed on its line by anything other than whitespace, a comment, or a line terminator does
 not open a body; whether that is valid, and whether the word before the `:` is one that takes a
@@ -436,14 +439,15 @@ considered one token (Section 2.2).
 
 ### 2.5. Document
 
-Document : VersionMarker? GuideField* Declaration* Ballot+
+Document : VersionMarker? GuideField* Declaration* Ballot*
 
 VersionMarker : `oval` Integer Newline
 
 A document is a Guide (Section 2.8) written at indentation zero. It opens with the version marker,
-then the document's fields, then any top-level `Party` and `Candidate` declarations, then one or
-more root `Ballot`s. These four groups appear in that order; within the fields and within the
-declarations, order is free.
+then the document's fields, then any top-level `Party` and `Candidate` declarations, then the root
+`Ballot`s. These four groups appear in that order; within the fields and within the declarations,
+order is free. The grammar leaves the ballots optional for the same reason it leaves `guide`
+optional: a document with none is invalid (`empty-document`), not malformed.
 
 There is no closing token. The document ends at end of input.
 
@@ -658,8 +662,8 @@ ballot @franklin "State of Franklin"
 
 A ballot is a node in the guide's tree. Its items are in ballot order. A `Ballot` item is a
 **sub-ballot**: a narrower electorate whose voters also see everything in the enclosing ballot.
-Sub-ballots nest without limit. Document-level ballots are **root ballots**; a document has at least
-one.
+Sub-ballots nest without limit. Document-level ballots are **root ballots**; a valid document has at
+least one (`empty-document`).
 
 A ballot with no block is a syntax error (`missing-block`), and a ballot whose block has no item is
 invalid (`empty-ballot`).
@@ -1187,8 +1191,8 @@ ballot @city "City of Ashford"
 The last line returns to the section's level, so it lexes as:
 
 ```tokens
-Dedent
 Whitespace «␣␣»
+Dedent
 Word «measure»
 Whitespace «␣»
 Punctuator «@»
@@ -1211,8 +1215,8 @@ Three spaces match no enclosing level. The nearest enclosing level is the sectio
 treated as if indented two spaces and lexes as:
 
 ```tokens
-Dedent
 Whitespace «␣␣␣»
+Dedent
 Word «measure»
 Whitespace «␣»
 Punctuator «@»
@@ -1254,9 +1258,10 @@ line is an unexpected token; and a line or entry that ends where the grammar req
 the missing-token errors. The remaining errors are entries that fit the grammar but not the
 document's structure. A parser never needs a fallback error.
 
-An `Error` token from the lexer is accepted wherever the grammar requires a token, as if it were the
-token required, and contributes no value, so its lexical error is its only diagnostic. Where the
-grammar requires nothing, an `Error` token is unexpected like any other.
+The parser skips `Error` tokens from the lexer as it skips comments and whitespace, so a lexical
+error is the only diagnostic for the text it covers. On a line that contains an `Error` token, no
+missing-token error is reported, since what is missing may be the text the lexer rejected. A line
+whose only token the parser does not skip is its terminator is treated as blank.
 
 #### Unexpected Token
 
@@ -1278,11 +1283,12 @@ The `date` field is kept with no value; the string is discarded.
 
 #### Missing Identifier
 
-Occurs when an identifier is required and the next token is not one: after `ballot`, `contest`,
-`measure`, `party`, or `candidate`; after `party` used as a field; and after `support` or `oppose`,
-which require at least one. It also occurs when `@` is not followed by a `Word`. The error is
-reported as `missing-identifier` and is zero-length at the position where the identifier would
-begin. To recover, assume the missing token and continue with the rest of the line.
+Occurs when an identifier is required and the line ends, or a `String` follows, where it should
+begin: after `ballot`, `contest`, `measure`, `party`, or `candidate`; after `party` used as a field;
+and after `support` or `oppose`, which require at least one. It also occurs when `@` is not followed
+by a `Word`. Any other token in that position is an unexpected token. The error is reported as
+`missing-identifier` and is zero-length at the position where the identifier would begin. To
+recover, assume the missing token and continue with the rest of the line.
 
 ```oval example
 party @dem "Democratic"
@@ -1449,9 +1455,9 @@ campaign incumbent incumbent @bsantos "Beatriz Santos"
 #### Misplaced Entry
 
 Occurs when a document-level entry appears after a group that must follow it has begun: a version
-marker after any other entry, or a guide field or a top-level `party` or `candidate` declaration
-after the first root ballot. The error is reported as `misplaced-entry` and spans the entry. To
-recover, set the entry aside.
+marker after any other entry, a guide field after a top-level `party` or `candidate` declaration, or
+a guide field or a top-level declaration after the first root ballot. The error is reported as
+`misplaced-entry` and spans the entry. To recover, set the entry aside.
 
 ```oval example
 oval 1
@@ -1540,6 +1546,31 @@ oval 1
 
 guide "Ashford Voter Guide"
 election "November 3, 2026 General Election"
+```
+
+#### Empty Document
+
+Occurs when the document has no root `Ballot`. The error is reported as `empty-document` and is
+zero-length at the end of the input.
+
+```oval example
+oval 1
+
+guide "Ashford Voter Guide"
+election "November 3, 2026 General Election"
+date 2026-11-03
+
+ballot @city "City of Ashford"
+  measure @prop-a "Proposition A"
+    recommend yes
+```
+
+```oval counter-example
+oval 1
+
+guide "Ashford Voter Guide"
+election "November 3, 2026 General Election"
+date 2026-11-03
 ```
 
 #### Invalid Date
@@ -1932,8 +1963,9 @@ contest @board "School Board" ranked max 2
 #### Retention Stance
 
 Occurs when a `retention` contest's recommendation is anything other than one `support` line with
-one reference, or one `oppose` line with one reference. A retention question has a single answer,
-yes or no. The error is reported as `retention-stance` and spans the line that breaks the shape.
+one reference, one `oppose` line with one reference, or `recommend no-position`. A retention
+question has a single answer, yes or no. The error is reported as `retention-stance` and spans the
+line that breaks the shape.
 
 ```oval example
 contest @judge-ueda "Retain Judge Ueda?" retention
@@ -1950,7 +1982,7 @@ contest @judge-ueda "Retain Judge Ueda?" retention
     oppose @ueda
 ```
 
-#### Markdown Profile
+#### Unsupported Markdown
 
 Occurs when a `MarkdownBlock` value, parsed as described in Section 2.2 (Markdown Profile), contains
 a construct outside the profile, or a link whose destination is not an absolute `http` or `https`
@@ -2184,8 +2216,8 @@ syntax tree or the diagnostics.
 - **Campaigns are referred to by index** within their contest's `campaigns` array, since they have
   no identifiers.
 - **Strict producers, tolerant consumers.** The schema forbids unknown keys so that a producer's
-  mistakes are caught. Consumers should ignore keys they do not recognize, because a later minor
-  version of this specification may add fields. Removing or renaming a field is a major version.
+  mistakes are caught. Consumers should ignore keys they do not recognize, because a later edition
+  of this specification may add fields. Removing or renaming a field takes a new major version.
 
 ### 5.2. Derived fields
 
@@ -2376,7 +2408,7 @@ BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespac
 
 **Syntactic productions**
 
-Document : VersionMarker? GuideField* Declaration* Ballot+
+Document : VersionMarker? GuideField* Declaration* Ballot*
 
 VersionMarker : `oval` Integer Newline
 

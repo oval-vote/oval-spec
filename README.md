@@ -11,10 +11,7 @@ The specification for [Oval](https://oval.vote), a plain-text file format for vo
 - `examples/franklin.oval.json` is the compiled output of that guide, which validates against the
   schema.
 
-The reference implementation of oval can be found [here](https://github.com/oval-vote/oval).
-
-The reference implementation is [oval-vote/oval](https://github.com/oval-vote/oval). The
-specification and the implementation share one version number; see Section 2.5.
+The reference implementation is [oval-vote/oval](https://github.com/oval-vote/oval).
 
 ## License
 
