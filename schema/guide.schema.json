@@ -373,7 +373,15 @@
     "counts": {
       "description": "Derived. Totals across the whole document.",
       "type": "object",
-      "required": ["ballots", "sections", "contests", "measures", "campaigns", "candidates", "parties"],
+      "required": [
+        "ballots",
+        "sections",
+        "contests",
+        "measures",
+        "campaigns",
+        "candidates",
+        "parties"
+      ],
       "additionalProperties": false,
       "properties": {
         "ballots": { "type": "integer", "minimum": 1 },

@@ -1,5 +1,13 @@
 import { execFileSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { REPOSITORY, writeEdition } from "./edition.mjs";
 
 rmSync("dist", { recursive: true, force: true });
@@ -11,7 +19,9 @@ const editions = existsSync("published")
   ? readdirSync("published", { withFileTypes: true })
       .filter((entry) => entry.isDirectory() && /^v\d+\.\d+\.\d+$/.test(entry.name))
       .map((entry) => {
-        const { version, date } = JSON.parse(readFileSync(`published/${entry.name}/edition.json`, "utf8"));
+        const { version, date } = JSON.parse(
+          readFileSync(`published/${entry.name}/edition.json`, "utf8"),
+        );
         return { tag: entry.name, version, date, parts: version.split(".").map(Number) };
       })
       .sort((a, b) => b.parts[0] - a.parts[0] || b.parts[1] - a.parts[1] || b.parts[2] - a.parts[2])
@@ -32,13 +42,20 @@ for (const edition of editions) {
 
 let draftDate;
 try {
-  draftDate = execFileSync("git", ["show", "-s", "--format=%cs", "HEAD"], { encoding: "utf8" }).trim();
+  draftDate = execFileSync("git", ["show", "-s", "--format=%cs", "HEAD"], {
+    encoding: "utf8",
+  }).trim();
 } catch {
   draftDate = new Date().toISOString().slice(0, 10);
 }
 
 const longDate = (iso) =>
-  new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  });
 
 const rows = [
   `<tr><td><em>Working draft</em></td><td>${longDate(draftDate)}</td><td><a href="./draft/">Draft</a></td><td></td></tr>`,

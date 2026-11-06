@@ -8,12 +8,15 @@
   "homepage": "https://spec.oval.vote",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "grammar": "node scripts/grammar.mjs",
     "grammar:check": "node scripts/grammar.mjs --check",
     "release": "node scripts/release.mjs",
     "draft": "node scripts/draft.mjs"
   },
   "devDependencies": {
+    "prettier": "3.9.10",
     "spec-md": "3.1.0"
   }
 }

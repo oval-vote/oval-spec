@@ -5,9 +5,9 @@ every push, and one frozen edition per release. An edition is rendered once, on 
 committed under `published/`, so it never changes after release, whatever later happens to the
 renderer or the source.
 
-The specification, the reference implementation, and the editor extension share one version
-number. The first two components are the language version that documents declare with
-`oval MAJOR.MINOR`; a patch release is for editorial changes that leave the language alone.
+The specification, the reference implementation, and the editor extension share one version number.
+The first two components are the language version that documents declare with `oval MAJOR.MINOR`; a
+patch release is for editorial changes that leave the language alone.
 
 ## Steps
 
@@ -20,8 +20,8 @@ number. The first two components are the language version that documents declare
    date. It refuses to overwrite an existing edition.
 3. Commit everything as `Release <version>`, open a pull request, and merge it. The tagged commit
    therefore names its own edition, and the edition's "edit on GitHub" links point at the tag.
-4. Tag the merge commit and create the GitHub release, whose page the versions index links to as
-   the release notes:
+4. Tag the merge commit and create the GitHub release, whose page the versions index links to as the
+   release notes:
 
    ```sh
    git checkout main && git pull
@@ -29,8 +29,8 @@ number. The first two components are the language version that documents declare
    ```
 
 5. Resume the draft: on a new branch run `npm run draft`, which puts `_Working Draft_` back under
-   the title, then commit it as `Resume the working draft` and merge. Until this merges, the
-   draft on the site shows the edition line; `npm run release` refuses to run while it is missing.
+   the title, then commit it as `Resume the working draft` and merge. Until this merges, the draft
+   on the site shows the edition line; `npm run release` refuses to run while it is missing.
 
 The merge in step 3 deploys the site. The new edition is at `spec.oval.vote/v<version>/`, and the
 language version alias `spec.oval.vote/<MAJOR.MINOR>/` moves to it, so links to the alias always

@@ -4,64 +4,141 @@ _Working Draft_
 
 **Introduction**
 
-This document contains the specification for oval, a plain-text file format for voting guides.
-
-This specification is developed at [oval-vote/oval-spec](https://github.com/oval-vote/oval-spec).
-The working draft, rendered from the `main` branch, is at
-[spec.oval.vote/draft](https://spec.oval.vote/draft/). Released editions are frozen when they are
-released and are listed at [spec.oval.vote](https://spec.oval.vote), each under its version number.
-
-The format's name, extension, and media type are given in Section 1.2.
+This is the specification for Oval, a plain-text file format for voting guides. It defines the Oval
+language: its characters, tokens, and grammar, and the meaning of each construct. For the tools that
+implement the language it also spells out what a conforming implementation does at each stage: how a
+lexer tokenizes source text and recovers from a malformed token, which documents a parser accepts
+and which it rejects, which rules a validator checks and whether each is an error or a warning, the
+style a formatter rewrites a document in, and the JSON a compiler produces from a valid document,
+with every reference resolved.
 
 ## 1. Overview
 
-An Oval document describes one voting guide: the election it covers, the ballot questions a voter
-will face, organized the way the ballot is, and the guide author's recommendation on each question
-with the reasoning behind it.
+A voting guide tells its readers what is on their ballot and how its author recommends they vote on
+each question, with optional reasoning behind each recommendation. Newspapers, advocacy groups,
+political clubs, and individuals publish guides before every election, almost always as prose: a web
+page, a PDF, a thread of posts. Written that way, the structure of a guide exists only in the
+author's head and the reader's eye. Publishing the same guide in more than one place means
+reformatting it by hand each time. Ballots are harder to model than they look, because election
+rules and their regional variations are many. Recommendations are harder still: a recommendation can
+be nuanced, can rank candidates, can endorse some and warn against others, or can decline to take a
+side. Nothing can check that every contest received a recommendation, that the candidate mentioned
+in two places is the same person, or that the guide still matches the ballot after a candidate
+withdraws. And nothing can turn one guide into a web page, a printed card, and a side-by-side
+comparison with another guide without someone retyping it.
 
-The format is designed to be written by hand by people who are not programmers, to read sensibly
-as plain text, and to be strict enough that a validator can catch an unfinished or self-
-contradictory guide before it is published.
+An Oval document is one voting guide. It states the election, the ballot in the order the voter will
+see it, each contest and measure on that ballot, the candidates and parties, and the author's
+position on each question. Structure is expressed with keywords and indentation. Reasoning is
+written as Markdown under the question it concerns.
 
-Oval has three layers, specified in order in this document:
+```oval
+oval 0.1
 
-- **The language** (Section 2): what sequences of characters form a well-formed document. A
-  document that satisfies Section 2 is *well-formed*. A parser must accept every well-formed
-  document and reject every other one.
-- **Validation** (Section 3): rules a well-formed document must also satisfy to be *valid*, such
-  as "every reference resolves" and "a vote-for-one contest does not recommend a ranking." Some
-  rules are errors and some are warnings. A validator reports both.
-- **Resolution** (Section 4): how the parsed document becomes the data model's entities, in
-  particular how a campaign is identified by one of its candidates.
+guide "Ashford Voter Guide"
+election "November 3, 2026 General Election"
+date 2026-11-03
+
+ballot @city "City of Ashford"
+
+  contest @mayor "Mayor" single
+    campaign incumbent @bsantos "Beatriz Santos"
+      designation "Mayor of Ashford"
+    campaign @cfox "Carl Fox"
+      designation "Small Business Owner"
+    recommend
+      support @bsantos
+      justification:
+        Santos has kept her 2022 promises on housing and transit. Fox has no plan beyond
+        cutting a budget he has not read.
+
+  measure @prop-a "Proposition A"
+    subtitle "Library parcel tax renewal"
+    recommend yes
+      justification:
+        Renews an existing tax at the same rate. Every branch stays open seven days a week.
+```
+
+Oval is designed around five goals, in this order:
+
+- **Readable and Writable by Hand.** An author with no programming background writes a complete
+  guide in a text editor and reads it back as plain text. There is nothing to learn beyond a few
+  keywords and indentation, and nothing to install to write a guide.
+- **Reads in ballot order.** The file is organized the way the ballot is, in ballots, sections,
+  contests, and measures, so an author can write it with the sample ballot open beside them and a
+  reader can follow it the same way.
+- **Explanations are first class.** Notes and justifications are Markdown blocks, not fields to be
+  filled in. A guide is its reasoning, and the format gives the reasoning the same standing as the
+  recommendation it supports.
+- **Checkable.** A validator catches an unfinished or self-contradictory guide before it is
+  published: a contest with no recommendation, a reference to a candidate who is not in that
+  contest, a ranking recommended in a vote-for-one contest.
+- **Exportable.** A valid guide compiles to a JSON value with a fixed schema and every reference
+  resolved, so a renderer can produce a web page, a PDF, or a static site from it without parsing
+  Oval itself.
+
+Oval does not describe how a guide is presented. Rendering a guide as a web page, a printed card, or
+a comparison table is the job of tools built on the compiled output, and a document carries no
+layout, styling, or presentation instructions. Oval also does not model the election beyond what the
+guide's author chooses to say about it: there are no results, polling places, districts, or
+registration rules, and no attempt to be a source of record for who is running.
+
+**What this document defines**
+
+This document defines Oval in four parts, each building on the one before it:
+
+- **The language.** The lexical and syntactic grammar: which sequences of characters form a
+  document. A document the grammar accepts is _well-formed_. A parser accepts every well-formed
+  document, rejects every other one, and reports where the grammar was broken.
+- **Validation.** The rules a well-formed document must also satisfy, such as that every reference
+  names something declared and that a vote-for-one contest does not recommend a ranking. Each rule
+  says what it checks and whether breaking it is an error or a warning. A well-formed document with
+  no errors is _valid_. A validator reports every error and every warning.
+- **Formatting.** The canonical style a formatter writes a document in. Formatting never changes
+  what a document means.
+- **Canonical output.** The JSON value a valid document compiles to: the guide with every reference
+  resolved and with the fields any renderer would otherwise recompute, in a shape fixed by a
+  published schema. Two implementations compile the same document to the same output.
+
+The appendices collect the complete grammar and the list of keywords.
+
+This document does not define the interface of any tool. The names of commands, the wording and
+layout of diagnostics, and how an editor presents them belong to the tools. It does not interpret
+Markdown; notes and justifications pass through to the output unchanged, and the dialect a renderer
+accepts is between the renderer and the author. And it does not say how guides are published,
+distributed, or kept current once written.
+
+Every document begins with a version marker naming the version of the language it is written in, so
+that a tool knows what it is reading before it reads anything else, and a document outlives the
+tools that wrote it. The marker is described in Section 2.5.
 
 ### 1.1. Notation
 
-Grammar productions use the notation of the GraphQL specification. A syntactic production,
-written `Name : Rule`, matches tokens; a lexical production, written `Name :: Rule`, matches
-characters. Alternatives are listed one per line. `X?` is optional, `X*` is zero or more, and `X+`
-is one or more. Literal text is in `backticks`, and prose that stands in for a rule is in double
-quotes. `one of` introduces alternatives that are each a single token, and `but not` excludes
-alternatives. Production names are UpperCamelCase, and on the website every name links to its
-definition.
+Grammar productions use the notation of the GraphQL specification. A syntactic production, written
+`Name : Rule`, matches tokens; a lexical production, written `Name :: Rule`, matches characters.
+Alternatives are listed one per line. `X?` is optional, `X*` is zero or more, and `X+` is one or
+more. Literal text is in `backticks`, and prose that stands in for a rule is in double quotes.
+`one of` introduces alternatives that are each a single token, and `but not` excludes alternatives.
+Production names are UpperCamelCase, and on the website every name links to its definition.
 
 The complete grammar is collected in Appendix A.
 
 ### 1.2. Identity
 
-| Property | Value |
-|---|---|
-| Name | Oval |
-| Home | https://oval.vote |
-| Source | https://github.com/oval-vote |
-| File extension | `.oval` |
-| Media type | `text/prs.oval` |
-| Encoding | UTF-8 (Section 2.1) |
+| Property       | Value                                                       |
+| -------------- | ----------------------------------------------------------- |
+| Name           | Oval                                                        |
+| Home           | https://oval.vote                                           |
+| Source         | https://github.com/oval-vote                                |
+| File extension | `.oval`                                                     |
+| Media type     | `text/prs.oval`                                             |
+| Encoding       | UTF-8 (Section 2.1)                                         |
 | Version marker | `oval 0.1`, the first entry of every document (Section 2.5) |
 
-**File extension.** Oval documents use the extension `.oval`. No other format is known to use it;
-it is unclaimed in GitHub Linguist and in file-extension registries. The name Oval is shared with
-the Open Vulnerability and Assessment Language, an unrelated XML security standard that does not
-use this extension.
+**File extension.** Oval documents use the extension `.oval`. No other format is known to use it; it
+is unclaimed in GitHub Linguist and in file-extension registries. The name Oval is shared with the
+Open Vulnerability and Assessment Language, an unrelated XML security standard that does not use
+this extension.
 
 **Media type.** The media type is `text/prs.oval`, registered (or to be registered) in the IANA
 personal tree under RFC 6838 Section 3.3. The `text/` top-level type is used because an Oval
@@ -76,12 +153,11 @@ is no structured-syntax suffix: Oval is not JSON, XML, or any other registered s
 
 The unregistered form `text/x-oval` is not used. RFC 6648 deprecates the `x-` prefix.
 
-**Version marker.** Every document begins with `oval` followed by the version of this
-specification it is written to, as `MAJOR.MINOR` (Section 2.5). A tool therefore knows which
-language a document is written in before it reads anything else, and a document can outlive the
-tools that wrote it: a future implementation declines a document it does not understand (V19)
-instead of misreading it. The marker names a version of this specification, never a version of a
-tool.
+**Version marker.** Every document begins with `oval` followed by the version of this specification
+it is written to, as `MAJOR.MINOR` (Section 2.5). A tool therefore knows which language a document
+is written in before it reads anything else, and a document can outlive the tools that wrote it: a
+future implementation declines a document it does not understand (V19) instead of misreading it. The
+marker names a version of this specification, never a version of a tool.
 
 ---
 
@@ -94,9 +170,10 @@ present, is ignored.
 
 SourceCharacter :: "any Unicode code point except U+0000"
 
-A document is divided into *lines* by line terminators.
+A document is divided into _lines_ by line terminators.
 
 LineTerminator ::
+
 - "New Line (U+000A)"
 - "Carriage Return (U+000D)" "New Line (U+000A)"
 - "Carriage Return (U+000D)"
@@ -109,6 +186,7 @@ not by brackets or closing keywords. Section 2.4 describes how indentation becom
 ### 2.2. Lexical Tokens
 
 Token ::
+
 - Keyword
 - Identifier
 - String
@@ -119,8 +197,8 @@ Token ::
 - Punctuator
 - MarkdownBlock
 
-Tokens are separated by whitespace within a line as necessary. Whitespace is never required
-between a `Punctuator` and an adjacent token.
+Tokens are separated by whitespace within a line as necessary. Whitespace is never required between
+a `Punctuator` and an adjacent token.
 
 Every byte of the source belongs to exactly one token, counting the ignored tokens of Section 2.3
 and an `Error` token for any text that cannot be tokenized. The layout tokens of Section 2.4 are
@@ -130,6 +208,7 @@ source exactly, which is what allows a formatter to round-trip a document.
 #### Keyword
 
 Keyword :: one of
+
 - `oval` `guide` `election` `date` `note`
 - `party` `candidate` `ballot` `section` `contest` `campaign` `measure`
 - `abbreviation` `website` `designation` `eligibility`
@@ -140,8 +219,8 @@ Keyword :: one of
 - `description` `if_yes` `if_no` `placement` `fiscal_impact` `supporters` `opponents`
 - `none`
 
-Keywords are reserved. They are matched case-sensitively and are all lowercase. A word that is not
-a keyword and does not begin with `@` is a lexical error; there are no free identifiers in Oval.
+Keywords are reserved. They are matched case-sensitively and are all lowercase. A word that is not a
+keyword and does not begin with `@` is a lexical error; there are no free identifiers in Oval.
 
 #### Identifier
 
@@ -152,6 +231,7 @@ IdentifierName :: IdentifierStart IdentifierPart*
 IdentifierStart :: Letter
 
 IdentifierPart ::
+
 - Letter
 - Digit
 - `-`
@@ -172,18 +252,18 @@ identical.
 String :: `"` StringCharacter* `"`
 
 StringCharacter ::
+
 - SourceCharacter but not `"` or `\` or LineTerminator
 - EscapedCharacter
 
 EscapedCharacter :: one of `\"` `\\`
 
-A string is single-line display text. Only two escapes exist: `\"` for a double quote and `\\`
-for a backslash. Strings carry no formatting; all multi-line or formatted text is a
-`MarkdownBlock`.
+A string is single-line display text. Only two escapes exist: `\"` for a double quote and `\\` for a
+backslash. Strings carry no formatting; all multi-line or formatted text is a `MarkdownBlock`.
 
-A line terminator or end of input before the closing quote is an *unterminated string*: the text
+A line terminator or end of input before the closing quote is an _unterminated string_: the text
 from the opening quote to the end of the line becomes an `Error` token and lexing resumes on the
-next line. A backslash followed by anything other than `"` or `\\` is an *invalid escape*: the
+next line. A backslash followed by anything other than `"` or `\\` is an _invalid escape_: the
 string is still a `String` token, and the error is reported on the two characters of the escape.
 
 #### Integer
@@ -193,7 +273,7 @@ Integer :: Digit+
 An unsigned whole number. Leading zeros are permitted and insignificant. There is no sign.
 
 A word that begins with a Digit but is neither an `Integer`, a `Date`, nor a `Version` (such as
-`12abc`, `3_000`, `2026-11-5`, or `01.1`) is a *malformed number* and becomes one `Error` token.
+`12abc`, `3_000`, `2026-11-5`, or `01.1`) is a _malformed number_ and becomes one `Error` token.
 Within a word that begins with a Digit, `.` is a word character, so `1.x` is one malformed number
 rather than an `Integer` followed by an unexpected character.
 
@@ -201,8 +281,8 @@ rather than an `Integer` followed by an unexpected character.
 
 Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
 
-An ISO 8601 calendar date. The lexer and parser match the shape only. Whether the date exists on
-the calendar is a validation rule (V13), so `2026-02-30` is a well-formed `Date` and an invalid
+An ISO 8601 calendar date. The lexer and parser match the shape only. Whether the date exists on the
+calendar is a validation rule (V13), so `2026-02-30` is a well-formed `Date` and an invalid
 document.
 
 #### Version
@@ -210,13 +290,14 @@ document.
 Version :: VersionPart `.` VersionPart
 
 VersionPart ::
+
 - `0`
 - NonZeroDigit Digit*
 
 NonZeroDigit :: /[1-9]/
 
-A version of this specification, `MAJOR.MINOR`. Neither part has leading zeros, so every version
-has exactly one spelling. The only place a `Version` appears is the version marker (Section 2.5).
+A version of this specification, `MAJOR.MINOR`. Neither part has leading zeros, so every version has
+exactly one spelling. The only place a `Version` appears is the version marker (Section 2.5).
 
 #### Url
 
@@ -226,10 +307,10 @@ UrlScheme :: one of `https` `http`
 
 UrlCharacter :: SourceCharacter but not one of "Space (U+0020)", "Tab (U+0009)", LineTerminator
 
-A URL is written bare, without quotes. It extends to the next space, tab, or line terminator, so
-`#` and `"` inside a URL are part of it. Only `http` and `https` are permitted. A scheme and `://`
-with nothing after them is a *malformed URL* and becomes one `Error` token. Any other word followed
-by `://` is lexed as an unknown word, a `:`, and whatever follows.
+A URL is written bare, without quotes. It extends to the next space, tab, or line terminator, so `#`
+and `"` inside a URL are part of it. Only `http` and `https` are permitted. A scheme and `://` with
+nothing after them is a _malformed URL_ and becomes one `Error` token. Any other word followed by
+`://` is lexed as an unknown word, a `:`, and whatever follows.
 
 #### Punctuator
 
@@ -244,18 +325,18 @@ A `MarkdownBlock` is the body of a Markdown field: the lines following a line th
 
 MarkdownBlock :: BodyLine+
 
-BodyLine :: "a line indented strictly more than the opening line, or a blank line between two such lines"
+BodyLine :: "a line indented more than the opening line, or a blank line between two such lines"
 
-The *opening line* is any line whose last two tokens, ignoring whitespace and comments, are a
+The _opening line_ is any line whose last two tokens, ignoring whitespace and comments, are a
 `Keyword` and `:`. After its `Newline`, the lexer looks ahead past any blank lines to the next line
 with content. If that line is indented strictly more than the opening line, the body begins there
 and extends over every following line that is either blank or indented strictly more than the
 opening line, ending after the terminator of the last such line with content. If the next content
 line is not indented more, there is no body and no token.
 
-The token covers the body's raw text, from the first content line's leading spaces through the
-last content line's terminator (or end of input). Blank lines before and after the body are not part
-of it; they lex as `BlankLine`. Blank lines inside the body are part of it. Body lines do not
+The token covers the body's raw text, from the first content line's leading spaces through the last
+content line's terminator (or end of input). Blank lines before and after the body are not part of
+it; they lex as `BlankLine`. Blank lines inside the body are part of it. Body lines do not
 participate in layout (Section 2.4): they produce no `Newline`, `Indent`, or `Dedent`, and the
 indentation stack is unchanged after the body.
 
@@ -263,12 +344,12 @@ The body is **opaque**. Inside it `#` is not a comment, `@`, `"`, and tabs are o
 and no other token is recognized. The body is interpreted as Markdown by renderers; this
 specification does not define which Markdown constructs are allowed.
 
-The token's *value* is derived from its text by removing the common leading indentation of its
+The token's _value_ is derived from its text by removing the common leading indentation of its
 non-blank lines from every line. Parsers expose the value; the token itself keeps the raw text.
 
-A `Keyword` followed by `:` and then anything other than whitespace, a comment, or a line
-terminator does not open a body; whether that is valid is the parser's concern. A Markdown field
-whose opening line has no body is a syntax error, not a lexical one; omit the field instead.
+A `Keyword` followed by `:` and then anything other than whitespace, a comment, or a line terminator
+does not open a body; whether that is valid is the parser's concern. A Markdown field whose opening
+line has no body is a syntax error, not a lexical one; omit the field instead.
 
 #### Lexical Errors
 
@@ -276,21 +357,22 @@ Every lexical error has a range. Where the text cannot be tokenized at all it be
 token spanned exactly by one error; where a token is recognizable but flawed, the token keeps its
 kind and the error points at the flaw within it. Lexing always continues.
 
-| Error | Range | Token | Recovery |
-|---|---|---|---|
-| Illegal tab | the run of tabs | `Error` | continue after the tabs |
-| Malformed identifier | `@` and the word after it | `Error` | continue after the word |
-| Unknown word | the word | `Error` | continue after the word |
-| Unexpected character | one character | `Error` | continue after it |
-| Unterminated string | opening quote to end of line | `Error` | resume at the line terminator |
-| Invalid escape | the backslash and the next character | `String` | continue inside the string |
-| Malformed number | the word | `Error` | continue after the word |
-| Malformed URL | scheme and `://` | `Error` | continue after `://` |
-| Inconsistent dedent | the line's leading spaces | `Whitespace` | treat the line as at the nearest enclosing level (Section 2.4) |
+| Error                | Range                                | Token        | Recovery                                                       |
+| -------------------- | ------------------------------------ | ------------ | -------------------------------------------------------------- |
+| Illegal tab          | the run of tabs                      | `Error`      | continue after the tabs                                        |
+| Malformed identifier | `@` and the word after it            | `Error`      | continue after the word                                        |
+| Unknown word         | the word                             | `Error`      | continue after the word                                        |
+| Unexpected character | one character                        | `Error`      | continue after it                                              |
+| Unterminated string  | opening quote to end of line         | `Error`      | resume at the line terminator                                  |
+| Invalid escape       | the backslash and the next character | `String`     | continue inside the string                                     |
+| Malformed number     | the word                             | `Error`      | continue after the word                                        |
+| Malformed URL        | scheme and `://`                     | `Error`      | continue after `://`                                           |
+| Inconsistent dedent  | the line's leading spaces            | `Whitespace` | treat the line as at the nearest enclosing level (Section 2.4) |
 
 ### 2.3. Ignored Tokens
 
 Ignored ::
+
 - Comment
 - Whitespace
 - BlankLine
@@ -303,10 +385,10 @@ Whitespace :: "Space (U+0020)"+
 
 BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespace and Comment"
 
-A `#` begins a comment that runs to the end of the line, **except inside a `MarkdownBlock` body or
-a `String`**, where it is an ordinary character. A comment may follow tokens on the same line.
+A `#` begins a comment that runs to the end of the line, **except inside a `MarkdownBlock` body or a
+`String`**, where it is an ordinary character. A comment may follow tokens on the same line.
 
-A line containing nothing but whitespace and a comment is a *blank line*. Its terminator lexes as
+A line containing nothing but whitespace and a comment is a _blank line_. Its terminator lexes as
 `BlankLine` rather than `Newline`, so blank lines are ignored by the parser wherever they appear.
 Inside a `MarkdownBlock` body blank lines are part of the body and separate paragraphs.
 
@@ -319,6 +401,7 @@ Oval's block structure is expressed by indentation. The lexer converts indentati
 synthetic tokens, following the approach of Python.
 
 LayoutToken ::
+
 - Newline
 - Indent
 - Dedent
@@ -333,24 +416,23 @@ All three are **zero-length** except `Newline` at a line terminator. `Indent` an
 positioned at the first token of the line that triggers them, after that line's leading
 `Whitespace`. Because they have no text, the lossless property of Section 2.2 holds.
 
-A line's *indentation* is the number of U+0020 characters before its first other character. A tab
-is an "other character" (and an error, Section 2.3). The lexer maintains a stack of indentation
-levels, initially `[0]`.
+A line's _indentation_ is the number of U+0020 characters before its first other character. A tab is
+an "other character" (and an error, Section 2.3). The lexer maintains a stack of indentation levels,
+initially `[0]`.
 
 - At the end of each line with tokens, emit `Newline` covering the line terminator. A blank line
   emits `BlankLine` instead (Section 2.3) and does not affect the stack.
-- Before the first token of a line with tokens, compare its indentation `n` to the top of the
-  stack:
+- Before the first token of a line with tokens, compare its indentation `n` to the top of the stack:
   - If `n` is greater, push `n` and emit `Indent`.
   - If `n` is less, pop the stack and emit one `Dedent` per level popped until the top is less than
-    or equal to `n`. If the top is then not equal to `n`, report an *inconsistent dedent* over the
+    or equal to `n`. If the top is then not equal to `n`, report an _inconsistent dedent_ over the
     line's leading spaces and treat the line as being at the top's level.
   - If `n` is equal, emit nothing.
-- At end of input, if the last line has tokens and no terminator, emit a zero-length `Newline`.
-  Then emit `Dedent` for every level above 0.
+- At end of input, if the last line has tokens and no terminator, emit a zero-length `Newline`. Then
+  emit `Dedent` for every level above 0.
 
-So a block always closes with the sequence `Newline Dedent`, whether it is followed by another
-line or by end of input, and the grammar's productions can end in `Newline` without an end-of-input
+So a block always closes with the sequence `Newline Dedent`, whether it is followed by another line
+or by end of input, and the grammar's productions can end in `Newline` without an end-of-input
 special case.
 
 The amount of indentation is not fixed; any increase opens a block. A formatter emits two spaces per
@@ -373,24 +455,24 @@ declarations, order is free.
 
 There is no closing token. The document ends at end of input.
 
-**Version marker.** `oval 0.1` names the version of this specification the document is written
-to. It is the first entry of every document; only blank lines and comments (Section 2.3) may
-precede it. The grammar leaves it optional for the same reason it leaves `guide` optional (V2): a
-parser can then build a tree for a document that lacks it and say exactly what is missing, without
-knowing which versions exist. A document without a marker, or with one naming a version the
-implementation does not support, is invalid (V19).
+**Version marker.** `oval 0.1` names the version of this specification the document is written to.
+It is the first entry of every document; only blank lines and comments (Section 2.3) may precede it.
+The grammar leaves it optional for the same reason it leaves `guide` optional (V2): a parser can
+then build a tree for a document that lacks it and say exactly what is missing, without knowing
+which versions exist. A document without a marker, or with one naming a version the implementation
+does not support, is invalid (V19).
 
 Versions are `MAJOR.MINOR` and are this specification's own version numbers. From major version 1
 onward, a minor version only adds constructs, so an implementation of `M.N` accepts every document
 declaring `M.0` through `M.N`. Major version 0 is the draft series: each `0.N` is a distinct
 language, and an implementation accepts exactly the one it implements. Once more than one version
-exists, this section will record which version introduced each construct, and Section 3 will gain
-a rule that a document uses only constructs of its declared version.
+exists, this section will record which version introduced each construct, and Section 3 will gain a
+rule that a document uses only constructs of its declared version.
 
 ### 2.6. Fields and Blocks
 
-Most constructs in Oval are a *header line* followed by an optional *block* of indented lines. The
-block holds *fields* and *children*.
+Most constructs in Oval are a _header line_ followed by an optional _block_ of indented lines. The
+block holds _fields_ and _children_.
 
 Block : Indent BlockEntry+ Dedent
 
@@ -404,10 +486,12 @@ MarkdownBody : `:` Newline MarkdownBlock
 A value is a `String`, `Integer`, `Date`, `Url`, `Identifier`, or string list:
 
 StringList :
+
 - `none`
 - Strings
 
 Strings :
+
 - String
 - Strings `,` String
 
@@ -415,11 +499,11 @@ Each construct's section lists the fields it accepts and the value each takes.
 
 Within one block, **each field keyword may appear at most once**, and **fields may appear in any
 order**. A repeated field is a syntax error. **Children** (campaigns within a contest, items within
-a ballot) are ordered, and their order is significant. Fields and children may be interleaved in
-the source; Section 7 describes the order a formatter puts them in.
+a ballot) are ordered, and their order is significant. Fields and children may be interleaved in the
+source; Section 7 describes the order a formatter puts them in.
 
-A `StringList` written as `none` denotes an empty list. This is distinct from omitting the
-field. Section 2.16 explains where the distinction matters.
+A `StringList` written as `none` denotes an empty list. This is distinct from omitting the field.
+Section 2.16 explains where the distinction matters.
 
 A **flag** is a keyword on a header line whose presence means `true`:
 
@@ -431,14 +515,14 @@ There is no `false` spelling; omit the flag.
 
 ### 2.7. Declarations and References
 
-Entities (Party, Candidate, Ballot, Contest, Measure) are *declared* exactly once each and may be
-*referred to* any number of times.
+Entities (Party, Candidate, Ballot, Contest, Measure) are _declared_ exactly once each and may be
+_referred to_ any number of times.
 
 Reference : Identifier
 
-A declaration is an `Identifier` **followed immediately by a `String`**, after the entity's
-keyword; the string is the entity's name or title. A reference is a bare `Identifier`. This is the
-single rule for every entity kind:
+A declaration is an `Identifier` **followed immediately by a `String`**, after the entity's keyword;
+the string is the entity's name or title. A reference is a bare `Identifier`. This is the single
+rule for every entity kind:
 
 ```
 candidate @jlee "Jordan Lee"     — declares @jlee
@@ -448,11 +532,11 @@ party @dem "Democratic"          — declares @dem
 party @dem                       — refers to @dem
 ```
 
-Some entities may be declared **inline** at their first use instead of at the top of the
-document. Where a reference is permitted, the grammar says whether a declaration is also permitted
-in that position. An inline declaration is the same declaration as a top-level one; it is simply
-written elsewhere. Validation rule V1 requires every identifier to be declared exactly once in the
-document, wherever that is.
+Some entities may be declared **inline** at their first use instead of at the top of the document.
+Where a reference is permitted, the grammar says whether a declaration is also permitted in that
+position. An inline declaration is the same declaration as a top-level one; it is simply written
+elsewhere. Validation rule V1 requires every identifier to be declared exactly once in the document,
+wherever that is.
 
 Identifiers share one namespace across all entity kinds (V1).
 
@@ -461,6 +545,7 @@ Identifiers share one namespace across all entity kinds (V1).
 The Guide is the document. Its fields are written at indentation zero.
 
 GuideField :
+
 - `guide` String Newline
 - `election` String Newline
 - `date` Date Newline
@@ -481,6 +566,7 @@ note:
 precedes them belongs to the document (Section 2.5), not to the guide.
 
 Declaration :
+
 - Party
 - Candidate
 
@@ -494,6 +580,7 @@ Party : `party` Identifier String Newline PartyBlock?
 PartyBlock : Indent PartyField+ Dedent
 
 PartyField :
+
 - `abbreviation` String Newline
 - `website` Url Newline
 - `note` MarkdownBody
@@ -512,11 +599,13 @@ Candidate : `candidate` Identifier String Newline CandidateBlock?
 CandidateBlock : Indent CandidateField+ Dedent
 
 CandidateField :
+
 - `designation` String Newline
 - PartyRef
 - `note` MarkdownBody
 
 PartyRef :
+
 - `party` Identifier Newline
 - `party` Identifier String Newline PartyBlock?
 
@@ -541,14 +630,17 @@ Ballot : `ballot` Identifier String Newline BallotBlock
 BallotBlock : Indent BallotEntry+ Dedent
 
 BallotEntry :
+
 - BallotField
 - BallotItem
 
 BallotField :
+
 - `eligibility` String Newline
 - `note` MarkdownBody
 
 BallotItem :
+
 - Section
 - Contest
 - Measure
@@ -565,8 +657,8 @@ ballot @franklin "State of Franklin"
 
 A ballot is a node in the guide's tree. Its items are in ballot order. A `Ballot` item is a
 **sub-ballot**: a narrower electorate whose voters also see everything in the enclosing ballot.
-Sub-ballots nest without limit. Document-level ballots are **root ballots**; a document has at
-least one.
+Sub-ballots nest without limit. Document-level ballots are **root ballots**; a document has at least
+one.
 
 A ballot with no items is a syntax error (the `BallotBlock` requires at least one line and V12
 requires an item).
@@ -578,17 +670,19 @@ Section : `section` String Newline SectionBlock
 SectionBlock : Indent SectionEntry+ Dedent
 
 SectionEntry :
+
 - SectionField
 - SectionItem
 
 SectionField : `note` MarkdownBody
 
 SectionItem :
+
 - Contest
 - Measure
 
-A section is a titled group of questions within a ballot, matching a heading on the printed
-ballot. It has no identifier and no eligibility meaning. Sections do not nest and do not contain
+A section is a titled group of questions within a ballot, matching a heading on the printed ballot.
+It has no identifier and no eligibility meaning. Sections do not nest and do not contain
 sub-ballots.
 
 ### 2.13. Contest
@@ -596,6 +690,7 @@ sub-ballots.
 Contest : `contest` Identifier String ContestKind Newline ContestBlock
 
 ContestKind :
+
 - `single`
 - `multiple` Integer
 - `ranked` RankedMax?
@@ -606,11 +701,13 @@ RankedMax : `max` Integer
 ContestBlock : Indent ContestEntry+ Dedent
 
 ContestEntry :
+
 - ContestField
 - Campaign
 - ContestRecommend
 
 ContestField :
+
 - `subtitle` String Newline
 - `tabulation` String Newline
 - `note` MarkdownBody
@@ -634,28 +731,30 @@ contest @mayor "Mayor" ranked max 5
 
 The contest kind is written on the header line after the title:
 
-| Kind | Meaning | Argument |
-|---|---|---|
-| `single` | Vote for one. | none |
-| `multiple` *n* | Vote for up to *n*; *n* elected. | `Integer`, required, at least 2 (V9) |
-| `ranked` | Rank choices. | optional `max` `Integer`: how many may be ranked |
-| `retention` | Yes or no on one officeholder. | none |
+| Kind           | Meaning                          | Argument                                         |
+| -------------- | -------------------------------- | ------------------------------------------------ |
+| `single`       | Vote for one.                    | none                                             |
+| `multiple` _n_ | Vote for up to _n_; _n_ elected. | `Integer`, required, at least 2 (V9)             |
+| `ranked`       | Rank choices.                    | optional `max` `Integer`: how many may be ranked |
+| `retention`    | Yes or no on one officeholder.   | none                                             |
 
 A contest's block holds its `Campaign`s in ballot order and its `ContestRecommend`s. The grammar
-accepts any number of each; validation requires at least one campaign except in a retention
-contest (V12) and exactly one recommendation (V10), so that a half-written contest still parses
-and the validator can name what is missing. Campaigns and the recommendation may be interleaved
-with fields in the source; a formatter orders them fields, campaigns, recommendation (Section 7).
+accepts any number of each; validation requires at least one campaign except in a retention contest
+(V12) and exactly one recommendation (V10), so that a half-written contest still parses and the
+validator can name what is missing. Campaigns and the recommendation may be interleaved with fields
+in the source; a formatter orders them fields, campaigns, recommendation (Section 7).
 
 ### 2.14. Campaign
 
 Campaign :
+
 - `campaign` Flags Member Newline CampaignBlock?
 - `campaign` Flags Newline CampaignBlock
 
 CampaignBlock : Indent CampaignEntry+ Dedent
 
 CampaignEntry :
+
 - Member Newline MemberBlock?
 - CampaignField
 
@@ -666,13 +765,14 @@ MemberRole : `as` String
 MemberBlock : Indent CandidateField+ Dedent
 
 CampaignField :
+
 - `website` Url Newline
 - `note` MarkdownBody
 - `designation` String Newline
 - PartyRef
 
-A campaign is one or more candidates running together for the contest. It has no identifier; it
-is identified by its candidates (Section 4).
+A campaign is one or more candidates running together for the contest. It has no identifier; it is
+identified by its candidates (Section 4).
 
 A `Member` is a candidate reference (`@id`) or an inline candidate declaration (`@id "Name"`),
 optionally followed by `as String`, the member's role on the ticket ("Governor", "Vice President").
@@ -691,13 +791,13 @@ campaign incumbent @bsantos "Beatriz Santos"
     Two-term incumbent.
 ```
 
-In this form the block holds campaign fields *and*, when the member is an inline declaration, the
+In this form the block holds campaign fields _and_, when the member is an inline declaration, the
 candidate's `designation` and `party`. The block's `note` is the **campaign's** note. A candidate
-note for a one-line campaign requires the block form below. This is a deliberate simplification:
-for a single-candidate campaign the reader sees both notes together regardless.
+note for a one-line campaign requires the block form below. This is a deliberate simplification: for
+a single-candidate campaign the reader sees both notes together regardless.
 
-**Block form.** Members are lines in the block, each optionally followed by its own
-`MemberBlock` of candidate fields.
+**Block form.** Members are lines in the block, each optionally followed by its own `MemberBlock` of
+candidate fields.
 
 ```oval example
 campaign incumbent
@@ -719,18 +819,20 @@ Member order is significant: the first member is the head of the ticket. In bloc
 member.
 
 **Flags.** `incumbent` means this campaign holds the office being contested; `withdrawn` means the
-campaign has ended but remains on the ballot. Both default to false. They may appear in either
-order and each at most once.
+campaign has ended but remains on the ballot. Both default to false. They may appear in either order
+and each at most once.
 
 ### 2.15. Contest Recommendation
 
 ContestRecommend :
+
 - `recommend` Newline RecommendBlock
 - `recommend` `no-position` Newline RecommendNoteBlock?
 
 RecommendBlock : Indent RecommendEntry+ Dedent
 
 RecommendEntry :
+
 - Support
 - Oppose
 - RecommendField
@@ -740,6 +842,7 @@ Support : `support` Reference+ Newline
 Oppose : `oppose` Reference+ Newline
 
 RecommendField :
+
 - `justification` MarkdownBody
 - `note` MarkdownBody
 
@@ -760,7 +863,7 @@ Each `support` line is one **tier**. Several `support` lines are several tiers, 
 to least preferred. References within one line are interchangeable. `oppose` lists campaigns the
 author advises against; it is unordered and may appear at most once (V5).
 
-Every reference in `support` or `oppose` names a campaign *by one of its candidates* (Section 4).
+Every reference in `support` or `oppose` names a campaign _by one of its candidates_ (Section 4).
 
 `recommend no-position` is an explicit statement that the author takes no position. It may carry
 `justification` and `note` but no `support` or `oppose`. A `recommend` block with neither `support`
@@ -773,10 +876,12 @@ Measure : `measure` Identifier String Newline MeasureBlock
 MeasureBlock : Indent MeasureEntry+ Dedent
 
 MeasureEntry :
+
 - MeasureField
 - MeasureRecommend
 
 MeasureField :
+
 - `subtitle` String Newline
 - `description` MarkdownBody
 - `if_yes` MarkdownBody
@@ -809,8 +914,8 @@ measure @prop1 "Proposition 1"
 ```
 
 `description`, `if_yes`, and `if_no` are official ballot text copied verbatim. `supporters` and
-`opponents` have three states: **absent** (not researched), **`none`** (researched; none known),
-and a list. A measure contains exactly one `MeasureRecommend` (V10).
+`opponents` have three states: **absent** (not researched), **`none`** (researched; none known), and
+a list. A measure contains exactly one `MeasureRecommend` (V10).
 
 ### 2.17. Measure Recommendation
 
@@ -828,8 +933,8 @@ recommend no-position
 
 ## 3. Validation
 
-A well-formed document is **valid** if it satisfies every rule marked *error* below. Rules marked
-*warning* do not affect validity but a validator must report them. Rule identifiers are stable;
+A well-formed document is **valid** if it satisfies every rule marked _error_ below. Rules marked
+_warning_ do not affect validity but a validator must report them. Rule identifiers are stable;
 tools report them by identifier.
 
 Where a rule corresponds to a constraint in `DATA_MODEL.md`, the constraint is cited.
@@ -837,13 +942,13 @@ Where a rule corresponds to a constraint in `DATA_MODEL.md`, the constraint is c
 ### V1 Identifiers — error
 
 Every `Identifier` used as a reference must be declared exactly once somewhere in the document.
-Every `Identifier` must be declared at most once. The namespace is shared across all entity kinds:
-a candidate and a measure may not share an identifier. A reference must resolve to a declaration
-of the kind its position expects: a `party` line names a party, and a member or a `support` or
-`oppose` entry names a candidate. (C1, C13)
+Every `Identifier` must be declared at most once. The namespace is shared across all entity kinds: a
+candidate and a measure may not share an identifier. A reference must resolve to a declaration of
+the kind its position expects: a `party` line names a party, and a member or a `support` or `oppose`
+entry names a candidate. (C1, C13)
 
-When a name is declared more than once, the first declaration in source order is the one
-references resolve to, and each later declaration is the error.
+When a name is declared more than once, the first declaration in source order is the one references
+resolve to, and each later declaration is the error.
 
 ### V2 Required guide fields — error
 
@@ -863,8 +968,8 @@ not permitted at all, since the candidate is declared elsewhere.
 
 ### V5 Recommendation shape — error
 
-Within a `RecommendBlock`, `oppose` appears at most once. No candidate appears more than once
-across all `support` lines and the `oppose` line. (C5)
+Within a `RecommendBlock`, `oppose` appears at most once. No candidate appears more than once across
+all `support` lines and the `oppose` line. (C5)
 
 ### V6 Recommendation references are campaigns in this contest — error
 
@@ -891,12 +996,12 @@ Every `Contest` has exactly one `ContestRecommend`. Every `Measure` has exactly 
 
 ### V11 Kind-specific recommendation rules — error / warning
 
-| Kind | Rule | Severity |
-|---|---|---|
-| `single` | At most one `support` line. | error |
-| `ranked` with `max` *n* | Total candidates across all `support` lines is at most *n*. | error |
-| `retention` | At most one `support` line with one reference, or one reference in `oppose`, not both. | error |
-| `multiple` *n* | Total candidates across all `support` lines exceeds *n*. | warning |
+| Kind                    | Rule                                                                                   | Severity |
+| ----------------------- | -------------------------------------------------------------------------------------- | -------- |
+| `single`                | At most one `support` line.                                                            | error    |
+| `ranked` with `max` _n_ | Total candidates across all `support` lines is at most _n_.                            | error    |
+| `retention`             | At most one `support` line with one reference, or one reference in `oppose`, not both. | error    |
+| `multiple` _n_          | Total candidates across all `support` lines exceeds _n_.                               | warning  |
 
 (C8)
 
@@ -938,11 +1043,11 @@ A `Measure` with exactly one of `if_yes` and `if_no`. (C14)
 
 ### V19 Supported version — error
 
-The document must have a version marker (Section 2.5), and it must name a version the
-implementation supports: the same major version as the implementation's, and a minor version no
-greater than it, or for major version 0 exactly the implementation's version. An implementation
-that reports V19 may report nothing else, since the rest of the document may not have the meaning
-this specification gives it.
+The document must have a version marker (Section 2.5), and it must name a version the implementation
+supports: the same major version as the implementation's, and a minor version no greater than it, or
+for major version 0 exactly the implementation's version. An implementation that reports V19 may
+report nothing else, since the rest of the document may not have the meaning this specification
+gives it.
 
 ---
 
@@ -959,9 +1064,9 @@ inline party declaration also sets the enclosing candidate's `party`.
 
 ### 4.2. Campaign identity
 
-Campaigns have no identifiers. A reference in a `ContestRecommend` is a **candidate** identifier.
-It resolves to the one campaign, among the enclosing contest's campaigns, whose members include
-that candidate. V7 guarantees there is at most one; V6 requires there to be exactly one.
+Campaigns have no identifiers. A reference in a `ContestRecommend` is a **candidate** identifier. It
+resolves to the one campaign, among the enclosing contest's campaigns, whose members include that
+candidate. V7 guarantees there is at most one; V6 requires there to be exactly one.
 
 ### 4.3. Fields
 
@@ -981,22 +1086,22 @@ responsibility.
 
 Three conformance levels are defined so that tools can claim what they implement.
 
-- **Lexer-conformant.** Tokenizes any input per Sections 2.2–2.4, producing tokens that cover
-  every byte, and reports lexical errors with the ranges and recovery of Section 2.2. Sufficient
-  for syntax highlighting.
-- **Parser-conformant.** Accepts exactly the well-formed documents of Section 2 and produces a
-  tree from which Section 4 can be applied. Sufficient for a formatter.
-- **Validator-conformant.** Parser-conformant, and reports every Section 3 rule with its
-  identifier and severity.
-- **Compiler-conformant.** Validator-conformant, and for every valid document produces the
-  canonical output of Section 6, byte-for-byte equal to the reference implementation's after JSON
+- **Lexer-conformant.** Tokenizes any input per Sections 2.2–2.4, producing tokens that cover every
+  byte, and reports lexical errors with the ranges and recovery of Section 2.2. Sufficient for
+  syntax highlighting.
+- **Parser-conformant.** Accepts exactly the well-formed documents of Section 2 and produces a tree
+  from which Section 4 can be applied. Sufficient for a formatter.
+- **Validator-conformant.** Parser-conformant, and reports every Section 3 rule with its identifier
+  and severity.
+- **Compiler-conformant.** Validator-conformant, and for every valid document produces the canonical
+  output of Section 6, byte-for-byte equal to the reference implementation's after JSON
   normalization (key order and whitespace disregarded).
 
 A conformance claim names the specification versions it covers (Section 2.5). An implementation
 reports documents outside them under V19 rather than attempting to process them.
 
-A conformance test suite (not yet written) will consist of well-formed and malformed documents,
-and for each well-formed document the expected validation report and canonical resolved output.
+A conformance test suite (not yet written) will consist of well-formed and malformed documents, and
+for each well-formed document the expected validation report and canonical resolved output.
 
 ---
 
@@ -1004,15 +1109,14 @@ and for each well-formed document the expected validation report and canonical r
 
 Compiling a valid document produces one JSON value: the data model with every reference resolved,
 plus derived fields that any renderer would otherwise recompute. Its shape is fixed by
-`schema/guide.schema.json`, a JSON Schema (draft 2020-12), which is normative. This section
-explains the conventions the schema follows and defines the derived fields. The output is called
-*canonical* because two conformant implementations must produce the same value for the same
-document; it is a contract between implementations and consumers, not a document for people to
-read.
+`schema/guide.schema.json`, a JSON Schema (draft 2020-12), which is normative. This section explains
+the conventions the schema follows and defines the derived fields. The output is called _canonical_
+because two conformant implementations must produce the same value for the same document; it is a
+contract between implementations and consumers, not a document for people to read.
 
-The output is the semantic model, not the syntax tree. It carries no source positions, comments,
-or whitespace, so two parsers cannot disagree about it on formatting. Tools that need positions
-use the syntax tree or the diagnostics.
+The output is the semantic model, not the syntax tree. It carries no source positions, comments, or
+whitespace, so two parsers cannot disagree about it on formatting. Tools that need positions use the
+syntax tree or the diagnostics.
 
 ### 6.1. Conventions
 
@@ -1027,16 +1131,16 @@ use the syntax tree or the diagnostics.
 - **Absent fields are omitted.** An optional field the author did not write is not present; it is
   never `null`. `supporters` and `opponents` therefore have three states: omitted (not researched),
   `[]` (researched, none), or a list.
-- **Booleans are always present.** `incumbent`, `withdrawn`, and `no_position` are written even
-  when false.
+- **Booleans are always present.** `incumbent`, `withdrawn`, and `no_position` are written even when
+  false.
 - **The root echoes the version marker.** `oval` is the document's declared version as a string,
   `"0.1"`. The output conforms to that version's schema, or to a later minor version's, which only
   adds keys.
-- **Discriminated unions use `kind`.** Every item in a ballot or section has a `kind` of
-  `section`, `contest`, `measure`, or `ballot`, and root ballots carry `kind: "ballot"` too, so one
-  type describes a ballot anywhere. `method.kind` and `stance.position` discriminate the same way.
-- **Markdown is a string** with common indentation removed, terminators normalized to `\n`, and
-  no trailing terminator (the value of Section 2.2). Rendering it is the consumer's job.
+- **Discriminated unions use `kind`.** Every item in a ballot or section has a `kind` of `section`,
+  `contest`, `measure`, or `ballot`, and root ballots carry `kind: "ballot"` too, so one type
+  describes a ballot anywhere. `method.kind` and `stance.position` discriminate the same way.
+- **Markdown is a string** with common indentation removed, terminators normalized to `\n`, and no
+  trailing terminator (the value of Section 2.2). Rendering it is the consumer's job.
 - **Campaigns are referred to by index** within their contest's `campaigns` array, since they have
   no identifiers.
 - **Strict producers, tolerant consumers.** The schema forbids unknown keys so that a producer's
@@ -1047,20 +1151,20 @@ use the syntax tree or the diagnostics.
 
 Everything below is computed from the document; none of it can disagree with the source.
 
-| Field | On | Definition |
-|---|---|---|
-| `candidates` | party | Identifiers of every candidate whose party this is, in document order. |
-| `contests` | candidate | Identifiers of every contest in which the candidate is a campaign member, in ballot order. |
-| `path` | ballot | Identifiers of the enclosing ballots, outermost first, excluding the ballot itself. Empty for a root. |
-| `location` | contest, measure, question entry | `ballot`, the innermost enclosing ballot's identifier; `section`, the enclosing section's title if any; `path`, every enclosing ballot's identifier outermost first, ending with `ballot`. |
-| `index` | campaign | Position in the contest's `campaigns` array. |
-| `head` | campaign | Identifier of the first member: the head of the ticket, and the name recommendations use for this campaign. |
-| `label` | campaign | The members' names joined with `" / "`, head first. For a single candidate, their name. |
-| `party` | campaign | The party every member shares, when all members have the same party. Omitted otherwise, including when any member has none. |
-| `stance` | campaign | What the contest's recommendation says about this campaign: `support` with the zero-based `tier`, `oppose`, or `none`. In a `no_position` recommendation every campaign has `none`. |
-| `support_campaigns`, `oppose_campaigns` | contest recommendation | The written `support` tiers and `oppose` list resolved from candidate identifiers to campaign indices. |
-| `questions` | root | Every contest and measure in ballot order, each with `kind`, `id`, `title`, and `location`. A flat index for tables of contents and per-electorate views. |
-| `counts` | root | Totals of ballots (all, not only roots), sections, contests, measures, campaigns, candidates, and parties. |
+| Field                                   | On                               | Definition                                                                                                                                                                                 |
+| --------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `candidates`                            | party                            | Identifiers of every candidate whose party this is, in document order.                                                                                                                     |
+| `contests`                              | candidate                        | Identifiers of every contest in which the candidate is a campaign member, in ballot order.                                                                                                 |
+| `path`                                  | ballot                           | Identifiers of the enclosing ballots, outermost first, excluding the ballot itself. Empty for a root.                                                                                      |
+| `location`                              | contest, measure, question entry | `ballot`, the innermost enclosing ballot's identifier; `section`, the enclosing section's title if any; `path`, every enclosing ballot's identifier outermost first, ending with `ballot`. |
+| `index`                                 | campaign                         | Position in the contest's `campaigns` array.                                                                                                                                               |
+| `head`                                  | campaign                         | Identifier of the first member: the head of the ticket, and the name recommendations use for this campaign.                                                                                |
+| `label`                                 | campaign                         | The members' names joined with `" / "`, head first. For a single candidate, their name.                                                                                                    |
+| `party`                                 | campaign                         | The party every member shares, when all members have the same party. Omitted otherwise, including when any member has none.                                                                |
+| `stance`                                | campaign                         | What the contest's recommendation says about this campaign: `support` with the zero-based `tier`, `oppose`, or `none`. In a `no_position` recommendation every campaign has `none`.        |
+| `support_campaigns`, `oppose_campaigns` | contest recommendation           | The written `support` tiers and `oppose` list resolved from candidate identifiers to campaign indices.                                                                                     |
+| `questions`                             | root                             | Every contest and measure in ballot order, each with `kind`, `id`, `title`, and `location`. A flat index for tables of contents and per-electorate views.                                  |
+| `counts`                                | root                             | Totals of ballots (all, not only roots), sections, contests, measures, campaigns, candidates, and parties.                                                                                 |
 
 Resolution of candidate identifiers to campaigns follows Section 4.2. A valid document resolves
 every reference, so the derived fields are always complete.
@@ -1068,8 +1172,8 @@ every reference, so the derived fields are always complete.
 ### 6.3. Example
 
 `examples/franklin.oval.json` is the canonical output of `examples/franklin.oval`, the fictional
-full-scale guide: six root ballots, forty-four contests, twenty-eight measures. It is produced by the
-reference implementation (`oval compile --pretty`) and validates against the schema:
+full-scale guide: six root ballots, forty-four contests, twenty-eight measures. It is produced by
+the reference implementation (`oval compile --pretty`) and validates against the schema:
 
 ```sh
 check-jsonschema --schemafile schema/guide.schema.json examples/franklin.oval.json
@@ -1081,13 +1185,13 @@ The repository's `mise.toml` installs `check-jsonschema`.
 
 ## 7. Formatting
 
-A formatter rewrites a well-formed document into the canonical style below. Formatting never
-changes meaning: the formatted document has the same significant tokens, the same Markdown values,
-and compiles to the same canonical output (Section 6) as the original. Formatting is idempotent.
+A formatter rewrites a well-formed document into the canonical style below. Formatting never changes
+meaning: the formatted document has the same significant tokens, the same Markdown values, and
+compiles to the same canonical output (Section 6) as the original. Formatting is idempotent.
 
-A formatter refuses a document with lexical or syntax errors and reports them instead. Recovery
-from errors produces a tree whose shape the author did not intend, and reformatting around it
-could move text in surprising ways.
+A formatter refuses a document with lexical or syntax errors and reports them instead. Recovery from
+errors produces a tree whose shape the author did not intend, and reformatting around it could move
+text in surprising ways.
 
 ### 7.1. Whitespace
 
@@ -1095,9 +1199,9 @@ could move text in surprising ways.
 - Trailing spaces are removed from every line, except content lines inside a `MarkdownBlock`, where
   two trailing spaces are a hard line break in Markdown and are preserved. Whitespace-only lines
   inside a body become empty.
-- Every line is indented two spaces per enclosing block, whatever the source used. A
-  `MarkdownBlock` body is indented one level deeper than its keyword line; each body line keeps its
-  indentation beyond the body's common minimum, so lists and continuation lines keep their shape.
+- Every line is indented two spaces per enclosing block, whatever the source used. A `MarkdownBlock`
+  body is indented one level deeper than its keyword line; each body line keeps its indentation
+  beyond the body's common minimum, so lists and continuation lines keep their shape.
 - Tokens on a line are separated by one space. `:` and `,` attach to the token before them. A
   trailing comment is preceded by one space.
 
@@ -1106,34 +1210,34 @@ could move text in surprising ways.
 - Runs of blank lines collapse to one. Blank lines at the start of the document are removed. Blank
   lines inside a `MarkdownBlock` body are content and are kept exactly.
 - A single blank line stays where the author put it; a formatter never inserts one.
-- A comment line belongs to the next line with tokens: it is indented to that line's depth and
-  moves with that line when entries are reordered (Section 7.3). Blank lines between a comment and
-  the line it precedes move with it. Comments after the last line of the document are placed at
-  column zero.
+- A comment line belongs to the next line with tokens: it is indented to that line's depth and moves
+  with that line when entries are reordered (Section 7.3). Blank lines between a comment and the
+  line it precedes move with it. Comments after the last line of the document are placed at column
+  zero.
 
 This attachment rule is a formatting decision, not a parsing one. The parser attaches a comment to
-whichever node is open when the next significant token is consumed, which puts a comment just
-before an indented block in the parent and a comment just before a dedent in the inner block.
-Neither is where a reader would say the comment belongs, so the formatter corrects both.
+whichever node is open when the next significant token is consumed, which puts a comment just before
+an indented block in the parent and a comment just before a dedent in the inner block. Neither is
+where a reader would say the comment belongs, so the formatter corrects both.
 
 ### 7.3. Entry order
 
 Within a block, entries are grouped by kind in the order Appendix A lists the block's alternatives,
 and kept in source order within a group:
 
-| Block | Order |
-|---|---|
-| Document | version marker; fields; then declarations; then ballots |
-| Ballot | fields; then sections, contests, measures, and sub-ballots |
-| Section | fields; then contests and measures |
-| Contest | fields; campaigns; recommendations |
-| Campaign | members; then fields |
-| Recommendation | `support` tiers; `oppose`; then `justification` and `note` |
-| Measure | fields; recommendations |
-| Party, Candidate, Member, inline Party | fields only |
+| Block                                  | Order                                                      |
+| -------------------------------------- | ---------------------------------------------------------- |
+| Document                               | version marker; fields; then declarations; then ballots    |
+| Ballot                                 | fields; then sections, contests, measures, and sub-ballots |
+| Section                                | fields; then contests and measures                         |
+| Contest                                | fields; campaigns; recommendations                         |
+| Campaign                               | members; then fields                                       |
+| Recommendation                         | `support` tiers; `oppose`; then `justification` and `note` |
+| Measure                                | fields; recommendations                                    |
+| Party, Candidate, Member, inline Party | fields only                                                |
 
-Fields keep their source order relative to one another. Children that carry meaning in their
-order (campaigns, members, tiers, items) are never reordered relative to one another.
+Fields keep their source order relative to one another. Children that carry meaning in their order
+(campaigns, members, tiers, items) are never reordered relative to one another.
 
 Whether a formatter should instead place fields first in every block, or impose an order among
 fields, is undecided and is expected to become a configurable option rather than a rule here.
@@ -1143,19 +1247,21 @@ fields, is undecided and is expected to become a configurable option rather than
 ## A. Appendix: Grammar Summary
 
 Every production of Section 2, collected. Lexical productions match characters; syntactic
-productions match tokens. Layout tokens (`Newline`, `Indent`, `Dedent`) are produced as described
-in Section 2.4.
+productions match tokens. Layout tokens (`Newline`, `Indent`, `Dedent`) are produced as described in
+Section 2.4.
 
 **Lexical productions**
 
 SourceCharacter :: "any Unicode code point except U+0000"
 
 LineTerminator ::
+
 - "New Line (U+000A)"
 - "Carriage Return (U+000D)" "New Line (U+000A)"
 - "Carriage Return (U+000D)"
 
 Token ::
+
 - Keyword
 - Identifier
 - String
@@ -1167,11 +1273,13 @@ Token ::
 - MarkdownBlock
 
 Ignored ::
+
 - Comment
 - Whitespace
 - BlankLine
 
 LayoutToken ::
+
 - Newline
 - Indent
 - Dedent
@@ -1183,6 +1291,7 @@ Indent :: "an increase in indentation, at the start of a line"
 Dedent :: "a return to an enclosing indentation, at the start of a line or at the end of input"
 
 Keyword :: one of
+
 - `oval` `guide` `election` `date` `note`
 - `party` `candidate` `ballot` `section` `contest` `campaign` `measure`
 - `abbreviation` `website` `designation` `eligibility`
@@ -1200,6 +1309,7 @@ IdentifierName :: IdentifierStart IdentifierPart*
 IdentifierStart :: Letter
 
 IdentifierPart ::
+
 - Letter
 - Digit
 - `-`
@@ -1212,6 +1322,7 @@ Digit :: /[0-9]/
 String :: `"` StringCharacter* `"`
 
 StringCharacter ::
+
 - SourceCharacter but not `"` or `\` or LineTerminator
 - EscapedCharacter
 
@@ -1224,6 +1335,7 @@ Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
 Version :: VersionPart `.` VersionPart
 
 VersionPart ::
+
 - `0`
 - NonZeroDigit Digit*
 
@@ -1239,7 +1351,7 @@ Punctuator :: one of `:` `,`
 
 MarkdownBlock :: BodyLine+
 
-BodyLine :: "a line indented strictly more than the opening line, or a blank line between two such lines"
+BodyLine :: "a line indented more than the opening line, or a blank line between two such lines"
 
 Comment :: `#` CommentCharacter*
 
@@ -1256,22 +1368,26 @@ Document : VersionMarker? GuideField* Declaration* Ballot+
 VersionMarker : `oval` Version Newline
 
 GuideField :
+
 - `guide` String Newline
 - `election` String Newline
 - `date` Date Newline
 - `note` MarkdownBody
 
 Declaration :
+
 - Party
 - Candidate
 
 MarkdownBody : `:` Newline MarkdownBlock
 
 StringList :
+
 - `none`
 - Strings
 
 Strings :
+
 - String
 - Strings `,` String
 
@@ -1286,6 +1402,7 @@ Party : `party` Identifier String Newline PartyBlock?
 PartyBlock : Indent PartyField+ Dedent
 
 PartyField :
+
 - `abbreviation` String Newline
 - `website` Url Newline
 - `note` MarkdownBody
@@ -1295,11 +1412,13 @@ Candidate : `candidate` Identifier String Newline CandidateBlock?
 CandidateBlock : Indent CandidateField+ Dedent
 
 CandidateField :
+
 - `designation` String Newline
 - PartyRef
 - `note` MarkdownBody
 
 PartyRef :
+
 - `party` Identifier Newline
 - `party` Identifier String Newline PartyBlock?
 
@@ -1308,14 +1427,17 @@ Ballot : `ballot` Identifier String Newline BallotBlock
 BallotBlock : Indent BallotEntry+ Dedent
 
 BallotEntry :
+
 - BallotField
 - BallotItem
 
 BallotField :
+
 - `eligibility` String Newline
 - `note` MarkdownBody
 
 BallotItem :
+
 - Section
 - Contest
 - Measure
@@ -1326,18 +1448,21 @@ Section : `section` String Newline SectionBlock
 SectionBlock : Indent SectionEntry+ Dedent
 
 SectionEntry :
+
 - SectionField
 - SectionItem
 
 SectionField : `note` MarkdownBody
 
 SectionItem :
+
 - Contest
 - Measure
 
 Contest : `contest` Identifier String ContestKind Newline ContestBlock
 
 ContestKind :
+
 - `single`
 - `multiple` Integer
 - `ranked` RankedMax?
@@ -1348,22 +1473,26 @@ RankedMax : `max` Integer
 ContestBlock : Indent ContestEntry+ Dedent
 
 ContestEntry :
+
 - ContestField
 - Campaign
 - ContestRecommend
 
 ContestField :
+
 - `subtitle` String Newline
 - `tabulation` String Newline
 - `note` MarkdownBody
 
 Campaign :
+
 - `campaign` Flags Member Newline CampaignBlock?
 - `campaign` Flags Newline CampaignBlock
 
 CampaignBlock : Indent CampaignEntry+ Dedent
 
 CampaignEntry :
+
 - Member Newline MemberBlock?
 - CampaignField
 
@@ -1374,18 +1503,21 @@ MemberRole : `as` String
 MemberBlock : Indent CandidateField+ Dedent
 
 CampaignField :
+
 - `website` Url Newline
 - `note` MarkdownBody
 - `designation` String Newline
 - PartyRef
 
 ContestRecommend :
+
 - `recommend` Newline RecommendBlock
 - `recommend` `no-position` Newline RecommendNoteBlock?
 
 RecommendBlock : Indent RecommendEntry+ Dedent
 
 RecommendEntry :
+
 - Support
 - Oppose
 - RecommendField
@@ -1395,6 +1527,7 @@ Support : `support` Reference+ Newline
 Oppose : `oppose` Reference+ Newline
 
 RecommendField :
+
 - `justification` MarkdownBody
 - `note` MarkdownBody
 
@@ -1405,10 +1538,12 @@ Measure : `measure` Identifier String Newline MeasureBlock
 MeasureBlock : Indent MeasureEntry+ Dedent
 
 MeasureEntry :
+
 - MeasureField
 - MeasureRecommend
 
 MeasureField :
+
 - `subtitle` String Newline
 - `description` MarkdownBody
 - `if_yes` MarkdownBody
@@ -1428,16 +1563,16 @@ MeasurePosition : one of `yes` `no` `no-position`
 
 All keywords are reserved in every position.
 
-| Group | Keywords |
-|---|---|
-| Document | `oval` `guide` `election` `date` `note` |
-| Entities | `party` `candidate` `ballot` `section` `contest` `campaign` `measure` |
-| Party fields | `abbreviation` `website` |
-| Candidate fields | `designation` |
-| Ballot fields | `eligibility` |
-| Contest header | `single` `multiple` `ranked` `retention` `max` |
-| Contest fields | `subtitle` `tabulation` |
-| Campaign | `incumbent` `withdrawn` `as` |
-| Recommendation | `recommend` `support` `oppose` `justification` `yes` `no` `no-position` |
-| Measure fields | `description` `if_yes` `if_no` `placement` `tabulation` `fiscal_impact` `supporters` `opponents` |
-| Values | `none` |
+| Group            | Keywords                                                                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------ |
+| Document         | `oval` `guide` `election` `date` `note`                                                          |
+| Entities         | `party` `candidate` `ballot` `section` `contest` `campaign` `measure`                            |
+| Party fields     | `abbreviation` `website`                                                                         |
+| Candidate fields | `designation`                                                                                    |
+| Ballot fields    | `eligibility`                                                                                    |
+| Contest header   | `single` `multiple` `ranked` `retention` `max`                                                   |
+| Contest fields   | `subtitle` `tabulation`                                                                          |
+| Campaign         | `incumbent` `withdrawn` `as`                                                                     |
+| Recommendation   | `recommend` `support` `oppose` `justification` `yes` `no` `no-position`                          |
+| Measure fields   | `description` `if_yes` `if_no` `placement` `tabulation` `fiscal_impact` `supporters` `opponents` |
+| Values           | `none`                                                                                           |
