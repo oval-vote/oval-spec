@@ -4,7 +4,7 @@ The specification for [Oval](https://oval.vote), a plain-text file format for vo
 
 - `SPEC.md` is the specification. It is published at [spec.oval.vote](https://spec.oval.vote).
 - `grammar.txt` is Appendix A extracted verbatim, for tools that want only the grammar.
-- `schema/guide.schema.json` is the JSON Schema for compiled output (Section 6).
+- `schema/guide.schema.json` is the JSON Schema for compiled output (Section 5).
 - `examples/franklin.oval` is a full-scale fictional guide that exercises every construct, and
   `examples/franklin.oval.json` is its compiled output.
 
@@ -39,6 +39,9 @@ spec-md is stricter than GitHub's Markdown. The conventions that matter when edi
   alternatives as list items, so the site renders them with every name linked. Oval examples are
   fenced as `oval example`.
 - Words containing underscores go in backticks.
+- A `tokens` fence lists a token sequence, one token per line as the kind followed by its text
+  between `«` and `»`, or the kind alone for a zero-length token. The build renders each into a
+  strip of boxes, with `Error` tokens tinted.
 - Prettier rewraps paragraphs at 100 columns, so a grammar production must fit on one line; the
   build fails on one that wraps.
 

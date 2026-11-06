@@ -14,12 +14,10 @@ LineTerminator ::
 
 Token ::
 
-- Keyword
-- Identifier
+- Word
 - String
 - Integer
 - Date
-- Version
 - Url
 - Punctuator
 - MarkdownBlock
@@ -42,25 +40,9 @@ Indent :: "an increase in indentation, at the start of a line"
 
 Dedent :: "a return to an enclosing indentation, at the start of a line or at the end of input"
 
-Keyword :: one of
+Word :: Letter WordPart*
 
-- `oval` `guide` `election` `date` `note`
-- `party` `candidate` `ballot` `section` `contest` `campaign` `measure`
-- `abbreviation` `website` `designation` `eligibility`
-- `single` `multiple` `ranked` `retention` `max`
-- `subtitle` `tabulation`
-- `incumbent` `withdrawn` `as`
-- `recommend` `support` `oppose` `justification` `yes` `no` `no-position`
-- `description` `if_yes` `if_no` `placement` `fiscal_impact` `supporters` `opponents`
-- `none`
-
-Identifier :: `@` IdentifierName
-
-IdentifierName :: IdentifierStart IdentifierPart*
-
-IdentifierStart :: Letter
-
-IdentifierPart ::
+WordPart ::
 
 - Letter
 - Digit
@@ -84,22 +66,13 @@ Integer :: Digit+
 
 Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
 
-Version :: VersionPart `.` VersionPart
-
-VersionPart ::
-
-- `0`
-- NonZeroDigit Digit*
-
-NonZeroDigit :: /[1-9]/
-
 Url :: UrlScheme `://` UrlCharacter+
 
 UrlScheme :: one of `https` `http`
 
 UrlCharacter :: SourceCharacter but not one of "Space (U+0020)", "Tab (U+0009)", LineTerminator
 
-Punctuator :: one of `:` `,`
+Punctuator :: one of `@` `:` `,`
 
 MarkdownBlock :: BodyLine+
 
@@ -117,7 +90,7 @@ BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespac
 
 Document : VersionMarker? GuideField* Declaration* Ballot+
 
-VersionMarker : `oval` Version Newline
+VersionMarker : `oval` Integer Newline
 
 GuideField :
 
@@ -146,6 +119,8 @@ Strings :
 Flags : Flag*
 
 Flag : one of `incumbent` `withdrawn`
+
+Identifier : `@` Word
 
 Reference : Identifier
 

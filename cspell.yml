@@ -11,9 +11,18 @@ ignoreRegExpList:
   - /[a-z]{2,}'s/
   - /@[a-z0-9-]+/
 words:
+  - autolinks
+  - setext
+  - strikethrough
   - creativecommons
   - schemafile
   - sublicensable
   - waivable
+  - Eriksen
+  - Hana
+  - Hiro
   - Kwame
+  - Mika
+  - Nakamura
   - Okafor
+  - Ueda
