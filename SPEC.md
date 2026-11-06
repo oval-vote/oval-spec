@@ -113,9 +113,12 @@ Markdown; notes and justifications pass through to the output unchanged, and the
 accepts is between the renderer and the author. And it does not say how guides are published,
 distributed, or kept current once written.
 
-Every document begins with a version marker naming the version of the language it is written in, so
-that a tool knows what it is reading before it reads anything else, and a document outlives the
-tools that wrote it. The marker is described in Section 2.5.
+Every Oval document begins with a version marker naming the major version of the language it was
+written in, so a tool knows how to read it before reading anything else. Within a major version,
+each edition of this specification only adds to the language; nothing is removed or changed. A tool
+built to a later edition therefore reads every document written to an earlier edition of the same
+major version, and a document that uses a construct its tool does not yet know fails at that
+construct rather than being misread.
 
 ### 1.1. Notation
 
@@ -130,20 +133,17 @@ The complete grammar is collected in Appendix A.
 
 ### 1.2. Identity
 
-| Property       | Value                                                       |
-| -------------- | ----------------------------------------------------------- |
-| Name           | Oval                                                        |
-| Home           | https://oval.vote                                           |
-| Source         | https://github.com/oval-vote                                |
-| File extension | `.oval`                                                     |
-| Media type     | `text/prs.oval`                                             |
-| Encoding       | UTF-8 (Section 2.1)                                         |
-| Version marker | `oval 0.1`, the first entry of every document (Section 2.5) |
+| Property       | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Name           | Oval                                                           |
+| Home           | [`https://oval.vote`](https://oval.vote)                       |
+| Source         | [`https://github.com/oval-vote`](https://github.com/oval-vote) |
+| File extension | `.oval`                                                        |
+| Media type     | `text/prs.oval`                                                |
+| Encoding       | UTF-8 (Section 2.1)                                            |
+| Version marker | `oval 1`, the first entry of every document                    |
 
-**File extension.** Oval documents use the extension `.oval`. No other format is known to use it; it
-is unclaimed in GitHub Linguist and in file-extension registries. The name Oval is shared with the
-Open Vulnerability and Assessment Language, an unrelated XML security standard that does not use
-this extension.
+**File extension.** Oval documents use the extension `.oval`.
 
 **Media type.** The media type is `text/prs.oval`, registered (or to be registered) in the IANA
 personal tree under RFC 6838 Section 3.3. The `text/` top-level type is used because an Oval
@@ -156,13 +156,8 @@ documents are always UTF-8 (Section 2.1); the parameter exists to satisfy the re
 `text/` registrations state how the character set is determined, and conveys no information. There
 is no structured-syntax suffix: Oval is not JSON, XML, or any other registered structured syntax.
 
-The unregistered form `text/x-oval` is not used. RFC 6648 deprecates the `x-` prefix.
-
-**Version marker.** Every document begins with `oval` followed by the version of this specification
-it is written to, as `MAJOR.MINOR` (Section 2.5). A tool therefore knows which language a document
-is written in before it reads anything else, and a document can outlive the tools that wrote it: a
-future implementation declines a document it does not understand (V19) instead of misreading it. The
-marker names a version of this specification, never a version of a tool.
+**Version marker.** Every document begins with `oval` followed by the major version of the language
+it is written in. The marker is the first entry of the document and is defined in Section 2.5.
 
 ---
 
@@ -170,8 +165,9 @@ marker names a version of this specification, never a version of a tool.
 
 ### 2.1. Source Text
 
-An Oval document is a sequence of Unicode code points encoded as UTF-8. A byte order mark, if
-present, is ignored.
+An Oval document is a sequence of Unicode code points encoded as UTF-8. Input that is not
+well-formed UTF-8 is rejected as a whole and produces no tokens. A byte order mark (U+FEFF) at the
+start of the input is ignored; a formatter does not emit one.
 
 SourceCharacter :: "any Unicode code point except U+0000"
 
@@ -183,7 +179,7 @@ LineTerminator ::
 - "Carriage Return (U+000D)" "New Line (U+000A)"
 - "Carriage Return (U+000D)"
 
-All three forms are equivalent. A formatter emits U+000A.
+All three forms are equivalent.
 
 Oval is **layout-sensitive**: the structure of a document is given by the indentation of its lines,
 not by brackets or closing keywords. Section 2.4 describes how indentation becomes tokens.
@@ -214,15 +210,11 @@ source exactly, which is what allows a formatter to round-trip a document.
 
 Keyword :: one of
 
-- `oval` `guide` `election` `date` `note`
-- `party` `candidate` `ballot` `section` `contest` `campaign` `measure`
-- `abbreviation` `website` `designation` `eligibility`
-- `single` `multiple` `ranked` `retention` `max`
-- `subtitle` `tabulation`
-- `incumbent` `withdrawn` `as`
-- `recommend` `support` `oppose` `justification` `yes` `no` `no-position`
-- `description` `if_yes` `if_no` `placement` `fiscal_impact` `supporters` `opponents`
-- `none`
+- `oval` `guide` `election` `date` `note` `party` `candidate` `ballot` `section` `contest`
+  `campaign` `measure` `abbreviation` `website` `designation` `eligibility` `single` `multiple`
+  `ranked` `retention` `max` `subtitle` `tabulation` `incumbent` `withdrawn` `as` `recommend`
+  `support` `oppose` `justification` `yes` `no` `no-position` `description` `if_yes` `if_no`
+  `placement` `fiscal_impact` `supporters` `opponents` `none`
 
 Keywords are reserved. They are matched case-sensitively and are all lowercase. A word that is not a
 keyword and does not begin with `@` is a lexical error; there are no free identifiers in Oval.
@@ -275,7 +267,8 @@ string is still a `String` token, and the error is reported on the two character
 
 Integer :: Digit+
 
-An unsigned whole number. Leading zeros are permitted and insignificant. There is no sign.
+An unsigned whole number. Leading zeros are permitted, but are insignificant. Integers cannot be
+signed.
 
 A word that begins with a Digit but is neither an `Integer`, a `Date`, nor a `Version` (such as
 `12abc`, `3_000`, `2026-11-5`, or `01.1`) is a _malformed number_ and becomes one `Error` token.
