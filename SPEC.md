@@ -1304,7 +1304,8 @@ begin: after `ballot`, `contest`, `measure`, `party`, or `candidate`; after `par
 and after `support` or `oppose`, which require at least one. It also occurs when `@` is not followed
 by a `Word`. Any other token in that position is an unexpected token. The error is reported as
 `missing-identifier` and is zero-length at the position where the identifier would begin. To
-recover, assume the missing token and continue with the rest of the line.
+recover, assume the missing token and continue with the rest of the line; after `support` or
+`oppose`, a `String` in the identifier's place is skipped with it, since it is not a second error.
 
 ```oval example
 party @dem "Democratic"
