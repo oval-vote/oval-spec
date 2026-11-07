@@ -966,11 +966,15 @@ Where the text cannot be tokenized at all it becomes an `Error` token spanned ex
 where a token is recognizable but flawed, the token keeps its kind and the error points at the flaw
 within it.
 
-If possible, implementers should continue lexing after encountering an error using the recovery
-strategy given for each error below. This allows a tool to provide better, more usable diagnostics
-to the user. It also allows multiple errors to be reported in a single pass.
+After an error the lexer continues, using the recovery given for each error below, so that every
+error in a document is reported in one pass and so that the token stream still covers every byte
+(Section 2.2). The recoveries are normative: two implementations given the same broken document
+produce the same tokens and the same errors.
 
-However, implementations that stop at the first error are also considered spec compliant.
+A tool that only needs to accept or reject a document may stop at the first error instead. It then
+reports a subset of the errors this section specifies and is not lexer- or parser-conformant
+(Section 4), since those levels exist for tools that must make sense of every byte of a broken file;
+the documents it accepts are exactly the documents a conformant implementation accepts.
 
 The seven errors below are exhaustive. Every character of an input that Section 2.1 accepts, at
 every position, either belongs to a token of Sections 2.2 through 2.4 or produces exactly one of
@@ -1237,8 +1241,8 @@ document with a syntax error is not well-formed.
 
 Every syntax error has a recovery, so that two implementations build the same tree and report the
 same errors for the same broken document, and so that an editor can keep working on a half-written
-file. As with lexical errors, an implementation that stops at the first syntax error is also
-conformant. There are four recoveries, named here and referred to by each error below:
+file. A tool that only needs to accept or reject a document may stop at the first error on the terms
+Section 3.1 gives. There are four recoveries, named here and referred to by each error below:
 
 - **Skip the line.** The tokens from the unexpected one to the end of the line are discarded. The
   construct keeps whatever was parsed before them, and parsing continues on the next line.
@@ -2181,9 +2185,10 @@ for each well-formed document the expected validation report and canonical resol
 Compiling a valid document produces one JSON value: the data model with every reference resolved,
 plus derived fields that any renderer would otherwise recompute. Its shape is fixed by
 `schema/guide.schema.json`, a JSON Schema (draft 2020-12), which is normative. This section explains
-the conventions the schema follows and defines the derived fields. The output is called _canonical_
-because two conformant implementations must produce the same value for the same document; it is a
-contract between implementations and consumers, not a document for people to read.
+the conventions the schema follows, lays out the shape it fixes, and defines the derived fields. The
+output is called _canonical_ because two conformant implementations must produce the same value for
+the same document; it is a contract between implementations and consumers, not a document for people
+to read.
 
 The output is the semantic model, not the syntax tree. It carries no source positions, comments, or
 whitespace, so two parsers cannot disagree about it on formatting. Tools that need positions use the
@@ -2219,7 +2224,237 @@ syntax tree or the diagnostics.
   mistakes are caught. Consumers should ignore keys they do not recognize, because a later edition
   of this specification may add fields. Removing or renaming a field takes a new major version.
 
-### 5.2. Derived fields
+### 5.2. Shape
+
+This section is generated from `schema/guide.schema.json` by `scripts/shape.mjs` and lists the
+objects and keys the schema defines. Every value is one of the objects below, an array of them, or a
+scalar. An _identifier_ is an entity's identifier without its leading `@`, and _Markdown_ is a body
+with its common indentation removed, line terminators normalized to `\n`, and no trailing terminator
+(Section 2.2). A key whose meaning begins with "Derived" is computed from the document; Section 5.3
+defines it.
+
+#### Root
+
+The canonical output of compiling an Oval document: the data model with every reference resolved,
+plus derived fields for renderers. Keys mirror the language's keywords.
+
+| Key          | Type                    | Required | Meaning                                                                             |
+| ------------ | ----------------------- | -------- | ----------------------------------------------------------------------------------- |
+| `oval`       | integer, at least 1     | yes      | The major version of the Oval language the document declares in its version marker. |
+| `guide`      | Guide                   | yes      | The document-level fields.                                                          |
+| `parties`    | array of Party          | yes      | Every party declared at the top level or inline, in document order.                 |
+| `candidates` | array of Candidate      | yes      | Every candidate declared at the top level or inline, in document order.             |
+| `ballots`    | array of Ballot         | yes      | Root ballots, in presentation order.                                                |
+| `questions`  | array of Question Entry | yes      | Derived. Every contest and measure in ballot order, with where it sits in the tree. |
+| `counts`     | Counts                  | yes      | Derived. Totals across the whole document.                                          |
+
+#### Guide
+
+The document-level fields: what the guide is and which election it covers.
+
+| Key        | Type                 | Required | Meaning                                               |
+| ---------- | -------------------- | -------- | ----------------------------------------------------- |
+| `name`     | string               | yes      | The guide's title, from `guide`.                      |
+| `election` | string               | yes      | The election as named on the ballot, from `election`. |
+| `date`     | string, `YYYY-MM-DD` | yes      | Election day as `YYYY-MM-DD`, from `date`.            |
+| `note`     | Markdown             | no       | The guide's introductory note, from `note`.           |
+
+#### Party
+
+A political party.
+
+| Key            | Type                | Required | Meaning                                                                         |
+| -------------- | ------------------- | -------- | ------------------------------------------------------------------------------- |
+| `id`           | identifier          | yes      | The party's identifier.                                                         |
+| `name`         | string              | yes      | The party's name as printed on the ballot.                                      |
+| `abbreviation` | string              | no       | The short form printed beside candidates, from `abbreviation`.                  |
+| `website`      | string, a URL       | no       | The party's website, from `website`.                                            |
+| `note`         | Markdown            | no       | The author's note on the party, from `note`.                                    |
+| `candidates`   | array of identifier | yes      | Derived. Identifiers of every candidate whose party this is, in document order. |
+
+#### Candidate
+
+A person who appears in one or more campaigns.
+
+| Key           | Type                | Required | Meaning                                                                                             |
+| ------------- | ------------------- | -------- | --------------------------------------------------------------------------------------------------- |
+| `id`          | identifier          | yes      | The candidate's identifier.                                                                         |
+| `name`        | string              | yes      | The candidate's name as printed on the ballot.                                                      |
+| `designation` | string              | no       | The occupation or title printed beside the name, from `designation`.                                |
+| `party`       | identifier          | no       | Identifier of the candidate's party, from `party`.                                                  |
+| `note`        | Markdown            | no       | The author's note on the candidate, from `note`.                                                    |
+| `contests`    | array of identifier | yes      | Derived. Identifiers of every contest in which the candidate is a campaign member, in ballot order. |
+
+#### Ballot
+
+A ballot: a root ballot or a sub-ballot for a narrower electorate.
+
+| Key           | Type                 | Required | Meaning                                                                                                   |
+| ------------- | -------------------- | -------- | --------------------------------------------------------------------------------------------------------- |
+| `kind`        | `"ballot"`           | yes      | Always `ballot`.                                                                                          |
+| `id`          | identifier           | yes      | The ballot's identifier.                                                                                  |
+| `title`       | string               | yes      | The jurisdiction or grouping the ballot covers.                                                           |
+| `eligibility` | string               | no       | Who receives this ballot, from `eligibility`.                                                             |
+| `note`        | Markdown             | no       | The author's note on the ballot, from `note`.                                                             |
+| `path`        | array of identifier  | yes      | Derived. Identifiers of the enclosing ballots, outermost first, not including this one. Empty for a root. |
+| `items`       | array of ballot_item | yes      | Sections, contests, measures, and sub-ballots in ballot order.                                            |
+
+#### Section
+
+A titled group of contests and measures within a ballot.
+
+| Key     | Type                        | Required | Meaning                                        |
+| ------- | --------------------------- | -------- | ---------------------------------------------- |
+| `kind`  | `"section"`                 | yes      | Always `section`.                              |
+| `title` | string                      | yes      | The section's title as printed on the ballot.  |
+| `note`  | Markdown                    | no       | The author's note on the section, from `note`. |
+| `items` | array of Contest or Measure | yes      | Contests and measures in ballot order.         |
+
+#### Contest
+
+A race between campaigns for an office.
+
+| Key              | Type                   | Required | Meaning                                                                |
+| ---------------- | ---------------------- | -------- | ---------------------------------------------------------------------- |
+| `kind`           | `"contest"`            | yes      | Always `contest`.                                                      |
+| `id`             | identifier             | yes      | The contest's identifier.                                              |
+| `title`          | string                 | yes      | The contest as named on the ballot.                                    |
+| `subtitle`       | string                 | no       | A line printed under the title, from `subtitle`.                       |
+| `method`         | Method                 | yes      | The voting method, from the contest header.                            |
+| `tabulation`     | string                 | no       | How votes are counted, from `tabulation`.                              |
+| `note`           | Markdown               | no       | The author's note on the contest, from `note`.                         |
+| `location`       | Location               | yes      | Derived. Where the contest sits in the ballot tree.                    |
+| `campaigns`      | array of Campaign      | yes      | In ballot order. A campaign is referred to by its index in this array. |
+| `recommendation` | Contest Recommendation | yes      | The author's recommendation on the contest.                            |
+
+#### Method
+
+The voting method, from the contest header.
+
+| Key     | Type                                                       | Required                 | Meaning                                                                       |
+| ------- | ---------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------- |
+| `kind`  | one of `"single"`, `"multiple"`, `"ranked"`, `"retention"` | yes                      | One of `single`, `multiple`, `ranked`, or `retention`.                        |
+| `seats` | integer, at least 2                                        | with `"multiple"`        | How many candidates are elected, from `multiple`.                             |
+| `max`   | integer, at least 1                                        | optional with `"ranked"` | How many candidates a voter may rank, from `max`, when the contest limits it. |
+
+#### Campaign
+
+One or more candidates running together for a contest.
+
+| Key         | Type                | Required | Meaning                                                                                                                  |
+| ----------- | ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `index`     | integer, at least 0 | yes      | Derived. Position in the contest's campaigns array.                                                                      |
+| `label`     | string              | yes      | Derived. The members' names joined with " / ", head of ticket first.                                                     |
+| `head`      | identifier          | yes      | Derived. Identifier of the first member: the head of the ticket, and the name the recommendation uses for this campaign. |
+| `party`     | identifier          | no       | Derived. The party shared by every member, when all members have the same one.                                           |
+| `members`   | array of Member     | yes      | The campaign's candidates, head of ticket first.                                                                         |
+| `incumbent` | boolean             | yes      | Whether the campaign currently occupies the office, from the `incumbent` flag.                                           |
+| `withdrawn` | boolean             | yes      | Whether the campaign has ended but remains on the ballot, from the `withdrawn` flag.                                     |
+| `website`   | string, a URL       | no       | The campaign's website, from `website`.                                                                                  |
+| `note`      | Markdown            | no       | The author's note on the campaign, from `note`.                                                                          |
+| `stance`    | Stance              | yes      | Derived. What the contest's recommendation says about this campaign.                                                     |
+
+#### Member
+
+A candidate's place on a campaign.
+
+| Key         | Type       | Required | Meaning                                                     |
+| ----------- | ---------- | -------- | ----------------------------------------------------------- |
+| `candidate` | identifier | yes      | The candidate's identifier.                                 |
+| `role`      | string     | no       | The member's role on the ticket, from `as`.                 |
+| `note`      | Markdown   | no       | The author's note on this member, from the member's `note`. |
+
+#### Stance
+
+Derived. What the contest's recommendation says about this campaign.
+
+| Key        | Type                                     | Required         | Meaning                                                       |
+| ---------- | ---------------------------------------- | ---------------- | ------------------------------------------------------------- |
+| `position` | one of `"support"`, `"oppose"`, `"none"` | yes              | One of `support`, `oppose`, or `none`.                        |
+| `tier`     | integer, at least 0                      | with `"support"` | Zero-based index of the support tier the campaign appears in. |
+
+#### Contest Recommendation
+
+The author's recommendation on a contest.
+
+| Key                 | Type                                   | Required | Meaning                                                                                     |
+| ------------------- | -------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| `no_position`       | boolean                                | yes      | Whether the author takes no position, from `recommend no-position`.                         |
+| `support`           | array of arrays of identifier          | yes      | Tiers as written: candidate identifiers, most preferred tier first. Empty when no_position. |
+| `oppose`            | array of identifier                    | yes      | Candidate identifiers as written. Empty when no_position.                                   |
+| `support_campaigns` | array of arrays of integer, at least 0 | yes      | Derived. The same tiers resolved to campaign indices.                                       |
+| `oppose_campaigns`  | array of integer, at least 0           | yes      | Derived. The opposed campaigns as indices.                                                  |
+| `justification`     | Markdown                               | no       | The author's reasoning, from `justification`.                                               |
+| `note`              | Markdown                               | no       | The author's note on the recommendation, from `note`.                                       |
+
+#### Measure
+
+A ballot measure: a question answered yes or no.
+
+| Key              | Type                   | Required | Meaning                                                                                                                     |
+| ---------------- | ---------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `description`    | Markdown               | no       | The question as printed on the ballot, from `description`.                                                                  |
+| `kind`           | `"measure"`            | yes      | Always `measure`.                                                                                                           |
+| `id`             | identifier             | yes      | The measure's identifier.                                                                                                   |
+| `title`          | string                 | yes      | The measure as named on the ballot.                                                                                         |
+| `subtitle`       | string                 | no       | A line printed under the title, from `subtitle`.                                                                            |
+| `if_yes`         | Markdown               | no       | What a yes vote does, from `if_yes`.                                                                                        |
+| `if_no`          | Markdown               | no       | What a no vote does, from `if_no`.                                                                                          |
+| `placement`      | string                 | no       | How the measure reached the ballot, from `placement`.                                                                       |
+| `tabulation`     | string                 | no       | What it takes to pass, from `tabulation`.                                                                                   |
+| `fiscal_impact`  | string                 | no       | The measure's fiscal impact, from `fiscal_impact`.                                                                          |
+| `supporters`     | array of string        | no       | Organizations supporting the measure, from `supporters`. Omitted when not researched; empty when researched and none known. |
+| `opponents`      | array of string        | no       | Organizations opposing the measure, from `opponents`. Omitted when not researched; empty when researched and none known.    |
+| `note`           | Markdown               | no       | The author's note on the measure, from `note`.                                                                              |
+| `location`       | Location               | yes      | Derived. Where the measure sits in the ballot tree.                                                                         |
+| `recommendation` | Measure Recommendation | yes      | The author's recommendation on the measure.                                                                                 |
+
+#### Measure Recommendation
+
+The author's recommendation on a measure.
+
+| Key             | Type                                    | Required | Meaning                                               |
+| --------------- | --------------------------------------- | -------- | ----------------------------------------------------- |
+| `position`      | one of `"yes"`, `"no"`, `"no-position"` | yes      | The recommended vote, from `recommend`.               |
+| `justification` | Markdown                                | no       | The author's reasoning, from `justification`.         |
+| `note`          | Markdown                                | no       | The author's note on the recommendation, from `note`. |
+
+#### Question Entry
+
+Derived. One contest or measure in the document's flat index of questions.
+
+| Key        | Type                            | Required | Meaning                                             |
+| ---------- | ------------------------------- | -------- | --------------------------------------------------- |
+| `kind`     | one of `"contest"`, `"measure"` | yes      | Whether the question is a `contest` or a `measure`. |
+| `id`       | identifier                      | yes      | The question's identifier.                          |
+| `title`    | string                          | yes      | The question's title.                               |
+| `location` | Location                        | yes      | Where the question sits in the ballot tree.         |
+
+#### Location
+
+Derived. Where a question sits in the ballot tree.
+
+| Key       | Type                | Required | Meaning                                                                       |
+| --------- | ------------------- | -------- | ----------------------------------------------------------------------------- |
+| `ballot`  | identifier          | yes      | Identifier of the innermost enclosing ballot.                                 |
+| `section` | string              | no       | Title of the enclosing section, when there is one.                            |
+| `path`    | array of identifier | yes      | Identifiers of every enclosing ballot, outermost first, ending with `ballot`. |
+
+#### Counts
+
+Derived. Totals across the whole document.
+
+| Key          | Type                | Required | Meaning                                    |
+| ------------ | ------------------- | -------- | ------------------------------------------ |
+| `ballots`    | integer, at least 1 | yes      | Every ballot, roots and sub-ballots alike. |
+| `sections`   | integer, at least 0 | yes      | Every section.                             |
+| `contests`   | integer, at least 0 | yes      | Every contest.                             |
+| `measures`   | integer, at least 0 | yes      | Every measure.                             |
+| `campaigns`  | integer, at least 0 | yes      | Every campaign.                            |
+| `candidates` | integer, at least 0 | yes      | Every candidate.                           |
+| `parties`    | integer, at least 0 | yes      | Every party.                               |
+
+### 5.3. Derived fields
 
 Everything below is computed from the document; none of it can disagree with the source.
 
@@ -2241,7 +2476,7 @@ Everything below is computed from the document; none of it can disagree with the
 Resolution of candidate identifiers to campaigns follows Section 2.15. A valid document resolves
 every reference, so the derived fields are always complete.
 
-### 5.3. Example
+### 5.4. Example
 
 `examples/franklin.oval.json` is the canonical output of `examples/franklin.oval`, the fictional
 full-scale guide: six root ballots, forty-four contests, twenty-eight measures. It is produced by
@@ -2279,13 +2514,14 @@ text in surprising ways.
 
 ### 6.2. Blank lines and comments
 
-- Runs of blank lines collapse to one. Blank lines at the start of the document are removed. Blank
-  lines inside a `MarkdownBlock` body are content and are kept exactly.
-- A single blank line stays where the author put it; a formatter never inserts one.
-- A comment line belongs to the next line with tokens: it is indented to that line's depth and moves
-  with that line when entries are reordered (Section 6.3). Blank lines between a comment and the
-  line it precedes move with it. Comments after the last line of the document are placed at column
-  zero.
+- Runs of blank lines collapse to one. Blank lines inside a `MarkdownBlock` body are content and are
+  kept exactly.
+- A blank line and any comment lines after it belong to the next line with tokens: they are indented
+  to that line's depth and move with it when entries are reordered (Section 6.3). A blank line the
+  author wrote at the start of a block stays; one that would begin a block only because its entry
+  was reordered is removed. Blank lines at the start and end of the document are removed. A
+  formatter never inserts a blank line. Comments after the last line of the document are placed at
+  column zero.
 
 This attachment rule is a formatting decision, not a parsing one. The parser attaches a comment to
 whichever node is open when the next significant token is consumed, which puts a comment just before

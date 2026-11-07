@@ -5,7 +5,8 @@ The specification for [Oval](https://oval.vote), a plain-text file format for vo
 - `SPEC.md` is the specification. It is published at [spec.oval.vote](https://spec.oval.vote) using
   [spec-md](https://spec-md.com)
 - `grammar.txt` is Appendix A extracted verbatim, for tools that want only the grammar.
-- `schema/guide.schema.json` is the JSON Schema for compiled output of a voting guide.
+- `schema/guide.schema.json` is the JSON Schema for compiled output of a voting guide. Section 5.2
+  of the specification is generated from it by `npm run shape`.
 - `examples/franklin.oval` is a full-scale fictional guide that exercises every construct in the
   specification.
 - `examples/franklin.oval.json` is the compiled output of that guide, which validates against the
