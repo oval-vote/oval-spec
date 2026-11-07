@@ -8,7 +8,7 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { REPOSITORY, writeEdition } from "./edition.mjs";
+import { REPOSITORY, sourceDigest, writeEdition } from "./edition.mjs";
 
 rmSync("dist", { recursive: true, force: true });
 mkdirSync("dist");
@@ -19,10 +19,10 @@ const editions = existsSync("published")
   ? readdirSync("published", { withFileTypes: true })
       .filter((entry) => entry.isDirectory() && /^v\d+\.\d+\.\d+$/.test(entry.name))
       .map((entry) => {
-        const { version, date } = JSON.parse(
+        const { version, date, source } = JSON.parse(
           readFileSync(`published/${entry.name}/edition.json`, "utf8"),
         );
-        return { tag: entry.name, version, date, parts: version.split(".").map(Number) };
+        return { tag: entry.name, version, date, source, parts: version.split(".").map(Number) };
       })
       .sort((a, b) => b.parts[0] - a.parts[0] || b.parts[1] - a.parts[1] || b.parts[2] - a.parts[2])
   : [];
@@ -57,8 +57,12 @@ const longDate = (iso) =>
     timeZone: "UTC",
   });
 
+const draftIsLatestEdition = editions[0]?.source === sourceDigest();
+
 const rows = [
-  `<tr><td><em>Working draft</em></td><td>${longDate(draftDate)}</td><td><a href="./draft/">Draft</a></td><td></td></tr>`,
+  draftIsLatestEdition
+    ? ""
+    : `<tr><td><em>Working draft</em></td><td>${longDate(draftDate)}</td><td><a href="./draft/">Draft</a></td><td></td></tr>`,
   ...editions.map(
     (edition, index) =>
       `<tr><td>${index === 0 ? "<em>Latest release</em>" : ""}</td><td>${longDate(edition.date)}</td>` +
@@ -99,7 +103,7 @@ writeFileSync(
 <body>
 <h1>Oval Specification Versions</h1>
 <table>
-${rows.join("\n")}
+${rows.filter(Boolean).join("\n")}
 </table>
 ${aliasNote}
 <p>The specification is developed at <a href="${REPOSITORY}">oval-vote/oval-spec</a>.</p>

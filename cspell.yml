@@ -12,6 +12,7 @@ ignoreRegExpList:
   - /@[a-z0-9-]+/
 words:
   - autolinks
+  - Unrelease
   - setext
   - strikethrough
   - creativecommons
