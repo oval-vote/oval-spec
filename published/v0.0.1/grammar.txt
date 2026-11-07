@@ -1,0 +1,287 @@
+Oval grammar, extracted verbatim from Appendix A of SPEC.md; edit the spec, not this file.
+Notation is described in SPEC.md section 1.1: `Name : Rule` matches tokens, `Name :: Rule`
+matches characters, alternatives are listed one per line, and ? * + are the usual quantifiers.
+
+**Lexical productions**
+
+SourceCharacter :: "any Unicode code point except U+0000"
+
+LineTerminator ::
+
+- "New Line (U+000A)"
+- "Carriage Return (U+000D)" "New Line (U+000A)"
+- "Carriage Return (U+000D)"
+
+Token ::
+
+- Word
+- String
+- Integer
+- Date
+- Url
+- Punctuator
+- MarkdownBlock
+
+Ignored ::
+
+- Comment
+- Whitespace
+- BlankLine
+
+LayoutToken ::
+
+- Newline
+- Indent
+- Dedent
+
+Newline :: "the end of a line that contains tokens"
+
+Indent :: "an increase in indentation, at the start of a line"
+
+Dedent :: "a return to an enclosing indentation, at the start of a line or at the end of input"
+
+Word :: Letter WordPart*
+
+WordPart ::
+
+- Letter
+- Digit
+- `-`
+- `_`
+
+Letter :: /[A-Za-z]/
+
+Digit :: /[0-9]/
+
+String :: `"` StringCharacter* `"`
+
+StringCharacter ::
+
+- SourceCharacter but not `"` or `\` or LineTerminator
+- EscapedCharacter
+
+EscapedCharacter :: one of `\"` `\\`
+
+Integer :: Digit+
+
+Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
+
+Url :: UrlScheme `://` UrlCharacter+
+
+UrlScheme :: one of `https` `http`
+
+UrlCharacter :: SourceCharacter but not one of "Space (U+0020)", "Tab (U+0009)", LineTerminator
+
+Punctuator :: one of `@` `:` `,`
+
+MarkdownBlock :: BodyLine+
+
+BodyLine :: "a line indented more than the opening line, or a blank line between two such lines"
+
+Comment :: `#` CommentCharacter*
+
+CommentCharacter :: SourceCharacter but not LineTerminator
+
+Whitespace :: "Space (U+0020)"+
+
+BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespace and Comment"
+
+**Syntactic productions**
+
+Document : VersionMarker? GuideField* Declaration* Ballot*
+
+VersionMarker : `oval` Integer Newline
+
+GuideField :
+
+- `guide` String Newline
+- `election` String Newline
+- `date` Date Newline
+- `note` MarkdownBody
+
+Declaration :
+
+- Party
+- Candidate
+
+MarkdownBody : `:` Newline MarkdownBlock
+
+StringList :
+
+- `none`
+- Strings
+
+Strings :
+
+- String
+- Strings `,` String
+
+Flags : Flag*
+
+Flag : one of `incumbent` `withdrawn`
+
+Identifier : `@` Word
+
+Reference : Identifier
+
+Party : `party` Identifier String Newline PartyBlock?
+
+PartyBlock : Indent PartyField+ Dedent
+
+PartyField :
+
+- `abbreviation` String Newline
+- `website` Url Newline
+- `note` MarkdownBody
+
+Candidate : `candidate` Identifier String Newline CandidateBlock?
+
+CandidateBlock : Indent CandidateField+ Dedent
+
+CandidateField :
+
+- `designation` String Newline
+- PartyRef
+- `note` MarkdownBody
+
+PartyRef :
+
+- `party` Identifier Newline
+- `party` Identifier String Newline PartyBlock?
+
+Ballot : `ballot` Identifier String Newline BallotBlock
+
+BallotBlock : Indent BallotEntry+ Dedent
+
+BallotEntry :
+
+- BallotField
+- BallotItem
+
+BallotField :
+
+- `eligibility` String Newline
+- `note` MarkdownBody
+
+BallotItem :
+
+- Section
+- Contest
+- Measure
+- Ballot
+
+Section : `section` String Newline SectionBlock
+
+SectionBlock : Indent SectionEntry+ Dedent
+
+SectionEntry :
+
+- SectionField
+- SectionItem
+
+SectionField : `note` MarkdownBody
+
+SectionItem :
+
+- Contest
+- Measure
+
+Contest : `contest` Identifier String ContestKind Newline ContestBlock
+
+ContestKind :
+
+- `single`
+- `multiple` Integer
+- `ranked` RankedMax?
+- `retention`
+
+RankedMax : `max` Integer
+
+ContestBlock : Indent ContestEntry+ Dedent
+
+ContestEntry :
+
+- ContestField
+- Campaign
+- ContestRecommend
+
+ContestField :
+
+- `subtitle` String Newline
+- `tabulation` String Newline
+- `note` MarkdownBody
+
+Campaign :
+
+- `campaign` Flags Member Newline CampaignBlock?
+- `campaign` Flags Newline CampaignBlock
+
+CampaignBlock : Indent CampaignEntry+ Dedent
+
+CampaignEntry :
+
+- Member Newline MemberBlock?
+- CampaignField
+
+Member : Identifier String? MemberRole?
+
+MemberRole : `as` String
+
+MemberBlock : Indent CandidateField+ Dedent
+
+CampaignField :
+
+- `website` Url Newline
+- `note` MarkdownBody
+- `designation` String Newline
+- PartyRef
+
+ContestRecommend :
+
+- `recommend` Newline RecommendBlock
+- `recommend` `no-position` Newline RecommendNoteBlock?
+
+RecommendBlock : Indent RecommendEntry+ Dedent
+
+RecommendEntry :
+
+- Support
+- Oppose
+- RecommendField
+
+Support : `support` Reference+ Newline
+
+Oppose : `oppose` Reference+ Newline
+
+RecommendField :
+
+- `justification` MarkdownBody
+- `note` MarkdownBody
+
+RecommendNoteBlock : Indent RecommendField+ Dedent
+
+Measure : `measure` Identifier String Newline MeasureBlock
+
+MeasureBlock : Indent MeasureEntry+ Dedent
+
+MeasureEntry :
+
+- MeasureField
+- MeasureRecommend
+
+MeasureField :
+
+- `subtitle` String Newline
+- `description` MarkdownBody
+- `if_yes` MarkdownBody
+- `if_no` MarkdownBody
+- `placement` String Newline
+- `tabulation` String Newline
+- `fiscal_impact` String Newline
+- `supporters` StringList Newline
+- `opponents` StringList Newline
+- `note` MarkdownBody
+
+MeasureRecommend : `recommend` MeasurePosition Newline RecommendNoteBlock?
+
+MeasurePosition : one of `yes` `no` `no-position`
