@@ -25,7 +25,7 @@ if (
 ) {
   throw new Error("commit or stash changes to the specification before releasing it");
 }
-execFileSync("node", ["scripts/grammar.mjs", "--check"], { stdio: "inherit" });
+execFileSync("node", [".scripts/grammar.mjs", "--check"], { stdio: "inherit" });
 
 const date = new Date().toLocaleDateString("en-CA");
 const longDate = new Date(`${date}T12:00:00Z`).toLocaleDateString("en-US", {

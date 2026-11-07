@@ -63,7 +63,7 @@ async function build() {
   building = true;
   const started = Date.now();
   try {
-    await run("node", ["scripts/build.mjs"]);
+    await run("node", [".scripts/build.mjs"]);
     console.log(`${new Date().toLocaleTimeString()} built in ${Date.now() - started} ms`);
     broadcast("reload", "");
   } catch (error) {
