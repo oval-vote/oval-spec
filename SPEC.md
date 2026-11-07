@@ -5,29 +5,27 @@ _Working Draft_
 **Introduction**
 
 This is the specification for Oval, a plain-text file format for voting guides. It defines the Oval
-language, its characters, tokens, grammar, and the meaning of each construct. For prospective
-implementers, it also describes how a conforming lexer, parser, validator, formatter, and compiler
-should behave.
+language, its characters, tokens, grammar, and the meaning of each construct.
+
+For prospective implementers of the specification, it also describes how a conforming lexer, parser,
+validator, formatter, and compiler behave.
 
 ## 1. Overview
 
 A voting guide tells its readers what is on their ballot and how its author recommends they vote on
 each question, with optional reasoning behind each recommendation. Newspapers, advocacy groups,
-political clubs, and individuals publish guides before every election, almost always as prose: a web
-page, a PDF, a thread of posts. Written that way, the structure of a guide exists only in the
-author's head and the reader's eye. Publishing the same guide in more than one place means
-reformatting it by hand each time. Ballots are harder to model than they look, because election
-rules and their regional variations are many. Recommendations are harder still: a recommendation can
-be nuanced, can rank candidates, can endorse some and warn against others, or can decline to take a
-side. Nothing can check that every contest received a recommendation, that the candidate mentioned
-in two places is the same person, or that the guide still matches the ballot after a candidate
-withdraws. And nothing can turn one guide into a web page, a printed card, and a side-by-side
-comparison with another guide without someone retyping it.
+political clubs, religious organizations, and even individuals often publish guides before every
+election, almost always as prose: a web page, a PDF, a thread of posts. Written that way, the
+structure of a guide exists only in the author's head and the reader's eye. Publishing the same
+guide in more than one place means reformatting it by hand each time. Ballots are harder to model
+than they look, because election rules and their regional variations are numerous and inconsistent.
+Modeling recommendations is harder still: a recommendation can be nuanced, can rank candidates, can
+endorse some and warn against others, or can decline to take a position.
 
-An Oval document is one voting guide. It states the election, the ballot in the order the voter will
-see it, each contest and measure on that ballot, the candidates and parties, and the author's
-position on each question. Structure is expressed with keywords and indentation. Reasoning is
-written as Markdown under the question it concerns.
+An Oval document represents a single voting guide. It states the election, the ballot or ballots,
+the contests and measures on each one, the candidates and parties, and the author's position on each
+question. Structure is expressed with keywords and indentation. Reasoning is written as Markdown
+under the question it concerns.
 
 ```oval
 oval 1
@@ -56,46 +54,54 @@ ballot @city "City of Ashford"
         Renews an existing tax at the same rate. Every branch stays open seven days a week.
 ```
 
-Oval is designed around five goals, in this order:
+Oval is designed around four design goals, in no particular order:
 
-- **Readable and Writable by Hand.** An author with no programming background writes a complete
-  guide in a text editor and reads it back as plain text. There is nothing to learn beyond a few
+- **Readable by Hand.** An author with no programming background should be able to write a complete
+  guide in a text editor and read it back as plain text. There is nothing to learn beyond a few
   keywords and indentation, and nothing to install to write a guide.
-- **Reads in ballot order.** The file is organized the way the ballot is, in ballots, sections,
-  contests, and measures, so an author can write it with the sample ballot open beside them and a
-  reader can follow it the same way.
-- **Explanations are first class.** Notes and justifications are Markdown blocks, not fields to be
-  filled in. A guide is its reasoning, and the format gives the reasoning the same standing as the
-  recommendation it supports.
-- **Checkable.** A validator catches an unfinished or self-contradictory guide before it is
-  published: a contest with no recommendation, a reference to a candidate who is not in that
-  contest, a ranking recommended in a vote-for-one contest.
-- **Exportable.** A valid guide compiles to a JSON value with a fixed schema and every reference
-  resolved, so a renderer can produce a web page, a PDF, or a static site from it without parsing
-  Oval itself.
+- **Explanations are first class.** A good voting guide is not just a list of selections. It should
+  also contain generally useful explanatory information about the election and the author's
+  reasoning behind each recommendation. Oval documents don't just model ballots, they model this
+  prose as well.
+- **Checkable.** A static validator should be able to catch an unfinished or self-contradictory
+  guide before it is published, for example: a contest with no recommendation, a reference to a
+  candidate who is not in that contest, or ranking recommended in a vote-for-one contest. A voting
+  guide is either completely valid or completely invalid.
+- **Exportable.** A guide is readable as plain text, but most readers will want it in a richer
+  format, such as a web page, a PDF, or a printed card. Tools that produce those kinds of outputs
+  will want stricter input than a text format — one with a fixed shape, independent of Oval's
+  syntax, with every reference resolved and every count computed, so that rendering requires no
+  lookup. A valid guide compiles to one JSON value with a fixed schema, and two guides that mean the
+  same thing compile to the same value, so a renderer reads that output and never parses Oval
+  itself.
 
-Oval does not describe how a guide is presented. Rendering a guide as a web page, a printed card, or
-a comparison table is the job of tools built on the compiled output, and a document carries no
+Oval does not describe how a guide is presented, but it does describe how a guide _can_ be
+represented using its canonical output. Rendering a guide as a web page, a printed card, a PDF file,
+or a comparison table is the job of tools built on the compiled output, and a document carries no
 layout, styling, or presentation instructions. Oval also does not model the election beyond what the
 guide's author chooses to say about it: there are no results, polling places, districts, or
 registration rules, and no attempt to be a source of record for who is running.
 
-**What this document defines**
+**Specification**
 
 This document defines Oval in four parts, each building on the one before it:
 
-- **The language.** The lexical and syntactic grammar: which sequences of characters form a
-  document. A document the grammar accepts is _well-formed_. A parser accepts every well-formed
-  document, rejects every other one, and reports where the grammar was broken.
-- **Validation.** The rules a well-formed document must also satisfy, such as that every reference
-  names something declared and that a vote-for-one contest does not recommend a ranking. Each rule
-  says what it checks and whether breaking it is an error or a warning. A well-formed document with
-  no errors is _valid_. A validator reports every error and every warning.
-- **Formatting.** The canonical style a formatter writes a document in. Formatting never changes
-  what a document means.
-- **Canonical output.** The JSON value a valid document compiles to: the guide with every reference
-  resolved and with the fields any renderer would otherwise recompute, in a shape fixed by a
-  published schema. Two implementations compile the same document to the same output.
+- **The language.** The lexical and syntactic grammar, which decides which sequences of characters
+  are allowed in an Oval document, and the meaning of each construct. A document that follows the
+  grammar is _well-formed_. A conformant parser accepts every well-formed document and reports where
+  the grammar was broken in every other one.
+- **Validation.** The rules that ensure a voting guide is complete, correct, and consistent. Each
+  rule says what it checks and whether breaking it is an `error` or a `warning`. A well-formed
+  document that breaks no rule whose severity is `error` is _valid_. A conformant validator reports
+  every `error` and every `warning`.
+- **Formatting.** The canonical style for Oval documents. A conformant formatter accepts every
+  well-formed document and produces an equivalent document in that style. Formatting never changes
+  the meaning of a document and never introduces an error or a warning.
+- **Canonical output.** The JSON value a valid document compiles to. It is the guide with every
+  reference resolved and with the fields any renderer would otherwise recompute, in a shape fixed by
+  a published [JSON Schema](https://json-schema.org). Compiled output should be unaffected by file
+  organization, comments, whitespace, and formatting — two guides with the same meaning should
+  compile to the same output.
 
 The appendices collect the complete grammar and the list of keywords.
 
@@ -114,7 +120,7 @@ construct rather than being misread.
 
 ### 1.1. Notation
 
-Grammar productions use the notation of the GraphQL specification. A syntactic production, written
+Grammar productions are written in the following notation. A syntactic production, written
 `Name : Rule`, matches tokens; a lexical production, written `Name :: Rule`, matches characters.
 Alternatives are listed one per line. `X?` is optional, `X*` is zero or more, and `X+` is one or
 more. Literal text is in `backticks`; in a syntactic production it matches a `Word` or `Punctuator`
@@ -126,15 +132,17 @@ The complete grammar is collected in Appendix A.
 
 ### 1.2. Identity
 
-| Property       | Value                                                          |
-| -------------- | -------------------------------------------------------------- |
-| Name           | Oval                                                           |
-| Home           | [`https://oval.vote`](https://oval.vote)                       |
-| Source         | [`https://github.com/oval-vote`](https://github.com/oval-vote) |
-| File extension | `.oval`                                                        |
-| Media type     | `text/prs.oval`                                                |
-| Encoding       | UTF-8 (Section 2.1)                                            |
-| Version marker | `oval 1`, the first entry of every document                    |
+| Property                | Value                                                          |
+| ----------------------- | -------------------------------------------------------------- |
+| Name                    | Oval                                                           |
+| Home                    | [`https://oval.vote`](https://oval.vote)                       |
+| Source                  | [`https://github.com/oval-vote`](https://github.com/oval-vote) |
+| File extension          | `.oval`                                                        |
+| Media type              | `text/prs.oval`                                                |
+| Uniform type identifier | `vote.oval.document`, conforming to `public.plain-text`        |
+| Encoding                | UTF-8 (Section 2.1)                                            |
+| Version marker          | `oval 1`, the first entry of every document                    |
+| Canonical output        | JSON, `application/json` (Section 5)                           |
 
 **File extension.** Oval documents use the extension `.oval`.
 
@@ -148,6 +156,16 @@ The type takes one optional parameter, `charset`, whose only permitted value is 
 documents are always UTF-8 (Section 2.1); the parameter exists to satisfy the requirement that
 `text/` registrations state how the character set is determined, and conveys no information. There
 is no structured-syntax suffix: Oval is not JSON, XML, or any other registered structured syntax.
+
+**Uniform type identifier.** On Apple platforms the type is identified as `vote.oval.document`. It
+conforms to `public.plain-text`, so any application that opens plain text can open an Oval document,
+and its tag specification lists the extension `oval` and the media type `text/prs.oval`. The
+identifier is exported by the application that owns the format on a given system and imported by
+every other application that reads or writes it; two applications must not both export it.
+
+**Canonical output.** The JSON value a document compiles to (Section 5) is served as
+`application/json`. It has no media type of its own; its schema is identified by the `$id` of
+`schema/guide.schema.json`.
 
 **Version marker.** Every document begins with `oval` followed by the major version of the language
 it is written in. The marker is the first entry of the document and is defined in Section 2.5.
