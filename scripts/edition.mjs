@@ -1,7 +1,30 @@
-import { cpSync, mkdirSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { cpSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import specMarkdown from "spec-md";
 
 export const REPOSITORY = "https://github.com/oval-vote/oval-spec";
+export const DRAFT_LINE = "_Working Draft_";
+const SOURCES = ["SPEC.md", "grammar.txt", "schema", "examples"];
+
+export function sourceDigest() {
+  const hash = createHash("sha256");
+  const visit = (path) => {
+    if (statSync(path).isDirectory()) {
+      for (const entry of readdirSync(path).sort()) {
+        visit(`${path}/${entry}`);
+      }
+    } else {
+      hash.update(path);
+      hash.update("\0");
+      hash.update(readFileSync(path));
+      hash.update("\0");
+    }
+  };
+  for (const path of SOURCES) {
+    visit(path);
+  }
+  return hash.digest("hex");
+}
 
 export async function renderSpec(ref) {
   const html = await specMarkdown.html("SPEC.md", { githubSource: `${REPOSITORY}/blame/${ref}/` });
