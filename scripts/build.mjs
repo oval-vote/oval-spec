@@ -82,9 +82,14 @@ writeFileSync(
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Oval Specification Versions</title>
+<meta name="color-scheme" content="light dark">
 <style>
-  body { color: #333; font: 13pt/18pt Cambria, "Palatino Linotype", Palatino, "Liberation Serif", serif; margin: 6rem auto 3rem; max-width: 780px; padding: 0 1rem; }
-  a { color: #3b5998; text-decoration: none; }
+  :root { --color-foreground: #333333; --color-background: #ffffff; --color-link: #3b5998; }
+  @media (prefers-color-scheme: dark) {
+    :root { --color-foreground: #b6b6b6; --color-background: #262626; --color-link: #89b7da; }
+  }
+  body { color: var(--color-foreground); background: var(--color-background); font: 13pt/18pt Cambria, "Palatino Linotype", Palatino, "Liberation Serif", serif; margin: 6rem auto 3rem; max-width: 780px; padding: 0 1rem; }
+  a { color: var(--color-link); text-decoration: none; }
   a:hover { text-decoration: underline; }
   h1 { font-size: 1.5em; margin: 0 0 2em; }
   td { padding: 0 2ch 5px 0; vertical-align: top; }
