@@ -56,12 +56,12 @@ ballot @city "City of Ashford"
 
 Oval is designed around four design goals, in no particular order:
 
-- **Readable by Hand.** An author with no programming background should be able to write a complete
+- **Readable by hand.** An author with no programming background should be able to write a complete
   guide in a text editor and read it back as plain text. There is nothing to learn beyond a few
   keywords and indentation, and nothing to install to write a guide.
 - **Explanations are first class.** A good voting guide is not just a list of selections. It should
   also contain generally useful explanatory information about the election and the author's
-  reasoning behind each recommendation. Oval documents don't just model ballots, they model this
+  reasoning behind their recommendations. Oval documents don't just model ballots, they model this
   prose as well.
 - **Checkable.** A static validator should be able to catch an unfinished or self-contradictory
   guide before it is published, for example: a contest with no recommendation, a reference to a
@@ -69,18 +69,18 @@ Oval is designed around four design goals, in no particular order:
   guide is either completely valid or completely invalid.
 - **Exportable.** A guide is readable as plain text, but most readers will want it in a richer
   format, such as a web page, a PDF, or a printed card. Tools that produce those kinds of outputs
-  will want stricter input than a text format — one with a fixed shape, independent of Oval's
+  will want stricter input than Oval's text format — one with a fixed shape, independent of Oval's
   syntax, with every reference resolved and every count computed, so that rendering requires no
   lookup. A valid guide compiles to one JSON value with a fixed schema, and two guides that mean the
   same thing compile to the same value, so a renderer reads that output and never parses Oval
   itself.
 
-Oval does not describe how a guide is presented, but it does describe how a guide _can_ be
-represented using its canonical output. Rendering a guide as a web page, a printed card, a PDF file,
-or a comparison table is the job of tools built on the compiled output, and a document carries no
-layout, styling, or presentation instructions. Oval also does not model the election beyond what the
-guide's author chooses to say about it: there are no results, polling places, districts, or
-registration rules, and no attempt to be a source of record for who is running.
+Oval does not describe how a guide is presented, but it does describe how a guide _can_ be presented
+using its canonical output. Rendering a guide as a web page, a printed card, a PDF file, or a
+comparison table is the job of tools built around the compiled output, and a document carries no
+layout, styling, or presentation instructions of its own. Oval also does not model the election
+beyond what the guide's author chooses to say about it: there are no results, polling places,
+districts, or registration rules, and no attempt to be a source of record for who is running.
 
 **Specification**
 
@@ -140,22 +140,22 @@ The complete grammar is collected in Appendix A.
 | File extension          | `.oval`                                                        |
 | Media type              | `text/prs.oval`                                                |
 | Uniform type identifier | `vote.oval.document`, conforming to `public.plain-text`        |
-| Encoding                | UTF-8 (Section 2.1)                                            |
+| Encoding                | UTF-8                                                          |
 | Version marker          | `oval 1`, the first entry of every document                    |
-| Canonical output        | JSON, `application/json` (Section 5)                           |
+| Canonical output        | JSON, `application/json`                                       |
 
 **File extension.** Oval documents use the extension `.oval`.
 
 **Media type.** The media type is `text/prs.oval`, registered (or to be registered) in the IANA
-personal tree under RFC 6838 Section 3.3. The `text/` top-level type is used because an Oval
-document is readable without interpreting software (RFC 6838 Section 4.2.1). The personal tree is
-used because the format is non-commercial and experimental; it may move to the vendor tree
-(`text/vnd.`) if adoption warrants.
+personal tree under [RFC 6838](https://www.rfc-editor.org/info/rfc6838/), Section 3.3. The `text/`
+top-level type is used because an Oval document is readable without interpreting software (RFC 6838
+Section 4.2.1). The personal tree is used because the format is current non-commercial and
+experimental; it may move to the vendor tree (`text/vnd.`) if warranted.
 
 The type takes one optional parameter, `charset`, whose only permitted value is `UTF-8`. Oval
-documents are always UTF-8 (Section 2.1); the parameter exists to satisfy the requirement that
-`text/` registrations state how the character set is determined, and conveys no information. There
-is no structured-syntax suffix: Oval is not JSON, XML, or any other registered structured syntax.
+documents are always UTF-8; the parameter exists to satisfy the requirement that `text/`
+registrations state how the character set is determined, and conveys no information. There is no
+structured-syntax suffix: Oval is not JSON, XML, or any other registered structured syntax.
 
 **Uniform type identifier.** On Apple platforms the type is identified as `vote.oval.document`. It
 conforms to `public.plain-text`, so any application that opens plain text can open an Oval document,
@@ -163,9 +163,8 @@ and its tag specification lists the extension `oval` and the media type `text/pr
 identifier is exported by the application that owns the format on a given system and imported by
 every other application that reads or writes it; two applications must not both export it.
 
-**Canonical output.** The JSON value a document compiles to (Section 5) is served as
-`application/json`. It has no media type of its own; its schema is identified by the `$id` of
-`schema/guide.schema.json`.
+**Canonical output.** The JSON value a document compiles to is served as `application/json`. It has
+no media type of its own; its schema is identified by the `$id` of `schema/guide.schema.json`.
 
 **Version marker.** Every document begins with `oval` followed by the major version of the language
 it is written in. The marker is the first entry of the document and is defined in Section 2.5.
@@ -193,7 +192,7 @@ LineTerminator ::
 All three forms are equivalent.
 
 Oval is **layout-sensitive**: the structure of a document is given by the indentation of its lines,
-not by brackets or closing keywords. Section 2.4 describes how indentation becomes tokens.
+not by brackets or closing keywords.
 
 ### 2.2. Lexical Tokens
 
@@ -210,10 +209,10 @@ Token ::
 Tokens are separated by whitespace within a line as necessary. Whitespace is never required between
 a `Punctuator` and an adjacent token.
 
-Every byte of the source belongs to exactly one token, counting the ignored tokens of Section 2.3
-and an `Error` token for any text that cannot be tokenized (Section 3.1). The layout tokens of
-Section 2.4 are zero-length. This makes the token stream lossless: concatenating the tokens' text
-reproduces the source exactly, which is what allows a formatter to round-trip a document.
+Every byte of the source belongs to exactly one token. Whitespace, comments, and line terminators
+are tokens, text that cannot be tokenized becomes an `Error` token, and the indentation tokens have
+no text of their own. Concatenating the text of every token therefore reproduces the source exactly,
+which is what lets a formatter rewrite a document without losing anything.
 
 #### Word
 
@@ -236,7 +235,7 @@ literal in backticks in a syntactic production, such as `ballot`, matches a `Wor
 exactly that, case-sensitively. A word the syntactic grammar names this way is a **keyword**;
 Appendix B lists them. A word in a position where the grammar does not expect it is a syntax error
 (Section 3.2), not a lexical one. Words have no other use: Oval has no free identifiers, and every
-name an author chooses is an `Identifier` (Section 2.7), a word after `@`.
+name an author chooses is an `Identifier`, a word after `@`.
 
 #### String
 
@@ -296,8 +295,7 @@ warning (`insecure-url`). A scheme and `://` with nothing after them is a _malfo
 
 Punctuator :: one of `@` `:` `,`
 
-`@` begins an `Identifier` (Section 2.7). `:` introduces a `MarkdownBlock` (Section 2.2, below). `,`
-separates strings in a list.
+`@` begins an `Identifier`. `:` introduces a `MarkdownBlock`. `,` separates strings in a list.
 
 #### MarkdownBlock
 
@@ -377,8 +375,8 @@ shows them as the characters written; write a URL as a link.
 
 Four or more spaces of indentation beyond the body's common minimum begin an indented code block in
 CommonMark. A paragraph or list item indented that far is therefore a `markdown-profile` error;
-reduce the indentation. A formatter preserves relative indentation inside a body (Section 6.1), so
-it never introduces or removes one.
+reduce the indentation. A formatter preserves relative indentation inside a body, so it never
+introduces or removes one.
 
 ### 2.3. Ignored Tokens
 
@@ -429,11 +427,11 @@ positioned at the first token of the line that triggers them, after that line's 
 `Whitespace`. Because they have no text, the lossless property of Section 2.2 is preserved.
 
 A line's _indentation_ is the number of U+0020 characters before its first other character. A tab is
-an "other character" (and an error, Section 2.3). The lexer maintains a stack of indentation levels,
-initially `[0]`.
+an "other character" (and an error). The lexer maintains a stack of indentation levels, initially
+`[0]`.
 
 - At the end of each line with tokens, emit `Newline` covering the line terminator. A blank line
-  emits `BlankLine` instead (Section 2.3) and does not affect the stack.
+  emits `BlankLine` instead and does not affect the stack.
 - Before the first token of a line with tokens, compare its indentation `n` to the top of the stack:
   - If `n` is greater, push `n` and emit `Indent`.
   - If `n` is less, pop the stack and emit one `Dedent` per level popped until the top is less than
@@ -453,7 +451,7 @@ level. A line indented more than its predecessor where the grammar does not perm
 syntax error (`unexpected-block`).
 
 Lines inside a `MarkdownBlock` body do not participate in this process. The entire markdown block is
-considered one token (Section 2.2).
+considered one token.
 
 ### 2.5. Document
 
@@ -470,12 +468,12 @@ optional: a document with none is invalid (`empty-document`), not malformed.
 There is no closing token. The document ends at end of input.
 
 **Version marker.** `oval 1` names the major version of the language the document is written in. It
-is the first entry of every document; only blank lines and comments (Section 2.3) may precede it.
-The grammar leaves it optional for the same reason it leaves `guide` optional
-(`missing-guide-field`): a parser can then build a tree for a document that lacks it and say exactly
-what is missing. A document without a marker, or whose marker names a major version the
-implementation does not support, is invalid (`unsupported-version`). The `Integer` is written
-without leading zeros; a formatter removes them.
+is the first entry of every document; only blank lines and comments may precede it. The grammar
+leaves it optional for the same reason it leaves `guide` optional (`missing-guide-field`): a parser
+can then build a tree for a document that lacks it and say exactly what is missing. A document
+without a marker, or whose marker names a major version the implementation does not support, is
+invalid (`unsupported-version`). The `Integer` is written without leading zeros; a formatter removes
+them.
 
 This specification defines major version 1. Within a major version, each edition of this
 specification only adds to the language, so an implementation of a later edition accepts every
@@ -515,10 +513,10 @@ Each construct's section lists the fields it accepts and the value each takes.
 Within one block, **each field keyword may appear at most once**, and **fields may appear in any
 order**. A repeated field is a syntax error (`repeated-field`). **Children** (campaigns within a
 contest, items within a ballot) are ordered, and their order is significant. Fields and children may
-be interleaved in the source; Section 6 describes the order a formatter puts them in.
+be interleaved in the source, though the canonical formatting style described later in this document
+contains a preferred order.
 
 A `StringList` written as `none` denotes an empty list. This is distinct from omitting the field.
-Section 2.16 explains where the distinction matters.
 
 A **flag** is a keyword on a header line whose presence means `true`:
 
@@ -593,7 +591,7 @@ Declaration :
 - Candidate
 
 Top-level declarations follow the guide fields. They are for parties and candidates referenced from
-more than one place; anything referenced once may be declared inline instead (Sections 2.10, 2.14).
+more than one place; anything referenced once may be declared inline instead.
 
 ### 2.9. Party
 
@@ -612,7 +610,7 @@ party @dem "Democratic"
   abbreviation "D"
 ```
 
-A party may be declared at the top level or inline in a candidate's `party` field (Section 2.10).
+A party may be declared at the top level or inline in a candidate's `party` field.
 
 ### 2.10. Candidate
 
@@ -643,8 +641,8 @@ candidate @nreyes "Nadia Reyes"
 `@green` right here and makes it this candidate's party. It may be followed by a `PartyBlock`
 indented under it.
 
-A candidate may be declared at the top level, as above, or inline in a campaign (Section 2.14).
-Declare at the top level when the person appears in more than one contest.
+A candidate may be declared at the top level, as above, or inline in a campaign. Declare at the top
+level when the person appears in more than one contest.
 
 ### 2.11. Ballot
 
@@ -766,7 +764,7 @@ accepts any number of each; validation requires at least one campaign except in 
 (`contest-without-campaigns`) and exactly one recommendation (`missing-recommendation`), so that a
 half-written contest still parses and the validator can name what is missing. Campaigns and the
 recommendation may be interleaved with fields in the source; a formatter orders them fields,
-campaigns, recommendation (Section 6).
+campaigns, recommendation.
 
 ### 2.14. Campaign
 
@@ -796,7 +794,7 @@ CampaignField :
 - PartyRef
 
 A campaign is one or more candidates running together for the contest. It has no identifier; it is
-identified by its candidates (Section 2.15).
+identified by its candidates.
 
 A `Member` is a candidate reference (`@id`) or an inline candidate declaration (`@id "Name"`),
 optionally followed by `as String`, the member's role on the ticket ("Governor", "Vice President").
@@ -963,20 +961,20 @@ recommend no-position
 
 Validating a document is three stages run in order, each on the output of the one before:
 
-1. **Lexing** turns the source text into the tokens of Sections 2.2 through 2.4. Text that cannot be
-   tokenized becomes an `Error` token and a lexical error (Section 3.1). Lexing covers every byte of
-   the input, so the token stream is complete even when it contains errors.
-2. **Parsing** matches the token stream against the syntactic grammar of Sections 2.5 through 2.17
-   and builds a tree. A token the grammar does not expect is a syntax error (Section 3.2). A
-   document that lexes and parses without error is _well-formed_.
-3. **Validation** checks the tree against the errors of Section 3.3 and the warnings of Section 3.4.
-   A well-formed document that produces no error is _valid_. Warnings do not affect validity, but a
-   validator reports them.
+1. **Lexing** turns the source text into the tokens. Text that cannot be tokenized becomes an
+   `Error` token and a lexical error. Lexing covers every byte of the input, so the token stream is
+   complete even when it contains errors. An exhaustive list of lexical errors is described below.
+2. **Parsing** matches the token stream against the syntactic grammar and builds a tree. A token the
+   grammar does not expect is a syntax error. A document that lexes and parses without error is
+   _well-formed_. An exhaustive list of syntax errors is described below.
+3. **Validation** checks the tree against the list of validation rules. A well-formed document that
+   produces no error is _valid_. Warnings do not affect validity, but a compliant validator should
+   still report them.
 
 Every error at every stage has an identifier and a range in the source. Identifiers are stable
-across editions; tools report errors by identifier. A validator reports every lexical error, every
-syntax error, and every rule the document breaks, in source order, so that an author sees all of
-them in one pass.
+across editions; tools should report errors by identifier. A validator reports every lexical error,
+every syntax error, and every rule the document breaks, in source order, so that an author can see
+them all in once pass.
 
 ### 3.1. Lexical Errors
 
@@ -985,20 +983,16 @@ where a token is recognizable but flawed, the token keeps its kind and the error
 within it.
 
 After an error the lexer continues, using the recovery given for each error below, so that every
-error in a document is reported in one pass and so that the token stream still covers every byte
-(Section 2.2). The recoveries are normative: two implementations given the same broken document
-produce the same tokens and the same errors.
+error in a document is reported in one pass and so that the token stream still covers every byte.
+The recoveries are normative: two implementations given the same broken document produce the same
+tokens and the same errors.
 
 A tool that only needs to accept or reject a document may stop at the first error instead. It then
 reports a subset of the errors this section specifies and is not lexer- or parser-conformant
 (Section 4), since those levels exist for tools that must make sense of every byte of a broken file;
 the documents it accepts are exactly the documents a conformant implementation accepts.
 
-The seven errors below are exhaustive. Every character of an input that Section 2.1 accepts, at
-every position, either belongs to a token of Sections 2.2 through 2.4 or produces exactly one of
-them, so a lexer never needs a fallback error.
-
-Each error below is followed by an example that lexes without error and a counter-example that
+Note: Each error below is followed by an example that lexes without error and a counter-example that
 produces the error, each with its token sequence: every token in order, with its kind and its text.
 A space is shown as ␣, a tab as ⇥, and a line terminator as ↵. Zero-length tokens have no text.
 
