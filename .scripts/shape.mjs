@@ -121,7 +121,7 @@ function section(name, title) {
 
 export async function render() {
   const intro = [
-    "This section is generated from `schema/guide.schema.json` by `scripts/shape.mjs` and lists the",
+    "This section is generated from `schema/guide.schema.json` by `.scripts/shape.mjs` and lists the",
     "objects and keys the schema defines. Every value is one of the objects below, an array of them,",
     "or a scalar. An _identifier_ is an entity's identifier without its leading `@`, and _Markdown_",
     "is a body with its common indentation removed, line terminators normalized to `\\n`, and no",

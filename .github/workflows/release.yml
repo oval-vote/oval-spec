@@ -4,11 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: The version to release, as MAJOR.MINOR.PATCH
-        required: true
-        type: string
-      summary:
-        description: One sentence for the top of the release notes
+        description: The version to release, as MAJOR.MINOR.PATCH; the version on main when empty
         required: false
         type: string
 
@@ -39,19 +35,21 @@ jobs:
       - name: Validate the request
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
-          VERSION: ${{ inputs.version }}
+          REQUESTED: ${{ inputs.version }}
         run: |
-          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "$VERSION is not MAJOR.MINOR.PATCH" >&2
-            exit 1
-          fi
           current="$(node -p "require('./package.json').version")"
-          if ! node -e 'const [a, b] = process.argv.slice(1).map((v) => v.split(".").map(Number)); process.exit((a[0] - b[0] || a[1] - b[1] || a[2] - b[2]) > 0 ? 0 : 1)' "$VERSION" "$current"; then
-            echo "$VERSION is not greater than the current version $current" >&2
+          version="${REQUESTED:-$current}"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "$version is not MAJOR.MINOR.PATCH" >&2
             exit 1
           fi
-          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null; then
-            echo "v$VERSION is already tagged" >&2
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null; then
+            echo "v$version is already released" >&2
+            exit 1
+          fi
+          latest="$(git tag --list 'v*' | sort -V | tail -1)"
+          if [ -n "$latest" ] && ! node -e 'const [a, b] = process.argv.slice(1).map((v) => v.split(".").map(Number)); process.exit((a[0] - b[0] || a[1] - b[1] || a[2] - b[2]) > 0 ? 0 : 1)' "$version" "${latest#v}"; then
+            echo "$version is not greater than the latest release ${latest#v}" >&2
             exit 1
           fi
           runs="$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs" --paginate --jq '.check_runs[] | select(.name != "release") | "\(.name): \(.status) \(.conclusion)"')"
@@ -64,20 +62,18 @@ jobs:
             echo "checks on $GITHUB_SHA are not all green" >&2
             exit 1
           fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
       - name: Check the tree
         run: mise run ci
       - name: Prepare the edition
-        env:
-          VERSION: ${{ inputs.version }}
         run: |
-          npm version "$VERSION" --no-git-tag-version
+          mise run set-version "$VERSION"
           npm run release
           npm run build
           npm run check
       - name: Commit and push
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
-          VERSION: ${{ inputs.version }}
           APP_SLUG: ${{ steps.app.outputs.app-slug }}
         run: |
           id="$(gh api "users/${APP_SLUG}[bot]" --jq .id)"
@@ -89,11 +85,6 @@ jobs:
       - name: Create the release
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
-          VERSION: ${{ inputs.version }}
-          SUMMARY: ${{ inputs.summary }}
-        run: |
-          notes=()
-          if [ -n "$SUMMARY" ]; then
-            notes=(--notes "$SUMMARY")
-          fi
-          gh release create "v$VERSION" --target "$(git rev-parse HEAD)" --title "v$VERSION" --generate-notes "${notes[@]}"
+        run:
+          gh release create "v$VERSION" --target "$(git rev-parse HEAD)" --title "v$VERSION" --notes
+          ""

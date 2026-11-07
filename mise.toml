@@ -16,3 +16,16 @@ run = "npm ci && npm test"
 [tasks."ci:schema"]
 description = "Validate Schema"
 run = "check-jsonschema --check-metaschema schema/guide.schema.json && check-jsonschema --schemafile schema/guide.schema.json examples/franklin.oval.json"
+
+[tasks."ci:version"]
+description = "Validate Version"
+depends = ["version:check"]
+
+[tasks."set-version"]
+description = "Set the version in package.json and its lockfile"
+usage = 'arg "<version>" help="The new version, as MAJOR.MINOR.PATCH"'
+run = '.scripts/version.sh set "$usage_version"'
+
+[tasks."version:check"]
+description = "Check that the version is well-formed, agrees with the lockfile, and is not behind the latest edition"
+run = ".scripts/version.sh check"
