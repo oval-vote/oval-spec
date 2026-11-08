@@ -164,7 +164,8 @@ identifier is exported by the application that owns the format on a given system
 every other application that reads or writes it; two applications must not both export it.
 
 **Canonical output.** The JSON value a document compiles to is served as `application/json`. It has
-no media type of its own; its schema is identified by the `$id` of `schema/guide.schema.json`.
+no media type of its own; its schema is identified by the `$id` of `oval.schema.json`, which names
+the edition the schema belongs to.
 
 **Version marker.** Every document begins with `oval` followed by the major version of the language
 it is written in. The marker is the first entry of the document and is defined in Section 2.5.
@@ -2197,11 +2198,11 @@ for each well-formed document the expected validation report and canonical resol
 
 Compiling a valid document produces one JSON value: the data model with every reference resolved,
 plus derived fields that any renderer would otherwise recompute. Its shape is fixed by
-`schema/guide.schema.json`, a JSON Schema (draft 2020-12), which is normative. This section explains
-the conventions the schema follows, lays out the shape it fixes, and defines the derived fields. The
-output is called _canonical_ because two conformant implementations must produce the same value for
-the same document; it is a contract between implementations and consumers, not a document for people
-to read.
+`oval.schema.json`, a JSON Schema (draft 2020-12) published beside this document and as the npm
+package `@oval-vote/oval-schema`, which is normative. This section explains the conventions the
+schema follows, lays out the shape it fixes, and defines the derived fields. The output is called
+_canonical_ because two conformant implementations must produce the same value for the same
+document; it is a contract between implementations and consumers, not a document for people to read.
 
 The output is the semantic model, not the syntax tree. It carries no source positions, comments, or
 whitespace, so two parsers cannot disagree about it on formatting. Tools that need positions use the
@@ -2239,12 +2240,12 @@ syntax tree or the diagnostics.
 
 ### 5.2. Shape
 
-This section is generated from `schema/guide.schema.json` by `.scripts/shape.mjs` and lists the
-objects and keys the schema defines. Every value is one of the objects below, an array of them, or a
-scalar. An _identifier_ is an entity's identifier without its leading `@`, and _Markdown_ is a body
-with its common indentation removed, line terminators normalized to `\n`, and no trailing terminator
-(Section 2.2). A key whose meaning begins with "Derived" is computed from the document; Section 5.3
-defines it.
+This section is generated from `packages/oval-schema/oval.schema.json` by `.scripts/shape.mjs` and
+lists the objects and keys the schema defines. Every value is one of the objects below, an array of
+them, or a scalar. An _identifier_ is an entity's identifier without its leading `@`, and _Markdown_
+is a body with its common indentation removed, line terminators normalized to `\n`, and no trailing
+terminator (Section 2.2). A key whose meaning begins with "Derived" is computed from the document;
+Section 5.3 defines it.
 
 #### Root
 
@@ -2496,7 +2497,7 @@ full-scale guide: six root ballots, forty-four contests, twenty-eight measures. 
 the reference implementation (`oval compile --pretty`) and validates against the schema:
 
 ```sh
-check-jsonschema --schemafile schema/guide.schema.json examples/franklin.oval.json
+check-jsonschema --schemafile packages/oval-schema/oval.schema.json examples/franklin.oval.json
 ```
 
 The repository's `mise.toml` installs `check-jsonschema`.

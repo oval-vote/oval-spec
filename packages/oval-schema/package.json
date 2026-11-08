@@ -1,0 +1,28 @@
+{
+  "name": "@oval-vote/oval-schema",
+  "version": "0.0.1",
+  "description": "The JSON Schema of a compiled Oval voting guide, with TypeScript types generated from it",
+  "license": "CC-BY-4.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oval-vote/oval-spec.git",
+    "directory": "packages/oval-schema"
+  },
+  "homepage": "https://spec.oval.vote",
+  "files": [
+    "dist/"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    },
+    "./oval.schema.json": "./dist/oval.schema.json"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "npm run build && tsc --noEmit --strict dist/index.d.ts"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -7,6 +7,13 @@ on:
         description: The version to release, as MAJOR.MINOR.PATCH; the version on main when empty
         required: false
         type: string
+      draft:
+        description: Publish a draft of the schema package from main instead of releasing
+        required: false
+        type: boolean
+        default: false
+  push:
+    tags: ["v*"]
 
 permissions: {}
 
@@ -16,6 +23,7 @@ concurrency:
 
 jobs:
   release:
+    if: github.event_name == 'workflow_dispatch' && !inputs.draft
     runs-on: ubuntu-latest
     steps:
       - if: github.ref != 'refs/heads/main'
@@ -79,7 +87,7 @@ jobs:
           id="$(gh api "users/${APP_SLUG}[bot]" --jq .id)"
           git config user.name "${APP_SLUG}[bot]"
           git config user.email "${id}+${APP_SLUG}[bot]@users.noreply.github.com"
-          git add package.json package-lock.json published
+          git add package.json package-lock.json packages/oval-schema/package.json published
           git commit -m "Release $VERSION"
           git push origin HEAD:main
       - name: Create the release
@@ -88,3 +96,66 @@ jobs:
         run:
           gh release create "v$VERSION" --target "$(git rev-parse HEAD)" --title "v$VERSION" --notes
           ""
+
+  publish:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - run: npm ci
+      - run: mise run version:check
+      - run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "the version is $version but the tag is $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+      - run: npm run check --workspace packages/oval-schema
+      - run: npm publish --workspace packages/oval-schema
+
+  draft:
+    if: github.event_name == 'workflow_dispatch' && inputs.draft
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - if: github.ref != 'refs/heads/main'
+        run: |
+          echo "drafts are published from main, not ${GITHUB_REF_NAME}" >&2
+          exit 1
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - run: npm ci
+      - name: Check that main is green
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          runs="$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs" --paginate --jq '.check_runs[] | select(.name != "draft") | "\(.name): \(.status) \(.conclusion)"')"
+          if [ -z "$runs" ]; then
+            echo "no checks have run on $GITHUB_SHA" >&2
+            exit 1
+          fi
+          echo "$runs"
+          if echo "$runs" | grep -vE ': completed (success|skipped|neutral)$'; then
+            echo "checks on $GITHUB_SHA are not all green" >&2
+            exit 1
+          fi
+      - name: Choose the draft version
+        run: |
+          base="$(node -p "require('./package.json').version")"
+          published="$(npm view @oval-vote/oval-schema versions --json 2>/dev/null || echo '[]')"
+          next="$(node -e 'const [base, published] = process.argv.slice(1); const drafts = JSON.parse(published).flatMap((v) => { const m = v.match(new RegExp(`^${base.replace(/\./g, "\\.")}-draft\\.(\\d+)$`)); return m ? [Number(m[1])] : []; }); console.log(Math.max(0, ...drafts) + 1)' "$base" "$published")"
+          echo "DRAFT_VERSION=$base-draft.$next" >> "$GITHUB_ENV"
+      - name: Publish the draft
+        env:
+          OVAL_SCHEMA_ID: https://spec.oval.vote/draft/schema/oval.schema.json
+        run: |
+          npm version "$DRAFT_VERSION" --no-git-tag-version --workspace packages/oval-schema
+          npm run check --workspace packages/oval-schema
+          npm publish --workspace packages/oval-schema --tag draft
+          echo "published @oval-vote/oval-schema@$DRAFT_VERSION under the draft tag"
