@@ -3,8 +3,10 @@ import { cpSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync }
 import specMarkdown from "spec-md";
 
 export const REPOSITORY = "https://github.com/oval-vote/oval-spec";
+export const SITE = "https://spec.oval.vote";
+export const SCHEMA = "packages/oval-schema/oval.schema.json";
 export const DRAFT_LINE = "_Working Draft_";
-const SOURCES = ["SPEC.md", "grammar.txt", "schema", "examples"];
+const SOURCES = ["SPEC.md", "grammar.txt", SCHEMA, "examples"];
 
 export function sourceDigest() {
   const hash = createHash("sha256");
@@ -95,11 +97,13 @@ function renderTokenSequences(html) {
   return rendered.replace("</head>", `<style>${TOKEN_STYLE}</style></head>`);
 }
 
-export async function writeEdition(directory, ref) {
+export async function writeEdition(directory, ref, site) {
   const html = await renderSpec(ref);
-  mkdirSync(directory, { recursive: true });
+  mkdirSync(`${directory}/schema`, { recursive: true });
   writeFileSync(`${directory}/index.html`, html);
-  cpSync("schema", `${directory}/schema`, { recursive: true });
+  const schema = JSON.parse(readFileSync(SCHEMA, "utf8"));
+  schema.$id = `${site}/schema/oval.schema.json`;
+  writeFileSync(`${directory}/schema/oval.schema.json`, `${JSON.stringify(schema, null, 2)}\n`);
   cpSync("examples", `${directory}/examples`, { recursive: true });
   cpSync("grammar.txt", `${directory}/grammar.txt`);
 }

@@ -8,7 +8,11 @@ package_version() {
 }
 
 lock_versions() {
-  node -p "const lock = require('./package-lock.json'); [lock.version, lock.packages[''].version].join(' ')"
+  node -p "const lock = require('./package-lock.json'); [lock.version, lock.packages[''].version, lock.packages['packages/oval-schema'].version].join(' ')"
+}
+
+schema_version() {
+  node -p "require('./packages/oval-schema/package.json').version"
 }
 
 latest_edition() {
@@ -26,6 +30,10 @@ check() {
   local ok=0
   if ! [[ "$expected" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "package.json version $expected is not MAJOR.MINOR.PATCH" >&2
+    ok=1
+  fi
+  if [ "$(schema_version)" != "$expected" ]; then
+    echo "packages/oval-schema/package.json is $(schema_version) but package.json is $expected" >&2
     ok=1
   fi
   for version in $(lock_versions); do
@@ -58,7 +66,7 @@ set_version() {
     echo "$version is not greater than the latest edition $latest" >&2
     exit 1
   fi
-  npm version "$version" --no-git-tag-version --allow-same-version >/dev/null
+  npm version "$version" --no-git-tag-version --allow-same-version --workspaces --include-workspace-root >/dev/null
   check
 }
 

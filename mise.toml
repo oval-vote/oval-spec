@@ -15,7 +15,7 @@ run = "npm ci && npm test"
 
 [tasks."ci:schema"]
 description = "Validate Schema"
-run = "check-jsonschema --check-metaschema schema/guide.schema.json && check-jsonschema --schemafile schema/guide.schema.json examples/franklin.oval.json"
+run = "check-jsonschema --check-metaschema packages/oval-schema/oval.schema.json && check-jsonschema --schemafile packages/oval-schema/oval.schema.json examples/franklin.oval.json"
 
 [tasks."ci:version"]
 description = "Validate Version"

@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { DRAFT_LINE, sourceDigest, writeEdition } from "./edition.mjs";
+import { DRAFT_LINE, SCHEMA, SITE, sourceDigest, writeEdition } from "./edition.mjs";
 
 const { version } = JSON.parse(readFileSync("package.json", "utf8"));
 if (!/^\d+\.\d+\.\d+$/.test(version)) {
@@ -19,7 +19,7 @@ if (existsSync(directory)) {
 if (
   execFileSync(
     "git",
-    ["status", "--porcelain", "--", "SPEC.md", "schema", "examples", "grammar.txt"],
+    ["status", "--porcelain", "--", "SPEC.md", SCHEMA, "examples", "grammar.txt"],
     { encoding: "utf8" },
   ).trim()
 ) {
@@ -40,7 +40,7 @@ writeFileSync(
   spec.replace(`\n${DRAFT_LINE}\n`, `\n_Version ${version}, released ${longDate}_\n`),
 );
 try {
-  await writeEdition(directory, tag);
+  await writeEdition(directory, tag, `${SITE}/${tag}`);
 } finally {
   writeFileSync("SPEC.md", spec);
 }

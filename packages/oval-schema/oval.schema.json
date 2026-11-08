@@ -1,7 +1,7 @@
 {
   "description": "The canonical output of compiling an Oval document: the data model with every reference resolved, plus derived fields for renderers. Keys mirror the language's keywords.",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://oval.vote/schema/0.1/guide.schema.json",
+  "$id": "https://spec.oval.vote/draft/schema/oval.schema.json",
   "title": "Oval compiled guide",
   "type": "object",
   "required": ["oval", "guide", "parties", "candidates", "ballots", "questions", "counts"],

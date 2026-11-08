@@ -8,12 +8,12 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { REPOSITORY, sourceDigest, writeEdition } from "./edition.mjs";
+import { REPOSITORY, SITE, sourceDigest, writeEdition } from "./edition.mjs";
 
 rmSync("dist", { recursive: true, force: true });
 mkdirSync("dist");
 
-await writeEdition("dist/draft", "main");
+await writeEdition("dist/draft", "main", `${SITE}/draft`);
 
 const editions = existsSync("published")
   ? readdirSync("published", { withFileTypes: true })
