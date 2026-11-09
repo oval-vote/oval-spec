@@ -2025,10 +2025,10 @@ The second example contains an indented code block.
 ### 3.4. Warnings
 
 A warning marks a document that is valid but probably not what its author intends: something is
-unused, duplicated, or unbalanced in a way the grammar and the errors above allow. Warnings do not
-affect validity. A validator reports every warning with the same identifiers and ranges as errors,
-and a compiler compiles a document that has warnings. A tool may let an author silence a warning;
-this specification does not say how.
+unused, duplicated, unbalanced, or empty in a way the grammar and the errors above allow. Warnings
+do not affect validity. A validator reports every warning with the same identifiers and ranges as
+errors, and a compiler compiles a document that has warnings. A tool may let an author silence a
+warning; this specification does not say how.
 
 #### Unused Declaration
 
@@ -2165,6 +2165,21 @@ website https://santosformayor.example
 
 ```oval counter-example
 website http://santosformayor.example
+```
+
+#### Empty String
+
+Occurs when a `String` contains no characters, or only spaces and tabs. A string is display text, so
+an empty one shows the reader a blank where a title, a name, or a value belongs. Write the text, or
+omit an optional field instead of leaving it empty. The warning is reported as `empty-string` and
+spans the string, its quotes included.
+
+```oval example
+subtitle "Vote for one"
+```
+
+```oval counter-example
+subtitle ""
 ```
 
 ---
