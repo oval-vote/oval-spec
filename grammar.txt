@@ -122,6 +122,8 @@ Flag : one of `incumbent` `withdrawn`
 
 Requirement : one of `required` `optional`
 
+Extensibility : one of `extensible` `exhaustive`
+
 Identifier : `@` Word
 
 Reference : Identifier
@@ -151,7 +153,7 @@ PartyRef :
 - `party` Identifier Newline
 - `party` Identifier String Newline PartyBlock?
 
-Ballot : Requirement? `ballot` Identifier String Newline BallotBlock
+Ballot : Requirement? Extensibility? `ballot` Identifier String Newline BallotBlock
 
 BallotBlock : Indent BallotEntry+ Dedent
 
@@ -172,7 +174,7 @@ BallotItem :
 - Measure
 - Ballot
 
-Section : Requirement? `section` String Newline SectionBlock
+Section : Requirement? Extensibility? `section` String Newline SectionBlock
 
 SectionBlock : Indent SectionEntry+ Dedent
 
@@ -188,7 +190,7 @@ SectionItem :
 - Contest
 - Measure
 
-Contest : Requirement? `contest` Identifier String ContestKind Newline ContestBlock
+Contest : Requirement? Extensibility? `contest` Identifier String ContestKind Newline ContestBlock
 
 ContestKind :
 
@@ -238,26 +240,42 @@ CampaignField :
 - `designation` String Newline
 - PartyRef
 
-ContestRecommend : `recommend` NoStance? Newline RecommendBlock?
+ContestRecommend :
+
+- `recommend` Newline StanceBlock
+- `recommend` NoStance Newline RecommendFieldBlock?
 
 NoStance : one of `no-position` `abstain`
 
-RecommendBlock : Indent RecommendEntry+ Dedent
+StanceBlock : Indent RecommendField* Stance RecommendEntry* Dedent
 
 RecommendEntry :
 
-- Support
-- Oppose
+- Stance
 - RecommendField
 
-Support : `support` Reference+ Newline
+Stance :
 
-Oppose : `oppose` Reference+ Newline
+- Support
+- Oppose
+
+Support : `support` Choice+ Newline
+
+Oppose : `oppose` Choice+ Newline
+
+Choice :
+
+- Reference
+- WriteIn
+
+WriteIn : `write-in` String?
 
 RecommendField :
 
 - `justification` MarkdownBody
 - `note` MarkdownBody
+
+RecommendFieldBlock : Indent RecommendField+ Dedent
 
 Measure : Requirement? `measure` Identifier String Newline MeasureBlock
 
@@ -284,5 +302,3 @@ MeasureField :
 MeasureRecommend : `recommend` MeasurePosition Newline RecommendFieldBlock?
 
 MeasurePosition : one of `yes` `no` `no-position` `abstain`
-
-RecommendFieldBlock : Indent RecommendField+ Dedent
