@@ -523,6 +523,34 @@ Flag : one of `incumbent` `withdrawn`
 
 There is no `false` spelling; omit the flag.
 
+A **requirement** is a keyword written before the keyword of a `Ballot`, `Section`, `Contest`, or
+`Measure`, on the same line:
+
+Requirement : one of `required` `optional`
+
+A question (a contest or a measure) is **required** when the ballot requires the voter to answer it,
+and **optional** when the voter may leave it blank. Every question has exactly one of these values,
+its _effective requirement_, found by looking outward from the question to the nearest construct
+that has a requirement written on it: the question itself, then its enclosing section, if any, then
+its enclosing ballots from the innermost out to the root ballot. When none of them has one, the
+question is optional.
+
+```oval example
+required ballot @city "City of Ashford"
+  section "City Offices"
+    contest @mayor "Mayor" single
+      ...
+    optional contest @auditor "City Auditor" single
+      ...
+  measure @prop-a "Proposition A"
+    ...
+```
+
+Here `@mayor` and `@prop-a` are required, inherited from the ballot, and `@auditor` is optional
+because its own requirement is nearer. A requirement on a ballot or a section has no meaning of its
+own; it only supplies the value its questions inherit. A question's effective requirement decides
+whether it may be recommended with `abstain` (Sections 2.15 and 2.17).
+
 ### 2.7. Declarations and References
 
 Entities (Party, Candidate, Ballot, Contest, Measure) are _declared_ exactly once each and may be
@@ -643,7 +671,7 @@ level when the person appears in more than one contest.
 
 ### 2.11. Ballot
 
-Ballot : `ballot` Identifier String Newline BallotBlock
+Ballot : Requirement? `ballot` Identifier String Newline BallotBlock
 
 BallotBlock : Indent BallotEntry+ Dedent
 
@@ -676,13 +704,14 @@ ballot @franklin "State of Franklin"
 A ballot is a node in the guide's tree. Its items are in ballot order. A `Ballot` item is a
 **sub-ballot**: a narrower electorate whose voters also see everything in the enclosing ballot.
 Sub-ballots nest without limit. Document-level ballots are **root ballots**; a valid document has at
-least one.
+least one. A `Requirement` before `ballot` is inherited by every question in the ballot and its
+sub-ballots that does not have a nearer one (Section 2.6).
 
 A ballot with no block is a syntax error, and a ballot whose block has no item is invalid.
 
 ### 2.12. Section
 
-Section : `section` String Newline SectionBlock
+Section : Requirement? `section` String Newline SectionBlock
 
 SectionBlock : Indent SectionEntry+ Dedent
 
@@ -700,11 +729,20 @@ SectionItem :
 
 A section is a titled group of questions within a ballot, matching a heading on the printed ballot.
 It has no identifier and no eligibility meaning. Sections do not nest and do not contain
-sub-ballots.
+sub-ballots. A `Requirement` before `section` is inherited by every question in the section that
+does not have its own (Section 2.6).
+
+```oval example
+required section "Statewide Offices"
+  contest @governor "Governor" single
+    ...
+  optional contest @controller "Controller" single
+    ...
+```
 
 ### 2.13. Contest
 
-Contest : `contest` Identifier String ContestKind Newline ContestBlock
+Contest : Requirement? `contest` Identifier String ContestKind Newline ContestBlock
 
 ContestKind :
 
@@ -760,6 +798,9 @@ accepts any number of each; validation requires at least one campaign except in 
 and exactly one recommendation, so that a half-written contest still parses and the validator can
 name what is missing. Campaigns and the recommendation may be interleaved with fields in the source;
 a formatter orders them fields, campaigns, recommendation.
+
+A `Requirement` before `contest` sets the contest's effective requirement directly, overriding any
+inherited from its section or ballots (Section 2.6).
 
 ### 2.14. Campaign
 
@@ -840,10 +881,9 @@ appear in either order and each at most once.
 
 ### 2.15. Contest Recommendation
 
-ContestRecommend :
+ContestRecommend : `recommend` NoStance? Newline RecommendBlock?
 
-- `recommend` Newline RecommendBlock
-- `recommend` `no-position` Newline RecommendNoteBlock?
+NoStance : one of `no-position` `abstain`
 
 RecommendBlock : Indent RecommendEntry+ Dedent
 
@@ -862,8 +902,6 @@ RecommendField :
 - `justification` MarkdownBody
 - `note` MarkdownBody
 
-RecommendNoteBlock : Indent RecommendField+ Dedent
-
 ```oval example
 recommend
   support @aokafor
@@ -875,6 +913,12 @@ recommend
     Do not rank Fox.
 ```
 
+A recommendation is a position followed by optional commentary. The position is written either on
+the `recommend` line, as `no-position` or `abstain`, or as the `support` and `oppose` lines of the
+block, never both. Without a `NoStance`, the block is required and must contain at least one
+`support` or `oppose` line. With one, the block is optional and may contain only `justification` and
+`note`.
+
 Each `support` line is one **tier**. Several `support` lines are several tiers, in order from most
 to least preferred. References within one line are interchangeable. `oppose` lists campaigns the
 author advises against; it is unordered and may appear at most once.
@@ -885,12 +929,25 @@ enclosing contest's campaigns, whose members include that candidate. A candidate
 more than one campaign within the same contest.
 
 `recommend no-position` is an explicit statement that the author takes no position. It may carry
-`justification` and `note` but no `support` or `oppose`. A `recommend` block with neither `support`
-nor `oppose` is a syntax error; write `no-position` instead.
+`justification` and `note` but no `support` or `oppose`.
+
+`recommend abstain` is an explicit recommendation to leave the question blank. It differs from
+`no-position`: `no-position` says the author offers no advice, while `abstain` advises the reader
+not to vote on the question at all. Like `no-position`, it may carry `justification` and `note` but
+no `support` or `oppose`. A required question cannot be left blank, so `abstain` is valid only on an
+optional one (Section 2.6).
+
+```oval example
+contest @auditor "City Auditor" single
+  campaign @hkim "Hana Kim"
+  recommend abstain
+    justification:
+      The only candidate is unopposed and has not answered our questionnaire.
+```
 
 ### 2.16. Measure
 
-Measure : `measure` Identifier String Newline MeasureBlock
+Measure : Requirement? `measure` Identifier String Newline MeasureBlock
 
 MeasureBlock : Indent MeasureEntry+ Dedent
 
@@ -934,19 +991,28 @@ measure @prop1 "Proposition 1"
 
 `description`, `if_yes`, and `if_no` are official ballot text copied verbatim. `supporters` and
 `opponents` have three states: **absent** (not researched), **`none`** (researched; none known), and
-a list. A measure contains exactly one `MeasureRecommend`.
+a list. A measure contains exactly one `MeasureRecommend`. A `Requirement` before `measure` sets the
+measure's effective requirement directly, overriding any inherited from its section or ballots
+(Section 2.6).
 
 ### 2.17. Measure Recommendation
 
-MeasureRecommend : `recommend` MeasurePosition Newline RecommendNoteBlock?
+MeasureRecommend : `recommend` MeasurePosition Newline RecommendFieldBlock?
 
-MeasurePosition : one of `yes` `no` `no-position`
+MeasurePosition : one of `yes` `no` `no-position` `abstain`
+
+RecommendFieldBlock : Indent RecommendField+ Dedent
 
 ```oval example
 recommend no-position
   justification:
     Two board members recused and the rest were split.
 ```
+
+A measure has no campaigns, so its position is always on the `recommend` line and its block holds
+only `justification` and `note`. `yes` and `no` recommend a vote. `no-position` says the author
+offers no advice. `abstain` advises the reader to leave the measure blank, and is valid only on an
+optional measure, as for a contest (Section 2.15).
 
 ---
 
@@ -1375,9 +1441,9 @@ date 2026-11-03
 
 Occurs when a construct whose block is required is not followed by an indented line: a `ballot`,
 `section`, `contest`, or `measure`; a `campaign` with no member on its line; or a `recommend`
-without `no-position`. The error is reported as `missing-block` and is zero-length after the line
-terminator. To recover, assume the missing token; the construct is kept with an empty block, and
-validation reports what the block lacks.
+without `no-position` or `abstain`. The error is reported as `missing-block` and is zero-length
+after the line terminator. To recover, assume the missing token; the construct is kept with an empty
+block, and validation reports what the block lacks.
 
 ```oval example
 ballot @city "City of Ashford"
@@ -1420,6 +1486,12 @@ measure; an identifier where no member is allowed; or a string. The error is rep
 `unexpected-entry` and spans the line and its block, if any. To recover, skip the entry. The
 diagnostic names the entries the block accepts.
 
+A `Requirement` belongs to the entry it begins, so the same error occurs when a line begins with
+`required` or `optional` and the next token is not the keyword of an entry the block accepts: a
+requirement alone on its line, a requirement before any other keyword (`required campaign`), two
+requirements (`optional required contest`), or a requirement before a construct the block does not
+accept (`required section` inside a section).
+
 ```oval example
 party @dem "Democratic"
   abbreviation "D"
@@ -1429,6 +1501,20 @@ party @dem "Democratic"
 party @dem "Democratic"
   designation "D"
 ```
+
+```oval example
+contest @mayor "Mayor" single
+  campaign @bsantos "Beatriz Santos"
+  recommend no-position
+```
+
+```oval counter-example
+contest @mayor "Mayor" single
+  required campaign @bsantos "Beatriz Santos"
+  recommend no-position
+```
+
+A requirement applies to questions and their containers, not to campaigns.
 
 #### Repeated Field
 
@@ -1496,10 +1582,11 @@ date 2026-11-03
 
 #### Empty Recommendation
 
-Occurs when a contest's `recommend` has a block with neither a `support` nor an `oppose` line. The
-error is reported as `empty-recommendation` and spans the `recommend` keyword. To recover, nothing
-is discarded; the block is kept, and parsing continues. Write `recommend no-position` to state that
-the author takes no position.
+Occurs when a contest's `recommend` line has no `no-position` or `abstain` and its block has neither
+a `support` nor an `oppose` line. The error is reported as `empty-recommendation` and spans the
+`recommend` keyword. To recover, nothing is discarded; the block is kept, and parsing continues.
+Write `recommend no-position` to state that the author takes no position, or `recommend abstain` to
+advise leaving the question blank.
 
 ```oval example
 recommend
@@ -1512,6 +1599,28 @@ recommend
 recommend
   justification:
     We could not reach either candidate.
+```
+
+#### Unexpected Stance
+
+Occurs when a contest's `recommend` line has `no-position` or `abstain` and its block contains a
+`support` or `oppose` line. The position is already stated on the `recommend` line, so the block may
+only add `justification` and `note`. The error is reported as `unexpected-stance` and spans each
+`support` or `oppose` line. To recover, set the entry aside. Remove either the line or the
+`no-position` or `abstain`. A measure never accepts these lines, so under a measure's `recommend`
+they are unexpected entries instead.
+
+```oval example
+recommend abstain
+  justification:
+    Neither candidate answered our questionnaire.
+```
+
+```oval counter-example
+recommend abstain
+  support @bsantos
+  justification:
+    Neither candidate answered our questionnaire.
 ```
 
 ### 3.3. Validation Errors
@@ -1834,8 +1943,9 @@ contest @judge-ueda "Retain Judge Ueda?" retention
 #### Missing Recommendation
 
 Occurs when a `Contest` has no `ContestRecommend` or a `Measure` has no `MeasureRecommend`. Every
-question on the ballot carries the author's position, even when that position is `no-position`. The
-error is reported as `missing-recommendation` and spans the contest's or measure's header line.
+question on the ballot carries the author's position, even when that position is `no-position` or
+`abstain`. The error is reported as `missing-recommendation` and spans the contest's or measure's
+header line.
 
 ```oval example
 measure @prop-a "Proposition A"
@@ -1973,9 +2083,9 @@ contest @board "School Board" ranked max 2
 #### Retention Stance
 
 Occurs when a `retention` contest's recommendation is anything other than one `support` line with
-one reference, one `oppose` line with one reference, or `recommend no-position`. A retention
-question has a single answer, yes or no. The error is reported as `retention-stance` and spans the
-line that breaks the shape.
+one reference, one `oppose` line with one reference, `recommend no-position`, or
+`recommend abstain`. A retention question has a single answer, yes or no. The error is reported as
+`retention-stance` and spans the line that breaks the shape.
 
 ```oval example
 contest @judge-ueda "Retain Judge Ueda?" retention
@@ -1990,6 +2100,29 @@ contest @judge-ueda "Retain Judge Ueda?" retention
   recommend
     support @ueda
     oppose @ueda
+```
+
+#### Abstain on a Required Question
+
+Occurs when a contest's or measure's recommendation is `abstain` and the question's effective
+requirement is required, whether the requirement is written on the question or inherited from its
+section or ballots (Section 2.6). A required question cannot be left blank. The error is reported as
+`abstain-on-required` and spans the `abstain` keyword.
+
+```oval example
+required section "City Measures"
+  measure @prop-a "Proposition A"
+    recommend yes
+  optional measure @prop-b "Proposition B"
+    recommend abstain
+```
+
+```oval counter-example
+required section "City Measures"
+  measure @prop-a "Proposition A"
+    recommend yes
+  measure @prop-b "Proposition B"
+    recommend abstain
 ```
 
 #### Unsupported Markdown
@@ -2228,11 +2361,11 @@ syntax tree or the diagnostics.
 - **Absent fields are omitted.** An optional field the author did not write is not present; it is
   never `null`. `supporters` and `opponents` therefore have three states: omitted (not researched),
   `[]` (researched, none), or a list.
-- **Booleans are always present.** `incumbent`, `withdrawn`, and `no_position` are written even when
-  false.
+- **Booleans are always present.** `incumbent`, `withdrawn`, `no_position`, `abstain`, and
+  `required` are written even when false.
 - **The root echoes the version marker.** `oval` is the document's declared major version as an
-  integer, `1`. Later editions of the same major version only add keys to the output, so a consumer
-  written to an earlier edition reads the output of a later one.
+  integer, `1`. Later editions of the same major version only add keys and enumerated values to the
+  output, so a consumer written to an earlier edition reads the output of a later one.
 - **Discriminated unions use `kind`.** Every item in a ballot or section has a `kind` of `section`,
   `contest`, `measure`, or `ballot`, and root ballots carry `kind: "ballot"` too, so one type
   describes a ballot anywhere. `method.kind` and `stance.position` discriminate the same way.
@@ -2242,8 +2375,9 @@ syntax tree or the diagnostics.
 - **Campaigns are referred to by index** within their contest's `campaigns` array, since they have
   no identifiers.
 - **Strict producers, tolerant consumers.** The schema forbids unknown keys so that a producer's
-  mistakes are caught. Consumers should ignore keys they do not recognize, because a later edition
-  of this specification may add fields. Removing or renaming a field takes a new major version.
+  mistakes are caught. Consumers should ignore keys they do not recognize, and tolerate values of an
+  enumeration they do not recognize, because a later edition of this specification may add fields
+  and values. Removing or renaming a field or a value takes a new major version.
 
 ### 5.2. Shape
 
@@ -2335,18 +2469,19 @@ A titled group of contests and measures within a ballot.
 
 A race between campaigns for an office.
 
-| Key              | Type                   | Required | Meaning                                                                |
-| ---------------- | ---------------------- | -------- | ---------------------------------------------------------------------- |
-| `kind`           | `"contest"`            | yes      | Always `contest`.                                                      |
-| `id`             | identifier             | yes      | The contest's identifier.                                              |
-| `title`          | string                 | yes      | The contest as named on the ballot.                                    |
-| `subtitle`       | string                 | no       | A line printed under the title, from `subtitle`.                       |
-| `method`         | Method                 | yes      | The voting method, from the contest header.                            |
-| `tabulation`     | string                 | no       | How votes are counted, from `tabulation`.                              |
-| `note`           | Markdown               | no       | The author's note on the contest, from `note`.                         |
-| `location`       | Location               | yes      | Derived. Where the contest sits in the ballot tree.                    |
-| `campaigns`      | array of Campaign      | yes      | In ballot order. A campaign is referred to by its index in this array. |
-| `recommendation` | Contest Recommendation | yes      | The author's recommendation on the contest.                            |
+| Key              | Type                   | Required | Meaning                                                                                              |
+| ---------------- | ---------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `kind`           | `"contest"`            | yes      | Always `contest`.                                                                                    |
+| `id`             | identifier             | yes      | The contest's identifier.                                                                            |
+| `title`          | string                 | yes      | The contest as named on the ballot.                                                                  |
+| `subtitle`       | string                 | no       | A line printed under the title, from `subtitle`.                                                     |
+| `method`         | Method                 | yes      | The voting method, from the contest header.                                                          |
+| `tabulation`     | string                 | no       | How votes are counted, from `tabulation`.                                                            |
+| `note`           | Markdown               | no       | The author's note on the contest, from `note`.                                                       |
+| `location`       | Location               | yes      | Derived. Where the contest sits in the ballot tree.                                                  |
+| `required`       | boolean                | yes      | Derived. Whether the voter must answer it, from the nearest `required` or `optional`; false if none. |
+| `campaigns`      | array of Campaign      | yes      | In ballot order. A campaign is referred to by its index in this array.                               |
+| `recommendation` | Contest Recommendation | yes      | The author's recommendation on the contest.                                                          |
 
 #### Method
 
@@ -2398,15 +2533,16 @@ Derived. What the contest's recommendation says about this campaign.
 
 The author's recommendation on a contest.
 
-| Key                 | Type                                   | Required | Meaning                                                                                     |
-| ------------------- | -------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| `no_position`       | boolean                                | yes      | Whether the author takes no position, from `recommend no-position`.                         |
-| `support`           | array of arrays of identifier          | yes      | Tiers as written: candidate identifiers, most preferred tier first. Empty when no_position. |
-| `oppose`            | array of identifier                    | yes      | Candidate identifiers as written. Empty when no_position.                                   |
-| `support_campaigns` | array of arrays of integer, at least 0 | yes      | Derived. The same tiers resolved to campaign indices.                                       |
-| `oppose_campaigns`  | array of integer, at least 0           | yes      | Derived. The opposed campaigns as indices.                                                  |
-| `justification`     | Markdown                               | no       | The author's reasoning, from `justification`.                                               |
-| `note`              | Markdown                               | no       | The author's note on the recommendation, from `note`.                                       |
+| Key                 | Type                                   | Required | Meaning                                                                                                |
+| ------------------- | -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------ |
+| `no_position`       | boolean                                | yes      | Whether the author takes no position, from `recommend no-position`.                                    |
+| `abstain`           | boolean                                | yes      | Whether the author recommends leaving the question blank, from `recommend abstain`.                    |
+| `support`           | array of arrays of identifier          | yes      | Tiers as written: candidate identifiers, most preferred tier first. Empty when no_position or abstain. |
+| `oppose`            | array of identifier                    | yes      | Candidate identifiers as written. Empty when no_position or abstain.                                   |
+| `support_campaigns` | array of arrays of integer, at least 0 | yes      | Derived. The same tiers resolved to campaign indices.                                                  |
+| `oppose_campaigns`  | array of integer, at least 0           | yes      | Derived. The opposed campaigns as indices.                                                             |
+| `justification`     | Markdown                               | no       | The author's reasoning, from `justification`.                                                          |
+| `note`              | Markdown                               | no       | The author's note on the recommendation, from `note`.                                                  |
 
 #### Measure
 
@@ -2428,28 +2564,30 @@ A ballot measure: a question answered yes or no.
 | `opponents`      | array of string        | no       | Organizations opposing the measure, from `opponents`. Omitted when not researched; empty when researched and none known.    |
 | `note`           | Markdown               | no       | The author's note on the measure, from `note`.                                                                              |
 | `location`       | Location               | yes      | Derived. Where the measure sits in the ballot tree.                                                                         |
+| `required`       | boolean                | yes      | Derived. Whether the voter must answer it, from the nearest `required` or `optional`; false if none.                        |
 | `recommendation` | Measure Recommendation | yes      | The author's recommendation on the measure.                                                                                 |
 
 #### Measure Recommendation
 
 The author's recommendation on a measure.
 
-| Key             | Type                                    | Required | Meaning                                               |
-| --------------- | --------------------------------------- | -------- | ----------------------------------------------------- |
-| `position`      | one of `"yes"`, `"no"`, `"no-position"` | yes      | The recommended vote, from `recommend`.               |
-| `justification` | Markdown                                | no       | The author's reasoning, from `justification`.         |
-| `note`          | Markdown                                | no       | The author's note on the recommendation, from `note`. |
+| Key             | Type                                                 | Required | Meaning                                               |
+| --------------- | ---------------------------------------------------- | -------- | ----------------------------------------------------- |
+| `position`      | one of `"yes"`, `"no"`, `"no-position"`, `"abstain"` | yes      | The recommended vote, from `recommend`.               |
+| `justification` | Markdown                                             | no       | The author's reasoning, from `justification`.         |
+| `note`          | Markdown                                             | no       | The author's note on the recommendation, from `note`. |
 
 #### Question Entry
 
 Derived. One contest or measure in the document's flat index of questions.
 
-| Key        | Type                            | Required | Meaning                                             |
-| ---------- | ------------------------------- | -------- | --------------------------------------------------- |
-| `kind`     | one of `"contest"`, `"measure"` | yes      | Whether the question is a `contest` or a `measure`. |
-| `id`       | identifier                      | yes      | The question's identifier.                          |
-| `title`    | string                          | yes      | The question's title.                               |
-| `location` | Location                        | yes      | Where the question sits in the ballot tree.         |
+| Key        | Type                            | Required | Meaning                                                                    |
+| ---------- | ------------------------------- | -------- | -------------------------------------------------------------------------- |
+| `kind`     | one of `"contest"`, `"measure"` | yes      | Whether the question is a `contest` or a `measure`.                        |
+| `id`       | identifier                      | yes      | The question's identifier.                                                 |
+| `title`    | string                          | yes      | The question's title.                                                      |
+| `location` | Location                        | yes      | Where the question sits in the ballot tree.                                |
+| `required` | boolean                         | yes      | Whether the voter must answer this question, as on the contest or measure. |
 
 #### Location
 
@@ -2485,11 +2623,12 @@ Everything below is computed from the document; none of it can disagree with the
 | `contests`                              | candidate                        | Identifiers of every contest in which the candidate is a campaign member, in ballot order.                                                                                                 |
 | `path`                                  | ballot                           | Identifiers of the enclosing ballots, outermost first, excluding the ballot itself. Empty for a root.                                                                                      |
 | `location`                              | contest, measure, question entry | `ballot`, the innermost enclosing ballot's identifier; `section`, the enclosing section's title if any; `path`, every enclosing ballot's identifier outermost first, ending with `ballot`. |
+| `required`                              | contest, measure, question entry | `true` when the nearest requirement on the question, its section, or its ballots is `required` (Section 2.6); `false` when it is `optional` or there is none.                              |
 | `index`                                 | campaign                         | Position in the contest's `campaigns` array.                                                                                                                                               |
 | `head`                                  | campaign                         | Identifier of the first member: the head of the ticket, and the name recommendations use for this campaign.                                                                                |
 | `label`                                 | campaign                         | The members' names joined with `" / "`, head first. For a single candidate, their name.                                                                                                    |
 | `party`                                 | campaign                         | The party every member shares, when all members have the same party. Omitted otherwise, including when any member has none.                                                                |
-| `stance`                                | campaign                         | What the contest's recommendation says about this campaign: `support` with the zero-based `tier`, `oppose`, or `none`. In a `no_position` recommendation every campaign has `none`.        |
+| `stance`                                | campaign                         | What the contest's recommendation says about this campaign: `support` with the zero-based `tier`, `oppose`, or `none`. With `no_position` or `abstain`, every campaign has `none`.         |
 | `support_campaigns`, `oppose_campaigns` | contest recommendation           | The written `support` tiers and `oppose` list resolved from candidate identifiers to campaign indices.                                                                                     |
 | `questions`                             | root                             | Every contest and measure in ballot order, each with `kind`, `id`, `title`, and `location`. A flat index for tables of contents and per-electorate views.                                  |
 | `counts`                                | root                             | Totals of ballots (all, not only roots), sections, contests, measures, campaigns, candidates, and parties.                                                                                 |
@@ -2514,8 +2653,9 @@ The repository's `mise.toml` installs `check-jsonschema`.
 ## 6. Formatting
 
 A formatter rewrites a well-formed document into the canonical style below. Formatting never changes
-meaning: the formatted document has the same significant tokens, the same Markdown values, and
-compiles to the same canonical output (Section 5) as the original. Formatting is idempotent.
+meaning: the formatted document has the same significant tokens, except the redundant requirements
+it removes (Section 6.4), the same Markdown values, and compiles to the same canonical output
+(Section 5) as the original. Formatting is idempotent.
 
 A formatter refuses a document with lexical or syntax errors and reports them instead. Recovery from
 errors produces a tree whose shape the author did not intend, and reformatting around it could move
@@ -2570,6 +2710,38 @@ Fields keep their source order relative to one another. Children that carry mean
 
 Whether a formatter should instead place fields first in every block, or impose an order among
 fields, is undecided and is expected to become a configurable option rather than a rule here.
+
+### 6.4. Requirements
+
+A `Requirement` is _redundant_ when it is the value its construct would inherit without it: the
+nearest requirement written on an enclosing section or ballot, or `optional` when there is none
+(Section 2.6). A formatter removes every redundant requirement, along with the space after it.
+
+```oval counter-example
+optional ballot @city "City of Ashford"
+  required section "City Offices"
+    required contest @mayor "Mayor" single
+      ...
+    optional contest @auditor "City Auditor" single
+      ...
+```
+
+A formatter rewrites the document above as the one below. The ballot's `optional` is what it would
+have with nothing written, and the mayor's `required` is what it would inherit from the section. The
+auditor's `optional` stays, because without it the contest would inherit `required`.
+
+```oval example
+ballot @city "City of Ashford"
+  required section "City Offices"
+    contest @mayor "Mayor" single
+      ...
+    optional contest @auditor "City Auditor" single
+      ...
+```
+
+Removing a redundant requirement leaves the effective requirement of every question unchanged, since
+each construct inherits the same value it held before. The formatted document therefore compiles to
+the same output, and a second pass finds nothing more to remove.
 
 ---
 
@@ -2697,6 +2869,8 @@ Flags : Flag*
 
 Flag : one of `incumbent` `withdrawn`
 
+Requirement : one of `required` `optional`
+
 Identifier : `@` Word
 
 Reference : Identifier
@@ -2726,7 +2900,7 @@ PartyRef :
 - `party` Identifier Newline
 - `party` Identifier String Newline PartyBlock?
 
-Ballot : `ballot` Identifier String Newline BallotBlock
+Ballot : Requirement? `ballot` Identifier String Newline BallotBlock
 
 BallotBlock : Indent BallotEntry+ Dedent
 
@@ -2747,7 +2921,7 @@ BallotItem :
 - Measure
 - Ballot
 
-Section : `section` String Newline SectionBlock
+Section : Requirement? `section` String Newline SectionBlock
 
 SectionBlock : Indent SectionEntry+ Dedent
 
@@ -2763,7 +2937,7 @@ SectionItem :
 - Contest
 - Measure
 
-Contest : `contest` Identifier String ContestKind Newline ContestBlock
+Contest : Requirement? `contest` Identifier String ContestKind Newline ContestBlock
 
 ContestKind :
 
@@ -2813,10 +2987,9 @@ CampaignField :
 - `designation` String Newline
 - PartyRef
 
-ContestRecommend :
+ContestRecommend : `recommend` NoStance? Newline RecommendBlock?
 
-- `recommend` Newline RecommendBlock
-- `recommend` `no-position` Newline RecommendNoteBlock?
+NoStance : one of `no-position` `abstain`
 
 RecommendBlock : Indent RecommendEntry+ Dedent
 
@@ -2835,9 +3008,7 @@ RecommendField :
 - `justification` MarkdownBody
 - `note` MarkdownBody
 
-RecommendNoteBlock : Indent RecommendField+ Dedent
-
-Measure : `measure` Identifier String Newline MeasureBlock
+Measure : Requirement? `measure` Identifier String Newline MeasureBlock
 
 MeasureBlock : Indent MeasureEntry+ Dedent
 
@@ -2859,9 +3030,11 @@ MeasureField :
 - `opponents` StringList Newline
 - `note` MarkdownBody
 
-MeasureRecommend : `recommend` MeasurePosition Newline RecommendNoteBlock?
+MeasureRecommend : `recommend` MeasurePosition Newline RecommendFieldBlock?
 
-MeasurePosition : one of `yes` `no` `no-position`
+MeasurePosition : one of `yes` `no` `no-position` `abstain`
+
+RecommendFieldBlock : Indent RecommendField+ Dedent
 
 ## B. Appendix: Keywords
 
@@ -2878,7 +3051,8 @@ from the grammar; nothing is reserved, since identifiers begin with `@`.
 | Contest header   | `single` `multiple` `ranked` `retention` `max`                                                   |
 | Contest fields   | `subtitle` `tabulation`                                                                          |
 | Campaign         | `incumbent` `withdrawn` `as`                                                                     |
-| Recommendation   | `recommend` `support` `oppose` `justification` `yes` `no` `no-position`                          |
+| Requirement      | `required` `optional`                                                                            |
+| Recommendation   | `recommend` `support` `oppose` `justification` `yes` `no` `no-position` `abstain`                |
 | Measure fields   | `description` `if_yes` `if_no` `placement` `tabulation` `fiscal_impact` `supporters` `opponents` |
 | Values           | `none`                                                                                           |
 

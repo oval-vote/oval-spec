@@ -333,7 +333,16 @@
     "contest": {
       "description": "A race between campaigns for an office.",
       "type": "object",
-      "required": ["kind", "id", "title", "method", "location", "campaigns", "recommendation"],
+      "required": [
+        "kind",
+        "id",
+        "title",
+        "method",
+        "location",
+        "required",
+        "campaigns",
+        "recommendation"
+      ],
       "additionalProperties": false,
       "properties": {
         "kind": {
@@ -367,6 +376,10 @@
         "location": {
           "description": "Derived. Where the contest sits in the ballot tree.",
           "$ref": "#/$defs/location"
+        },
+        "required": {
+          "description": "Derived. Whether the voter must answer it, from the nearest `required` or `optional`; false if none.",
+          "type": "boolean"
         },
         "campaigns": {
           "description": "In ballot order. A campaign is referred to by its index in this array.",
@@ -500,15 +513,26 @@
     "contest_recommendation": {
       "description": "The author's recommendation on a contest.",
       "type": "object",
-      "required": ["no_position", "support", "oppose", "support_campaigns", "oppose_campaigns"],
+      "required": [
+        "no_position",
+        "abstain",
+        "support",
+        "oppose",
+        "support_campaigns",
+        "oppose_campaigns"
+      ],
       "additionalProperties": false,
       "properties": {
         "no_position": {
           "description": "Whether the author takes no position, from `recommend no-position`.",
           "type": "boolean"
         },
+        "abstain": {
+          "description": "Whether the author recommends leaving the question blank, from `recommend abstain`.",
+          "type": "boolean"
+        },
         "support": {
-          "description": "Tiers as written: candidate identifiers, most preferred tier first. Empty when no_position.",
+          "description": "Tiers as written: candidate identifiers, most preferred tier first. Empty when no_position or abstain.",
           "type": "array",
           "items": {
             "type": "array",
@@ -519,7 +543,7 @@
           }
         },
         "oppose": {
-          "description": "Candidate identifiers as written. Empty when no_position.",
+          "description": "Candidate identifiers as written. Empty when no_position or abstain.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/identifier"
@@ -558,7 +582,7 @@
     "measure": {
       "description": "A ballot measure: a question answered yes or no.",
       "type": "object",
-      "required": ["kind", "id", "title", "location", "recommendation"],
+      "required": ["kind", "id", "title", "location", "required", "recommendation"],
       "additionalProperties": false,
       "properties": {
         "description": {
@@ -623,6 +647,10 @@
           "description": "Derived. Where the measure sits in the ballot tree.",
           "$ref": "#/$defs/location"
         },
+        "required": {
+          "description": "Derived. Whether the voter must answer it, from the nearest `required` or `optional`; false if none.",
+          "type": "boolean"
+        },
         "recommendation": {
           "description": "The author's recommendation on the measure.",
           "$ref": "#/$defs/measure_recommendation"
@@ -637,7 +665,7 @@
       "properties": {
         "position": {
           "description": "The recommended vote, from `recommend`.",
-          "enum": ["yes", "no", "no-position"]
+          "enum": ["yes", "no", "no-position", "abstain"]
         },
         "justification": {
           "description": "The author's reasoning, from `justification`.",
@@ -652,7 +680,7 @@
     "question_entry": {
       "description": "Derived. One contest or measure in the document's flat index of questions.",
       "type": "object",
-      "required": ["kind", "id", "title", "location"],
+      "required": ["kind", "id", "title", "location", "required"],
       "additionalProperties": false,
       "properties": {
         "kind": {
@@ -670,6 +698,10 @@
         "location": {
           "description": "Where the question sits in the ballot tree.",
           "$ref": "#/$defs/location"
+        },
+        "required": {
+          "description": "Whether the voter must answer this question, as on the contest or measure.",
+          "type": "boolean"
         }
       }
     },

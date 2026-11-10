@@ -1458,6 +1458,7 @@
                   "federal"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1591,6 +1592,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "hana-nakamura"
@@ -1629,6 +1631,7 @@
                   "federal"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1666,6 +1669,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "dana-lombardi"
@@ -1697,6 +1701,7 @@
                   "federal"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1750,6 +1755,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "dana-lombardi"
@@ -1786,6 +1792,7 @@
                   "federal"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1824,6 +1831,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "quinn-okafor"
@@ -1854,6 +1862,7 @@
                   "federal"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1892,6 +1901,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "odalys-halvorsen"
@@ -1922,6 +1932,7 @@
                   "federal"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1960,6 +1971,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "bram-mendez"
@@ -2004,6 +2016,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2042,6 +2055,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "kiran-ueda"
@@ -2072,6 +2086,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2110,6 +2125,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "wes-larsson"
@@ -2140,6 +2156,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2179,6 +2196,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "odalys-dominguez",
@@ -2211,6 +2229,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2249,6 +2268,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "silas-osei"
@@ -2285,6 +2305,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2323,6 +2344,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "isaac-walsh"
@@ -2353,6 +2375,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2391,6 +2414,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "silas-reyes"
@@ -2421,6 +2445,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2459,6 +2484,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "tamsin-ivanova"
@@ -2496,6 +2522,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2516,6 +2543,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "elena-villanueva"
@@ -2565,6 +2593,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "The existing subsidy is not enough and this modest increase is a cheap fix. It will\nnot solve the underlying shortage, but it is better than nothing."
@@ -2590,6 +2619,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "This is a straightforward bond for infrastructure the district has deferred for a\ndecade. The repayment schedule is conservative and the oversight committee has real\nteeth."
@@ -2613,6 +2643,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "Two of our board members work for organizations that would receive funding under this\nmeasure. They recused themselves and the remaining members were evenly split."
@@ -2641,6 +2672,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "The existing subsidy is not enough and this modest increase is a cheap fix. It will\nnot solve the underlying shortage, but it is better than nothing."
@@ -2668,6 +2700,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "The existing subsidy is not enough and this modest increase is a cheap fix. It will\nnot solve the underlying shortage, but it is better than nothing."
@@ -2688,6 +2721,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "no-position",
                 "justification": "The mechanism here is the problem, not the goal. It sets no limits on what localities\nmay do in its place, and the cities most eager to use it have the worst records on the\nunderlying issue.\n\nWe would support a narrower version. Vote no on this one."
@@ -2718,6 +2752,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "no",
                 "justification": "This is a straightforward bond for infrastructure the district has deferred for a\ndecade. The repayment schedule is conservative and the oversight committee has real\nteeth."
@@ -2742,6 +2777,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "The mechanism here is the problem, not the goal. It sets no limits on what localities\nmay do in its place, and the cities most eager to use it have the worst records on the\nunderlying issue.\n\nWe would support a narrower version. Vote no on this one."
@@ -2765,6 +2801,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "The existing subsidy is not enough and this modest increase is a cheap fix. It will\nnot solve the underlying shortage, but it is better than nothing."
@@ -2794,6 +2831,7 @@
                   "franklin"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "no",
                 "justification": "Enshrines in the charter a right the courts have already recognized. Cheap, symbolic,\nand worth doing."
@@ -2831,6 +2869,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3036,6 +3075,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "rosa-dominguez"
@@ -3078,6 +3118,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3115,6 +3156,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "lena-tanaka",
@@ -3146,6 +3188,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3182,6 +3225,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "yara-suzuki"
@@ -3211,6 +3255,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3247,6 +3292,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "priya-fontaine"
@@ -3277,6 +3323,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3298,6 +3345,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "lila-mbeki"
@@ -3334,6 +3382,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3388,6 +3437,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "farah-lindqvist"
@@ -3427,6 +3477,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3481,6 +3532,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "tamsin-delacroix"
@@ -3520,6 +3572,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3604,6 +3657,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "omar-haddad"
@@ -3643,6 +3697,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3727,6 +3782,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "quinn-oyelaran"
@@ -3766,6 +3822,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3850,6 +3907,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "rhea-vance"
@@ -3889,6 +3947,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3943,6 +4002,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "jun-bergstrom"
@@ -3989,6 +4049,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -4162,6 +4223,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "jun-ivanova",
@@ -4205,6 +4267,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -4332,6 +4395,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "isaac-mbeki",
@@ -4382,6 +4446,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "Two of our board members work for organizations that would receive funding under this\nmeasure. They recused themselves and the remaining members were evenly split."
@@ -4402,6 +4467,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "This is a straightforward bond for infrastructure the district has deferred for a\ndecade. The repayment schedule is conservative and the oversight committee has real\nteeth."
@@ -4426,6 +4492,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "no-position",
                 "justification": "The mechanism here is the problem, not the goal. It sets no limits on what localities\nmay do in its place, and the cities most eager to use it have the worst records on the\nunderlying issue.\n\nWe would support a narrower version. Vote no on this one."
@@ -4454,6 +4521,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "This is a straightforward bond for infrastructure the district has deferred for a\ndecade. The repayment schedule is conservative and the oversight committee has real\nteeth."
@@ -4477,6 +4545,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "no",
                 "justification": "Enshrines in the charter a right the courts have already recognized. Cheap, symbolic,\nand worth doing."
@@ -4498,6 +4567,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "This is a straightforward bond for infrastructure the district has deferred for a\ndecade. The repayment schedule is conservative and the oversight committee has real\nteeth."
@@ -4527,6 +4597,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "Consolidates six overlapping programs into one with a single budget. It should cut\noverhead and make oversight possible for the first time."
@@ -4547,6 +4618,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "The existing subsidy is not enough and this modest increase is a cheap fix. It will\nnot solve the underlying shortage, but it is better than nothing."
@@ -4570,6 +4642,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "This is a straightforward bond for infrastructure the district has deferred for a\ndecade. The repayment schedule is conservative and the oversight committee has real\nteeth."
@@ -4596,6 +4669,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "Brings the retirement age back to where it was in 2012. The staffing picture here is\nnothing like the shortage elsewhere, and the health-risk argument is real."
@@ -4620,6 +4694,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "This creates a new office with no new powers and no clear mandate. It is redundant\nwith three existing bodies and adds a layer of coordination at best."
@@ -4641,6 +4716,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "no-position",
                 "justification": "A flat per-parcel tax is regressive, but the alternative is cutting the service\nentirely, and the people who depend on it most are the ones a cut would hurt."
@@ -4672,6 +4748,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "The existing subsidy is not enough and this modest increase is a cheap fix. It will\nnot solve the underlying shortage, but it is better than nothing."
@@ -4692,6 +4769,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "Two of our board members work for organizations that would receive funding under this\nmeasure. They recused themselves and the remaining members were evenly split."
@@ -4717,6 +4795,7 @@
                   "ashford"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "Brings the retirement age back to where it was in 2012. The staffing picture here is\nnothing like the shortage elsewhere, and the health-risk argument is real."
@@ -4750,6 +4829,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -4786,6 +4866,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "lena-brennan"
@@ -4822,6 +4903,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -4981,6 +5063,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "talia-vance"
@@ -5020,6 +5103,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5089,6 +5173,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "camila-sandoval"
@@ -5128,6 +5213,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5197,6 +5283,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "kiran-abernathy"
@@ -5236,6 +5323,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5320,6 +5408,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "petra-abernathy"
@@ -5359,6 +5448,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5413,6 +5503,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "bram-okonkwo"
@@ -5458,6 +5549,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5495,6 +5587,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "imani-petrov"
@@ -5525,6 +5618,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5562,6 +5656,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "bram-pappas"
@@ -5598,6 +5693,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "no-position",
                 "justification": "Two of our board members work for organizations that would receive funding under this\nmeasure. They recused themselves and the remaining members were evenly split."
@@ -5624,6 +5720,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "no",
                 "justification": "We are sympathetic to the goal, but sentence-length deterrence has not worked anywhere\nit has been tried, and the fiscal estimate does not include the custody costs."
@@ -5649,6 +5746,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5700,6 +5798,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "petra-kowalczyk"
@@ -5729,6 +5828,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5780,6 +5880,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "uma-moreau"
@@ -5815,6 +5916,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5881,6 +5983,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "felix-suzuki"
@@ -5910,6 +6013,7 @@
                   "brookhaven"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5976,6 +6080,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "elena-tanaka"
@@ -6021,6 +6126,7 @@
                   "millbrook"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -6163,6 +6269,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "vera-tanaka",
@@ -6204,6 +6311,7 @@
                   "millbrook"
                 ]
               },
+              "required": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -6301,6 +6409,7 @@
               ],
               "recommendation": {
                 "no_position": false,
+                "abstain": false,
                 "support": [
                   [
                     "maeve-nakamura",
@@ -6348,6 +6457,7 @@
                   "millbrook"
                 ]
               },
+              "required": false,
               "recommendation": {
                 "position": "yes",
                 "justification": "The existing subsidy is not enough and this modest increase is a cheap fix. It will\nnot solve the underlying shortage, but it is better than nothing."
@@ -6379,6 +6489,7 @@
               "transit"
             ]
           },
+          "required": false,
           "campaigns": [
             {
               "index": 0,
@@ -6415,6 +6526,7 @@
           ],
           "recommendation": {
             "no_position": false,
+            "abstain": false,
             "support": [
               [
                 "kwame-halvorsen"
@@ -6444,6 +6556,7 @@
               "transit"
             ]
           },
+          "required": false,
           "campaigns": [
             {
               "index": 0,
@@ -6480,6 +6593,7 @@
           ],
           "recommendation": {
             "no_position": false,
+            "abstain": false,
             "support": [
               [
                 "vera-patel"
@@ -6509,6 +6623,7 @@
               "transit"
             ]
           },
+          "required": false,
           "campaigns": [
             {
               "index": 0,
@@ -6545,6 +6660,7 @@
           ],
           "recommendation": {
             "no_position": false,
+            "abstain": false,
             "support": [
               [
                 "anil-osei"
@@ -6574,7 +6690,8 @@
         "path": [
           "federal"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6586,7 +6703,8 @@
         "path": [
           "federal"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6598,7 +6716,8 @@
         "path": [
           "federal"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6610,7 +6729,8 @@
         "path": [
           "federal"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6622,7 +6742,8 @@
         "path": [
           "federal"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6634,7 +6755,8 @@
         "path": [
           "federal"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6646,7 +6768,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6658,7 +6781,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6670,7 +6794,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6682,7 +6807,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6694,7 +6820,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6706,7 +6833,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6718,7 +6846,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6730,7 +6859,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6742,7 +6872,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6754,7 +6885,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6766,7 +6898,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6778,7 +6911,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6790,7 +6924,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6802,7 +6937,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6814,7 +6950,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6826,7 +6963,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6838,7 +6976,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -6850,7 +6989,8 @@
         "path": [
           "franklin"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6862,7 +7002,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6874,7 +7015,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6886,7 +7028,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6898,7 +7041,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6910,7 +7054,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6922,7 +7067,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6934,7 +7080,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6946,7 +7093,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6958,7 +7106,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6970,7 +7119,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6982,7 +7132,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -6994,7 +7145,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7006,7 +7158,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7018,7 +7171,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7030,7 +7184,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7042,7 +7197,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7054,7 +7210,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7066,7 +7223,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7078,7 +7236,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7090,7 +7249,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7102,7 +7262,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7114,7 +7275,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7126,7 +7288,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7138,7 +7301,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7150,7 +7314,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7162,7 +7327,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7174,7 +7340,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7186,7 +7353,8 @@
         "path": [
           "ashford"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7198,7 +7366,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7210,7 +7379,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7222,7 +7392,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7234,7 +7405,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7246,7 +7418,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7258,7 +7431,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7270,7 +7444,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7282,7 +7457,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7294,7 +7470,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7306,7 +7483,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7318,7 +7496,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7330,7 +7509,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7342,7 +7522,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7354,7 +7535,8 @@
         "path": [
           "brookhaven"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7366,7 +7548,8 @@
         "path": [
           "millbrook"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7378,7 +7561,8 @@
         "path": [
           "millbrook"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "measure",
@@ -7390,7 +7574,8 @@
         "path": [
           "millbrook"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7401,7 +7586,8 @@
         "path": [
           "transit"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7412,7 +7598,8 @@
         "path": [
           "transit"
         ]
-      }
+      },
+      "required": false
     },
     {
       "kind": "contest",
@@ -7423,7 +7610,8 @@
         "path": [
           "transit"
         ]
-      }
+      },
+      "required": false
     }
   ],
   "counts": {

@@ -120,6 +120,8 @@ Flags : Flag*
 
 Flag : one of `incumbent` `withdrawn`
 
+Requirement : one of `required` `optional`
+
 Identifier : `@` Word
 
 Reference : Identifier
@@ -149,7 +151,7 @@ PartyRef :
 - `party` Identifier Newline
 - `party` Identifier String Newline PartyBlock?
 
-Ballot : `ballot` Identifier String Newline BallotBlock
+Ballot : Requirement? `ballot` Identifier String Newline BallotBlock
 
 BallotBlock : Indent BallotEntry+ Dedent
 
@@ -170,7 +172,7 @@ BallotItem :
 - Measure
 - Ballot
 
-Section : `section` String Newline SectionBlock
+Section : Requirement? `section` String Newline SectionBlock
 
 SectionBlock : Indent SectionEntry+ Dedent
 
@@ -186,7 +188,7 @@ SectionItem :
 - Contest
 - Measure
 
-Contest : `contest` Identifier String ContestKind Newline ContestBlock
+Contest : Requirement? `contest` Identifier String ContestKind Newline ContestBlock
 
 ContestKind :
 
@@ -236,10 +238,9 @@ CampaignField :
 - `designation` String Newline
 - PartyRef
 
-ContestRecommend :
+ContestRecommend : `recommend` NoStance? Newline RecommendBlock?
 
-- `recommend` Newline RecommendBlock
-- `recommend` `no-position` Newline RecommendNoteBlock?
+NoStance : one of `no-position` `abstain`
 
 RecommendBlock : Indent RecommendEntry+ Dedent
 
@@ -258,9 +259,7 @@ RecommendField :
 - `justification` MarkdownBody
 - `note` MarkdownBody
 
-RecommendNoteBlock : Indent RecommendField+ Dedent
-
-Measure : `measure` Identifier String Newline MeasureBlock
+Measure : Requirement? `measure` Identifier String Newline MeasureBlock
 
 MeasureBlock : Indent MeasureEntry+ Dedent
 
@@ -282,6 +281,8 @@ MeasureField :
 - `opponents` StringList Newline
 - `note` MarkdownBody
 
-MeasureRecommend : `recommend` MeasurePosition Newline RecommendNoteBlock?
+MeasureRecommend : `recommend` MeasurePosition Newline RecommendFieldBlock?
 
-MeasurePosition : one of `yes` `no` `no-position`
+MeasurePosition : one of `yes` `no` `no-position` `abstain`
+
+RecommendFieldBlock : Indent RecommendField+ Dedent
