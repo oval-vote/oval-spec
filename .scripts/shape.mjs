@@ -126,8 +126,8 @@ export async function render() {
     "and lists the objects and keys the schema defines. Every value is one of the objects below, an array of them,",
     "or a scalar. An _identifier_ is an entity's identifier without its leading `@`, and _Markdown_",
     "is a body with its common indentation removed, line terminators normalized to `\\n`, and no",
-    'trailing terminator (Section 2.2). A key whose meaning begins with "Derived" is computed from',
-    "the document; Section 5.3 defines it.",
+    'trailing terminator. A key whose meaning begins with "Derived" is computed from',
+    "the document.",
   ].join("\n");
   const sections = ORDER.map(([name, title]) => section(name, title));
   const markdown = [intro, ...sections].join("\n\n") + "\n";

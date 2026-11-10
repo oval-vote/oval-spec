@@ -25,7 +25,8 @@
         "isaac-walsh",
         "silas-reyes",
         "tamsin-ivanova"
-      ]
+      ],
+      "contests": []
     },
     {
       "id": "gop",
@@ -45,7 +46,8 @@
         "omar-chaudhry",
         "victor-ferreira",
         "cedric-larsson"
-      ]
+      ],
+      "contests": []
     },
     {
       "id": "green",
@@ -55,7 +57,8 @@
         "victor-bergstrom",
         "vera-mendez",
         "kiran-thorne"
-      ]
+      ],
+      "contests": []
     },
     {
       "id": "lib",
@@ -64,7 +67,8 @@
       "candidates": [
         "petra-patel",
         "samir-osei"
-      ]
+      ],
+      "contests": []
     },
     {
       "id": "pf",
@@ -73,7 +77,8 @@
       "candidates": [
         "petra-dominguez",
         "quinn-guerrero"
-      ]
+      ],
+      "contests": []
     },
     {
       "id": "ind",
@@ -82,7 +87,8 @@
       "candidates": [
         "ada-fontaine",
         "camila-oyelaran"
-      ]
+      ],
+      "contests": []
     }
   ],
   "candidates": [
@@ -1463,15 +1469,18 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Hana Nakamura / Hiro Eriksen",
                   "head": "hana-nakamura",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "hana-nakamura",
                       "role": "President"
                     },
                     {
+                      "kind": "candidate",
                       "candidate": "hiro-eriksen",
                       "role": "Vice President"
                     }
@@ -1486,15 +1495,18 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Yara Bergstrom / Omar Rowe",
                   "head": "yara-bergstrom",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "yara-bergstrom",
                       "role": "President"
                     },
                     {
+                      "kind": "candidate",
                       "candidate": "omar-rowe",
                       "role": "Vice President"
                     }
@@ -1508,15 +1520,18 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Victor Bergstrom / Vera Mendez",
                   "head": "victor-bergstrom",
                   "party": "green",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "victor-bergstrom",
                       "role": "President"
                     },
                     {
+                      "kind": "candidate",
                       "candidate": "vera-mendez",
                       "role": "Vice President"
                     }
@@ -1529,15 +1544,18 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Petra Patel / Samir Osei",
                   "head": "petra-patel",
                   "party": "lib",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "petra-patel",
                       "role": "President"
                     },
                     {
+                      "kind": "candidate",
                       "candidate": "samir-osei",
                       "role": "Vice President"
                     }
@@ -1550,15 +1568,18 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Petra Dominguez / Quinn Guerrero",
                   "head": "petra-dominguez",
                   "party": "pf",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "petra-dominguez",
                       "role": "President"
                     },
                     {
+                      "kind": "candidate",
                       "candidate": "quinn-guerrero",
                       "role": "Vice President"
                     }
@@ -1571,15 +1592,18 @@
                 },
                 {
                   "index": 5,
+                  "kind": "candidates",
                   "label": "Ada Fontaine / Camila Oyelaran",
                   "head": "ada-fontaine",
                   "party": "ind",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "ada-fontaine",
                       "role": "President"
                     },
                     {
+                      "kind": "candidate",
                       "candidate": "camila-oyelaran",
                       "role": "Vice President"
                     }
@@ -1635,11 +1659,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Dana Lombardi",
                   "head": "dana-lombardi",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "dana-lombardi"
                     }
                   ],
@@ -1652,11 +1678,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Sofia Yilmaz",
                   "head": "sofia-yilmaz",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "sofia-yilmaz"
                     }
                   ],
@@ -1704,11 +1732,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Dana Lombardi",
                   "head": "dana-lombardi",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "dana-lombardi"
                     }
                   ],
@@ -1721,11 +1751,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Sofia Yilmaz",
                   "head": "sofia-yilmaz",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "sofia-yilmaz"
                     }
                   ],
@@ -1737,11 +1769,13 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Kiran Thorne",
                   "head": "kiran-thorne",
                   "party": "green",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "kiran-thorne"
                     }
                   ],
@@ -1794,11 +1828,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Quinn Okafor",
                   "head": "quinn-okafor",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "quinn-okafor"
                     }
                   ],
@@ -1812,11 +1848,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Talia Jensen",
                   "head": "talia-jensen",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "talia-jensen"
                     }
                   ],
@@ -1863,11 +1901,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Odalys Halvorsen",
                   "head": "odalys-halvorsen",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "odalys-halvorsen"
                     }
                   ],
@@ -1881,11 +1921,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Marcus Ndiaye",
                   "head": "marcus-ndiaye",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "marcus-ndiaye"
                     }
                   ],
@@ -1932,11 +1974,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Bram Mendez",
                   "head": "bram-mendez",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "bram-mendez"
                     }
                   ],
@@ -1950,11 +1994,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Maeve Haddad",
                   "head": "maeve-haddad",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "maeve-haddad"
                     }
                   ],
@@ -2015,11 +2061,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Kiran Ueda",
                   "head": "kiran-ueda",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "kiran-ueda"
                     }
                   ],
@@ -2033,11 +2081,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Elena Hossain",
                   "head": "elena-hossain",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "elena-hossain"
                     }
                   ],
@@ -2084,11 +2134,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Wes Larsson",
                   "head": "wes-larsson",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "wes-larsson"
                     }
                   ],
@@ -2102,11 +2154,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Nadia Okonkwo",
                   "head": "nadia-okonkwo",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "nadia-okonkwo"
                     }
                   ],
@@ -2153,11 +2207,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Odalys Dominguez",
                   "head": "odalys-dominguez",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "odalys-dominguez"
                     }
                   ],
@@ -2171,11 +2227,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Uma Wojcik",
                   "head": "uma-wojcik",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "uma-wojcik"
                     }
                   ],
@@ -2228,11 +2286,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Silas Osei",
                   "head": "silas-osei",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "silas-osei"
                     }
                   ],
@@ -2246,11 +2306,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Yusuf Eriksen",
                   "head": "yusuf-eriksen",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "yusuf-eriksen"
                     }
                   ],
@@ -2303,11 +2365,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Isaac Walsh",
                   "head": "isaac-walsh",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "isaac-walsh"
                     }
                   ],
@@ -2321,11 +2385,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Omar Chaudhry",
                   "head": "omar-chaudhry",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "omar-chaudhry"
                     }
                   ],
@@ -2372,11 +2438,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Silas Reyes",
                   "head": "silas-reyes",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "silas-reyes"
                     }
                   ],
@@ -2390,11 +2458,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Victor Ferreira",
                   "head": "victor-ferreira",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "victor-ferreira"
                     }
                   ],
@@ -2441,11 +2511,13 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Tamsin Ivanova",
                   "head": "tamsin-ivanova",
                   "party": "dem",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "tamsin-ivanova"
                     }
                   ],
@@ -2459,11 +2531,13 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Cedric Larsson",
                   "head": "cedric-larsson",
                   "party": "gop",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "cedric-larsson"
                     }
                   ],
@@ -2517,10 +2591,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Elena Villanueva",
                   "head": "elena-villanueva",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "elena-villanueva"
                     }
                   ],
@@ -2863,10 +2939,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Theo Ferreira",
                   "head": "theo-ferreira",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "theo-ferreira"
                     }
                   ],
@@ -2880,10 +2958,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Rosa Dominguez",
                   "head": "rosa-dominguez",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "rosa-dominguez"
                     }
                   ],
@@ -2897,10 +2977,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Desmond Eriksen",
                   "head": "desmond-eriksen",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "desmond-eriksen"
                     }
                   ],
@@ -2913,10 +2995,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Kwame Yilmaz",
                   "head": "kwame-yilmaz",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "kwame-yilmaz"
                     }
                   ],
@@ -2928,10 +3012,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Kiran Haddad",
                   "head": "kiran-haddad",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "kiran-haddad"
                     }
                   ],
@@ -2943,10 +3029,12 @@
                 },
                 {
                   "index": 5,
+                  "kind": "candidates",
                   "label": "Omar Ivanova",
                   "head": "omar-ivanova",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "omar-ivanova"
                     }
                   ],
@@ -2958,10 +3046,12 @@
                 },
                 {
                   "index": 6,
+                  "kind": "candidates",
                   "label": "Ezra Petrov",
                   "head": "ezra-petrov",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "ezra-petrov"
                     }
                   ],
@@ -2973,10 +3063,12 @@
                 },
                 {
                   "index": 7,
+                  "kind": "candidates",
                   "label": "Rhea Rowe",
                   "head": "rhea-rowe",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "rhea-rowe"
                     }
                   ],
@@ -2988,10 +3080,12 @@
                 },
                 {
                   "index": 8,
+                  "kind": "candidates",
                   "label": "Wren Kowalczyk",
                   "head": "wren-kowalczyk",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "wren-kowalczyk"
                     }
                   ],
@@ -3003,10 +3097,12 @@
                 },
                 {
                   "index": 9,
+                  "kind": "candidates",
                   "label": "Sofia Rahimi",
                   "head": "sofia-rahimi",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "sofia-rahimi"
                     }
                   ],
@@ -3018,10 +3114,12 @@
                 },
                 {
                   "index": 10,
+                  "kind": "candidates",
                   "label": "Nico Suzuki",
                   "head": "nico-suzuki",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "nico-suzuki"
                     }
                   ],
@@ -3033,10 +3131,12 @@
                 },
                 {
                   "index": 11,
+                  "kind": "candidates",
                   "label": "Elena Zamora",
                   "head": "elena-zamora",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "elena-zamora"
                     }
                   ],
@@ -3048,10 +3148,12 @@
                 },
                 {
                   "index": 12,
+                  "kind": "candidates",
                   "label": "Silas Brennan",
                   "head": "silas-brennan",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "silas-brennan"
                     }
                   ],
@@ -3117,10 +3219,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Lena Tanaka",
                   "head": "lena-tanaka",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "lena-tanaka"
                     }
                   ],
@@ -3134,10 +3238,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Luis Oyelaran",
                   "head": "luis-oyelaran",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "luis-oyelaran"
                     }
                   ],
@@ -3189,10 +3295,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Yara Suzuki",
                   "head": "yara-suzuki",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "yara-suzuki"
                     }
                   ],
@@ -3206,10 +3314,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Ezra Sandoval",
                   "head": "ezra-sandoval",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "ezra-sandoval"
                     }
                   ],
@@ -3255,10 +3365,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Priya Fontaine",
                   "head": "priya-fontaine",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "priya-fontaine"
                     }
                   ],
@@ -3272,10 +3384,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Maeve Ueda",
                   "head": "maeve-ueda",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "maeve-ueda"
                     }
                   ],
@@ -3322,10 +3436,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Lila Mbeki",
                   "head": "lila-mbeki",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "lila-mbeki"
                     }
                   ],
@@ -3380,10 +3496,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Felix Hossain",
                   "head": "felix-hossain",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "felix-hossain"
                     }
                   ],
@@ -3397,10 +3515,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Farah Lindqvist",
                   "head": "farah-lindqvist",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "farah-lindqvist"
                     }
                   ],
@@ -3414,10 +3534,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Hana Abernathy",
                   "head": "hana-abernathy",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "hana-abernathy"
                     }
                   ],
@@ -3478,10 +3600,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Desmond Hossain",
                   "head": "desmond-hossain",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "desmond-hossain"
                     }
                   ],
@@ -3495,10 +3619,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Tamsin Delacroix",
                   "head": "tamsin-delacroix",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "tamsin-delacroix"
                     }
                   ],
@@ -3512,10 +3638,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Rhea Zamora",
                   "head": "rhea-zamora",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "rhea-zamora"
                     }
                   ],
@@ -3576,10 +3704,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Priya Abernathy",
                   "head": "priya-abernathy",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "priya-abernathy"
                     }
                   ],
@@ -3593,10 +3723,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Omar Haddad",
                   "head": "omar-haddad",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "omar-haddad"
                     }
                   ],
@@ -3610,10 +3742,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Nico Kowalczyk",
                   "head": "nico-kowalczyk",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "nico-kowalczyk"
                     }
                   ],
@@ -3626,10 +3760,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Farah Ndiaye",
                   "head": "farah-ndiaye",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "farah-ndiaye"
                     }
                   ],
@@ -3641,10 +3777,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Farah Halvorsen",
                   "head": "farah-halvorsen",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "farah-halvorsen"
                     }
                   ],
@@ -3704,10 +3842,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Tamsin Villanueva",
                   "head": "tamsin-villanueva",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "tamsin-villanueva"
                     }
                   ],
@@ -3721,10 +3861,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Quinn Oyelaran",
                   "head": "quinn-oyelaran",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "quinn-oyelaran"
                     }
                   ],
@@ -3738,10 +3880,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Tamsin Rowe",
                   "head": "tamsin-rowe",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "tamsin-rowe"
                     }
                   ],
@@ -3754,10 +3898,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Jun Thorne",
                   "head": "jun-thorne",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "jun-thorne"
                     }
                   ],
@@ -3769,10 +3915,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Cedric Walsh",
                   "head": "cedric-walsh",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "cedric-walsh"
                     }
                   ],
@@ -3832,10 +3980,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Omar Abernathy",
                   "head": "omar-abernathy",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "omar-abernathy"
                     }
                   ],
@@ -3849,10 +3999,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Rhea Vance",
                   "head": "rhea-vance",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "rhea-vance"
                     }
                   ],
@@ -3866,10 +4018,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Wes Walsh",
                   "head": "wes-walsh",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "wes-walsh"
                     }
                   ],
@@ -3882,10 +4036,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Iris Achebe",
                   "head": "iris-achebe",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "iris-achebe"
                     }
                   ],
@@ -3897,10 +4053,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Amara Ndiaye",
                   "head": "amara-ndiaye",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "amara-ndiaye"
                     }
                   ],
@@ -3960,10 +4118,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Yara Larsson",
                   "head": "yara-larsson",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "yara-larsson"
                     }
                   ],
@@ -3977,10 +4137,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Jun Bergstrom",
                   "head": "jun-bergstrom",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "jun-bergstrom"
                     }
                   ],
@@ -3994,10 +4156,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Owen Chaudhry",
                   "head": "owen-chaudhry",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "owen-chaudhry"
                     }
                   ],
@@ -4065,10 +4229,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Jun Ivanova",
                   "head": "jun-ivanova",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "jun-ivanova"
                     }
                   ],
@@ -4081,10 +4247,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Uma Petrov",
                   "head": "uma-petrov",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "uma-petrov"
                     }
                   ],
@@ -4097,10 +4265,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Cedric Rowe",
                   "head": "cedric-rowe",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "cedric-rowe"
                     }
                   ],
@@ -4113,10 +4283,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Isaac Nakamura",
                   "head": "isaac-nakamura",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "isaac-nakamura"
                     }
                   ],
@@ -4129,10 +4301,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Priya Whitaker",
                   "head": "priya-whitaker",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "priya-whitaker"
                     }
                   ],
@@ -4144,10 +4318,12 @@
                 },
                 {
                   "index": 5,
+                  "kind": "candidates",
                   "label": "Cedric Jensen",
                   "head": "cedric-jensen",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "cedric-jensen"
                     }
                   ],
@@ -4159,10 +4335,12 @@
                 },
                 {
                   "index": 6,
+                  "kind": "candidates",
                   "label": "Beatriz Osei",
                   "head": "beatriz-osei",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "beatriz-osei"
                     }
                   ],
@@ -4174,10 +4352,12 @@
                 },
                 {
                   "index": 7,
+                  "kind": "candidates",
                   "label": "Marcus Mendez",
                   "head": "marcus-mendez",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "marcus-mendez"
                     }
                   ],
@@ -4189,10 +4369,12 @@
                 },
                 {
                   "index": 8,
+                  "kind": "candidates",
                   "label": "Silas Achebe",
                   "head": "silas-achebe",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "silas-achebe"
                     }
                   ],
@@ -4204,10 +4386,12 @@
                 },
                 {
                   "index": 9,
+                  "kind": "candidates",
                   "label": "Hana Garza",
                   "head": "hana-garza",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "hana-garza"
                     }
                   ],
@@ -4219,10 +4403,12 @@
                 },
                 {
                   "index": 10,
+                  "kind": "candidates",
                   "label": "Cedric Yilmaz",
                   "head": "cedric-yilmaz",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "cedric-yilmaz"
                     }
                   ],
@@ -4291,10 +4477,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Isaac Mbeki",
                   "head": "isaac-mbeki",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "isaac-mbeki"
                     }
                   ],
@@ -4307,10 +4495,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Ada Rahimi",
                   "head": "ada-rahimi",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "ada-rahimi"
                     }
                   ],
@@ -4323,10 +4513,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Yusuf Patel",
                   "head": "yusuf-patel",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "yusuf-patel"
                     }
                   ],
@@ -4339,10 +4531,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Isaac Rahimi",
                   "head": "isaac-rahimi",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "isaac-rahimi"
                     }
                   ],
@@ -4354,10 +4548,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Ada Castellano",
                   "head": "ada-castellano",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "ada-castellano"
                     }
                   ],
@@ -4369,10 +4565,12 @@
                 },
                 {
                   "index": 5,
+                  "kind": "candidates",
                   "label": "Cedric Guerrero",
                   "head": "cedric-guerrero",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "cedric-guerrero"
                     }
                   ],
@@ -4384,10 +4582,12 @@
                 },
                 {
                   "index": 6,
+                  "kind": "candidates",
                   "label": "Amara Kowalczyk",
                   "head": "amara-kowalczyk",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "amara-kowalczyk"
                     }
                   ],
@@ -4399,10 +4599,12 @@
                 },
                 {
                   "index": 7,
+                  "kind": "candidates",
                   "label": "Dana Nakamura",
                   "head": "dana-nakamura",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "dana-nakamura"
                     }
                   ],
@@ -4858,10 +5060,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Lena Brennan",
                   "head": "lena-brennan",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "lena-brennan"
                     }
                   ],
@@ -4875,10 +5079,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Ezra Garza",
                   "head": "ezra-garza",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "ezra-garza"
                     }
                   ],
@@ -4931,10 +5137,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Ada Ndiaye",
                   "head": "ada-ndiaye",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "ada-ndiaye"
                     }
                   ],
@@ -4948,10 +5156,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Talia Vance",
                   "head": "talia-vance",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "talia-vance"
                     }
                   ],
@@ -4965,10 +5175,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Tamsin Kaur",
                   "head": "tamsin-kaur",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "tamsin-kaur"
                     }
                   ],
@@ -4981,10 +5193,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Anil Garza",
                   "head": "anil-garza",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "anil-garza"
                     }
                   ],
@@ -4996,10 +5210,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Farah Haddad",
                   "head": "farah-haddad",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "farah-haddad"
                     }
                   ],
@@ -5011,10 +5227,12 @@
                 },
                 {
                   "index": 5,
+                  "kind": "candidates",
                   "label": "Lena Okonkwo",
                   "head": "lena-okonkwo",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "lena-okonkwo"
                     }
                   ],
@@ -5026,10 +5244,12 @@
                 },
                 {
                   "index": 6,
+                  "kind": "candidates",
                   "label": "Theo Mendez",
                   "head": "theo-mendez",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "theo-mendez"
                     }
                   ],
@@ -5041,10 +5261,12 @@
                 },
                 {
                   "index": 7,
+                  "kind": "candidates",
                   "label": "Isaac Petrov",
                   "head": "isaac-petrov",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "isaac-petrov"
                     }
                   ],
@@ -5056,10 +5278,12 @@
                 },
                 {
                   "index": 8,
+                  "kind": "candidates",
                   "label": "Lila Nilsson",
                   "head": "lila-nilsson",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "lila-nilsson"
                     }
                   ],
@@ -5071,10 +5295,12 @@
                 },
                 {
                   "index": 9,
+                  "kind": "candidates",
                   "label": "Cedric Reyes",
                   "head": "cedric-reyes",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "cedric-reyes"
                     }
                   ],
@@ -5134,10 +5360,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Sofia Nakamura",
                   "head": "sofia-nakamura",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "sofia-nakamura"
                     }
                   ],
@@ -5151,10 +5379,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Camila Sandoval",
                   "head": "camila-sandoval",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "camila-sandoval"
                     }
                   ],
@@ -5168,10 +5398,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Mateo Pappas",
                   "head": "mateo-pappas",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "mateo-pappas"
                     }
                   ],
@@ -5184,10 +5416,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Maeve Bergstrom",
                   "head": "maeve-bergstrom",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "maeve-bergstrom"
                     }
                   ],
@@ -5247,10 +5481,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Ezra Jablonski",
                   "head": "ezra-jablonski",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "ezra-jablonski"
                     }
                   ],
@@ -5264,10 +5500,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Kiran Abernathy",
                   "head": "kiran-abernathy",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "kiran-abernathy"
                     }
                   ],
@@ -5281,10 +5519,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Kiran Ndiaye",
                   "head": "kiran-ndiaye",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "kiran-ndiaye"
                     }
                   ],
@@ -5297,10 +5537,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Desmond Pappas",
                   "head": "desmond-pappas",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "desmond-pappas"
                     }
                   ],
@@ -5360,10 +5602,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Silas Patel",
                   "head": "silas-patel",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "silas-patel"
                     }
                   ],
@@ -5377,10 +5621,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Petra Abernathy",
                   "head": "petra-abernathy",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "petra-abernathy"
                     }
                   ],
@@ -5394,10 +5640,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Ezra Mendez",
                   "head": "ezra-mendez",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "ezra-mendez"
                     }
                   ],
@@ -5410,10 +5658,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Tamsin Reyes",
                   "head": "tamsin-reyes",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "tamsin-reyes"
                     }
                   ],
@@ -5425,10 +5675,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Farah Lombardi",
                   "head": "farah-lombardi",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "farah-lombardi"
                     }
                   ],
@@ -5488,10 +5740,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Vera Okonkwo",
                   "head": "vera-okonkwo",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "vera-okonkwo"
                     }
                   ],
@@ -5505,10 +5759,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Bram Okonkwo",
                   "head": "bram-okonkwo",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "bram-okonkwo"
                     }
                   ],
@@ -5522,10 +5778,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Lena Delacroix",
                   "head": "lena-delacroix",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "lena-delacroix"
                     }
                   ],
@@ -5592,10 +5850,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Imani Petrov",
                   "head": "imani-petrov",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "imani-petrov"
                     }
                   ],
@@ -5609,10 +5869,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Cedric Lombardi",
                   "head": "cedric-lombardi",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "cedric-lombardi"
                     }
                   ],
@@ -5660,10 +5922,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Bram Pappas",
                   "head": "bram-pappas",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "bram-pappas"
                     }
                   ],
@@ -5677,10 +5941,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Isaac Fontaine",
                   "head": "isaac-fontaine",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "isaac-fontaine"
                     }
                   ],
@@ -5787,10 +6053,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Petra Kowalczyk",
                   "head": "petra-kowalczyk",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "petra-kowalczyk"
                     }
                   ],
@@ -5804,10 +6072,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Isaac Osei",
                   "head": "isaac-osei",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "isaac-osei"
                     }
                   ],
@@ -5819,10 +6089,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Iris Ferreira",
                   "head": "iris-ferreira",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "iris-ferreira"
                     }
                   ],
@@ -5868,10 +6140,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Uma Moreau",
                   "head": "uma-moreau",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "uma-moreau"
                     }
                   ],
@@ -5885,10 +6159,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Luis Mendez",
                   "head": "luis-mendez",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "luis-mendez"
                     }
                   ],
@@ -5900,10 +6176,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Iris Walsh",
                   "head": "iris-walsh",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "iris-walsh"
                     }
                   ],
@@ -5955,10 +6233,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Felix Suzuki",
                   "head": "felix-suzuki",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "felix-suzuki"
                     }
                   ],
@@ -5972,10 +6252,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Rafael Ferreira",
                   "head": "rafael-ferreira",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "rafael-ferreira"
                     }
                   ],
@@ -5987,10 +6269,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Yusuf Kaur",
                   "head": "yusuf-kaur",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "yusuf-kaur"
                     }
                   ],
@@ -6002,10 +6286,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Marcus Osei",
                   "head": "marcus-osei",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "marcus-osei"
                     }
                   ],
@@ -6051,10 +6337,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Elena Tanaka",
                   "head": "elena-tanaka",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "elena-tanaka"
                     }
                   ],
@@ -6068,10 +6356,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Noor Chaudhry",
                   "head": "noor-chaudhry",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "noor-chaudhry"
                     }
                   ],
@@ -6083,10 +6373,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Iris Nilsson",
                   "head": "iris-nilsson",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "iris-nilsson"
                     }
                   ],
@@ -6098,10 +6390,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Desmond Soto",
                   "head": "desmond-soto",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "desmond-soto"
                     }
                   ],
@@ -6163,10 +6457,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Vera Tanaka",
                   "head": "vera-tanaka",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "vera-tanaka"
                     }
                   ],
@@ -6179,10 +6475,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Isaac Sandoval",
                   "head": "isaac-sandoval",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "isaac-sandoval"
                     }
                   ],
@@ -6195,10 +6493,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Theo Garza",
                   "head": "theo-garza",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "theo-garza"
                     }
                   ],
@@ -6211,10 +6511,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Jun Ferreira",
                   "head": "jun-ferreira",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "jun-ferreira"
                     }
                   ],
@@ -6226,10 +6528,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Maeve Sandoval",
                   "head": "maeve-sandoval",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "maeve-sandoval"
                     }
                   ],
@@ -6241,10 +6545,12 @@
                 },
                 {
                   "index": 5,
+                  "kind": "candidates",
                   "label": "Uma Patel",
                   "head": "uma-patel",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "uma-patel"
                     }
                   ],
@@ -6256,10 +6562,12 @@
                 },
                 {
                   "index": 6,
+                  "kind": "candidates",
                   "label": "Dana Iyer",
                   "head": "dana-iyer",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "dana-iyer"
                     }
                   ],
@@ -6271,10 +6579,12 @@
                 },
                 {
                   "index": 7,
+                  "kind": "candidates",
                   "label": "Kiran Chaudhry",
                   "head": "kiran-chaudhry",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "kiran-chaudhry"
                     }
                   ],
@@ -6286,10 +6596,12 @@
                 },
                 {
                   "index": 8,
+                  "kind": "candidates",
                   "label": "Rafael Garza",
                   "head": "rafael-garza",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "rafael-garza"
                     }
                   ],
@@ -6353,10 +6665,12 @@
               "campaigns": [
                 {
                   "index": 0,
+                  "kind": "candidates",
                   "label": "Maeve Nakamura",
                   "head": "maeve-nakamura",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "maeve-nakamura"
                     }
                   ],
@@ -6369,10 +6683,12 @@
                 },
                 {
                   "index": 1,
+                  "kind": "candidates",
                   "label": "Jordan Patel",
                   "head": "jordan-patel",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "jordan-patel"
                     }
                   ],
@@ -6385,10 +6701,12 @@
                 },
                 {
                   "index": 2,
+                  "kind": "candidates",
                   "label": "Samir Jensen",
                   "head": "samir-jensen",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "samir-jensen"
                     }
                   ],
@@ -6401,10 +6719,12 @@
                 },
                 {
                   "index": 3,
+                  "kind": "candidates",
                   "label": "Wes Garza",
                   "head": "wes-garza",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "wes-garza"
                     }
                   ],
@@ -6416,10 +6736,12 @@
                 },
                 {
                   "index": 4,
+                  "kind": "candidates",
                   "label": "Vera Ivanova",
                   "head": "vera-ivanova",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "vera-ivanova"
                     }
                   ],
@@ -6431,10 +6753,12 @@
                 },
                 {
                   "index": 5,
+                  "kind": "candidates",
                   "label": "Owen Abernathy",
                   "head": "owen-abernathy",
                   "members": [
                     {
+                      "kind": "candidate",
                       "candidate": "owen-abernathy"
                     }
                   ],
@@ -6536,10 +6860,12 @@
           "campaigns": [
             {
               "index": 0,
+              "kind": "candidates",
               "label": "Kwame Halvorsen",
               "head": "kwame-halvorsen",
               "members": [
                 {
+                  "kind": "candidate",
                   "candidate": "kwame-halvorsen"
                 }
               ],
@@ -6553,10 +6879,12 @@
             },
             {
               "index": 1,
+              "kind": "candidates",
               "label": "Desmond Moreau",
               "head": "desmond-moreau",
               "members": [
                 {
+                  "kind": "candidate",
                   "candidate": "desmond-moreau"
                 }
               ],
@@ -6602,10 +6930,12 @@
           "campaigns": [
             {
               "index": 0,
+              "kind": "candidates",
               "label": "Vera Patel",
               "head": "vera-patel",
               "members": [
                 {
+                  "kind": "candidate",
                   "candidate": "vera-patel"
                 }
               ],
@@ -6619,10 +6949,12 @@
             },
             {
               "index": 1,
+              "kind": "candidates",
               "label": "Silas Villanueva",
               "head": "silas-villanueva",
               "members": [
                 {
+                  "kind": "candidate",
                   "candidate": "silas-villanueva"
                 }
               ],
@@ -6668,10 +7000,12 @@
           "campaigns": [
             {
               "index": 0,
+              "kind": "candidates",
               "label": "Anil Osei",
               "head": "anil-osei",
               "members": [
                 {
+                  "kind": "candidate",
                   "candidate": "anil-osei"
                 }
               ],
@@ -6685,10 +7019,12 @@
             },
             {
               "index": 1,
+              "kind": "candidates",
               "label": "Hiro Garza",
               "head": "hiro-garza",
               "members": [
                 {
+                  "kind": "candidate",
                   "candidate": "hiro-garza"
                 }
               ],
