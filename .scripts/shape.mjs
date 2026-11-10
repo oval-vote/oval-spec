@@ -18,6 +18,7 @@ const ORDER = [
   ["member", "Member"],
   ["stance", "Stance"],
   ["contest_recommendation", "Contest Recommendation"],
+  ["choice", "Choice"],
   ["measure", "Measure"],
   ["measure_recommendation", "Measure Recommendation"],
   ["question_entry", "Question Entry"],

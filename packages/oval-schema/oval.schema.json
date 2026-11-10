@@ -340,6 +340,7 @@
         "method",
         "location",
         "required",
+        "extensible",
         "campaigns",
         "recommendation"
       ],
@@ -379,6 +380,10 @@
         },
         "required": {
           "description": "Derived. Whether the voter must answer it, from the nearest `required` or `optional`; false if none.",
+          "type": "boolean"
+        },
+        "extensible": {
+          "description": "Derived. Whether the voter may write in a choice, from the nearest `extensible` or `exhaustive`; false if none.",
           "type": "boolean"
         },
         "campaigns": {
@@ -513,14 +518,7 @@
     "contest_recommendation": {
       "description": "The author's recommendation on a contest.",
       "type": "object",
-      "required": [
-        "no_position",
-        "abstain",
-        "support",
-        "oppose",
-        "support_campaigns",
-        "oppose_campaigns"
-      ],
+      "required": ["no_position", "abstain", "support", "oppose"],
       "additionalProperties": false,
       "properties": {
         "no_position": {
@@ -532,41 +530,21 @@
           "type": "boolean"
         },
         "support": {
-          "description": "Tiers as written: candidate identifiers, most preferred tier first. Empty when no_position or abstain.",
+          "description": "Tiers as written, most preferred tier first. Empty when no_position or abstain.",
           "type": "array",
           "items": {
             "type": "array",
             "minItems": 1,
             "items": {
-              "$ref": "#/$defs/identifier"
+              "$ref": "#/$defs/choice"
             }
           }
         },
         "oppose": {
-          "description": "Candidate identifiers as written. Empty when no_position or abstain.",
+          "description": "Choices as written. Empty when no_position or abstain.",
           "type": "array",
           "items": {
-            "$ref": "#/$defs/identifier"
-          }
-        },
-        "support_campaigns": {
-          "description": "Derived. The same tiers resolved to campaign indices.",
-          "type": "array",
-          "items": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "type": "integer",
-              "minimum": 0
-            }
-          }
-        },
-        "oppose_campaigns": {
-          "description": "Derived. The opposed campaigns as indices.",
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "minimum": 0
+            "$ref": "#/$defs/choice"
           }
         },
         "justification": {
@@ -578,6 +556,45 @@
           "$ref": "#/$defs/markdown"
         }
       }
+    },
+    "choice": {
+      "description": "One choice in a recommendation: a candidate printed on the ballot, or a write-in.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "candidate", "campaign"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "description": "One of `candidate` or `write_in`.",
+              "const": "candidate"
+            },
+            "candidate": {
+              "description": "The candidate's identifier, as written.",
+              "$ref": "#/$defs/identifier"
+            },
+            "campaign": {
+              "description": "Derived. Index of the campaign the candidate resolves to.",
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "write_in"
+            },
+            "name": {
+              "description": "The name to write in, from `write-in`. Omitted for a bare write-in.",
+              "type": "string"
+            }
+          }
+        }
+      ]
     },
     "measure": {
       "description": "A ballot measure: a question answered yes or no.",

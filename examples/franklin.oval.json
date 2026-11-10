@@ -1459,6 +1459,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1595,16 +1596,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "hana-nakamura"
+                    {
+                      "kind": "candidate",
+                      "candidate": "hana-nakamura",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Hana Nakamura's first term delivered the port funding Franklin has sought for a\ndecade. The challengers have not released a platform beyond a pledge to cut waste."
               }
             }
@@ -1632,6 +1631,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1672,16 +1672,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "dana-lombardi"
+                    {
+                      "kind": "candidate",
+                      "candidate": "dana-lombardi",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "See the full-term contest below. Our reasoning is the same, and splitting the vote\nbetween the two contests would serve no purpose."
               }
             },
@@ -1702,6 +1700,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1758,16 +1757,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "dana-lombardi"
+                    {
+                      "kind": "candidate",
+                      "candidate": "dana-lombardi",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Dana Lombardi has used two years in the Senate to deliver the port funding Franklin\nhas sought for a decade. Sofia Yilmaz has not held office."
               }
             }
@@ -1793,6 +1790,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1834,16 +1832,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "quinn-okafor"
+                    {
+                      "kind": "candidate",
+                      "candidate": "quinn-okafor",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "This is a close call. Quinn Okafor and Talia Jensen agree on most of the substance;\nQuinn Okafor has the better track record of working across the aisle, which this seat\nneeds."
               }
             },
@@ -1863,6 +1859,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1904,16 +1901,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "odalys-halvorsen"
+                    {
+                      "kind": "candidate",
+                      "candidate": "odalys-halvorsen",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Odalys Halvorsen ran the department that this office oversees and left it in better\nshape than they found it."
               }
             },
@@ -1933,6 +1928,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -1974,16 +1970,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "bram-mendez"
+                    {
+                      "kind": "candidate",
+                      "candidate": "bram-mendez",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Bram Mendez is the only candidate who answered our questionnaire in full. The others\ndeclined to meet with us."
               }
             }
@@ -2017,6 +2011,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2058,16 +2053,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "kiran-ueda"
+                    {
+                      "kind": "candidate",
+                      "candidate": "kiran-ueda",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Kiran Ueda has the clearest plan for the office and a record of delivering on it.\nElena Hossain has not said how the proposals would be paid for."
               }
             },
@@ -2087,6 +2080,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2128,16 +2122,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "wes-larsson"
+                    {
+                      "kind": "candidate",
+                      "candidate": "wes-larsson",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Wes Larsson has the clearest plan for the office and a record of delivering on it.\nNadia Okonkwo has not said how the proposals would be paid for."
               }
             },
@@ -2157,6 +2149,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2199,18 +2192,19 @@
                 "abstain": false,
                 "support": [
                   [
-                    "odalys-dominguez",
-                    "uma-wojcik"
+                    {
+                      "kind": "candidate",
+                      "candidate": "odalys-dominguez",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "uma-wojcik",
+                      "campaign": 1
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0,
-                    1
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Either is a fine choice. We did not reach consensus between them and would be happy\nwith both."
               }
             },
@@ -2230,6 +2224,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2271,16 +2266,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "silas-osei"
+                    {
+                      "kind": "candidate",
+                      "candidate": "silas-osei",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Rank Silas Osei first. Yusuf Eriksen is acceptable as a second choice; the rest of the\nfield is not ready for this office."
               }
             }
@@ -2306,6 +2299,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2347,16 +2341,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "isaac-walsh"
+                    {
+                      "kind": "candidate",
+                      "candidate": "isaac-walsh",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Rank Isaac Walsh first. Omar Chaudhry is acceptable as a second choice; the rest of\nthe field is not ready for this office."
               }
             },
@@ -2376,6 +2368,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2417,16 +2410,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "silas-reyes"
+                    {
+                      "kind": "candidate",
+                      "candidate": "silas-reyes",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Silas Reyes ran the department that this office oversees and left it in better shape\nthan they found it."
               }
             },
@@ -2446,6 +2437,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2487,16 +2479,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "tamsin-ivanova"
+                    {
+                      "kind": "candidate",
+                      "candidate": "tamsin-ivanova",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "We endorsed Cedric Larsson last cycle and were disappointed. Tamsin Ivanova has spent\nfour years on the relevant commission and knows the budget line by line."
               }
             }
@@ -2523,6 +2513,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -2546,16 +2537,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "elena-villanueva"
+                    {
+                      "kind": "candidate",
+                      "candidate": "elena-villanueva",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Retention elections are not the place to relitigate a single decision. The bar\nevaluation is \"well qualified\" and the opinions are careful."
               }
             }
@@ -2870,6 +2859,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3078,27 +3068,31 @@
                 "abstain": false,
                 "support": [
                   [
-                    "rosa-dominguez"
+                    {
+                      "kind": "candidate",
+                      "candidate": "rosa-dominguez",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "theo-ferreira",
-                    "desmond-eriksen"
+                    {
+                      "kind": "candidate",
+                      "candidate": "theo-ferreira",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "desmond-eriksen",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [
-                  "silas-brennan"
-                ],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [
-                  12
+                  {
+                    "kind": "candidate",
+                    "candidate": "silas-brennan",
+                    "campaign": 12
+                  }
                 ],
                 "justification": "Rosa Dominguez ran the department that this office oversees and left it in better\nshape than they found it.",
                 "note": "Rank Theo Ferreira and Desmond Eriksen second and third in either order."
@@ -3119,6 +3113,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3159,18 +3154,19 @@
                 "abstain": false,
                 "support": [
                   [
-                    "lena-tanaka",
-                    "luis-oyelaran"
+                    {
+                      "kind": "candidate",
+                      "candidate": "lena-tanaka",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "luis-oyelaran",
+                      "campaign": 1
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0,
-                    1
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Either is a fine choice. We did not reach consensus between them and would be happy\nwith both."
               }
             },
@@ -3189,6 +3185,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3228,16 +3225,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "yara-suzuki"
+                    {
+                      "kind": "candidate",
+                      "candidate": "yara-suzuki",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "This is a close call. Yara Suzuki and Ezra Sandoval agree on most of the substance;\nYara Suzuki has the better track record of working across the aisle, which this seat\nneeds."
               }
             },
@@ -3256,6 +3251,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3295,16 +3291,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "priya-fontaine"
+                    {
+                      "kind": "candidate",
+                      "candidate": "priya-fontaine",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Priya Fontaine ran the department that this office oversees and left it in better\nshape than they found it."
               }
             },
@@ -3324,6 +3318,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3348,16 +3343,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "lila-mbeki"
+                    {
+                      "kind": "candidate",
+                      "candidate": "lila-mbeki",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "We endorsed ('', '') last cycle and were disappointed. Lila Mbeki has spent four years\non the relevant commission and knows the budget line by line."
               }
             }
@@ -3383,6 +3376,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3440,24 +3434,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "farah-lindqvist"
+                    {
+                      "kind": "candidate",
+                      "candidate": "farah-lindqvist",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "felix-hossain",
-                    "hana-abernathy"
+                    {
+                      "kind": "candidate",
+                      "candidate": "felix-hossain",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "hana-abernathy",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "We endorsed Felix Hossain last cycle and were disappointed. Farah Lindqvist has spent\nfour years on the relevant commission and knows the budget line by line.",
                 "note": "Rank Felix Hossain and Hana Abernathy second and third in either order."
               }
@@ -3478,6 +3474,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3535,24 +3532,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "tamsin-delacroix"
+                    {
+                      "kind": "candidate",
+                      "candidate": "tamsin-delacroix",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "desmond-hossain",
-                    "rhea-zamora"
+                    {
+                      "kind": "candidate",
+                      "candidate": "desmond-hossain",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "rhea-zamora",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "We endorsed Desmond Hossain last cycle and were disappointed. Tamsin Delacroix has\nspent four years on the relevant commission and knows the budget line by line.",
                 "note": "Rank Desmond Hossain and Rhea Zamora second and third in either order."
               }
@@ -3573,6 +3572,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3660,24 +3660,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "omar-haddad"
+                    {
+                      "kind": "candidate",
+                      "candidate": "omar-haddad",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "priya-abernathy",
-                    "nico-kowalczyk"
+                    {
+                      "kind": "candidate",
+                      "candidate": "priya-abernathy",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "nico-kowalczyk",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "This is a close call. Omar Haddad and Priya Abernathy agree on most of the substance;\nOmar Haddad has the better track record of working across the aisle, which this seat\nneeds.",
                 "note": "Rank Priya Abernathy and Nico Kowalczyk second and third in either order."
               }
@@ -3698,6 +3700,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3785,24 +3788,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "quinn-oyelaran"
+                    {
+                      "kind": "candidate",
+                      "candidate": "quinn-oyelaran",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "tamsin-villanueva",
-                    "tamsin-rowe"
+                    {
+                      "kind": "candidate",
+                      "candidate": "tamsin-villanueva",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "tamsin-rowe",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Quinn Oyelaran ran the department that this office oversees and left it in better\nshape than they found it.",
                 "note": "Rank Tamsin Villanueva and Tamsin Rowe second and third in either order."
               }
@@ -3823,6 +3828,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -3910,24 +3916,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "rhea-vance"
+                    {
+                      "kind": "candidate",
+                      "candidate": "rhea-vance",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "omar-abernathy",
-                    "wes-walsh"
+                    {
+                      "kind": "candidate",
+                      "candidate": "omar-abernathy",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "wes-walsh",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "This is a close call. Rhea Vance and Omar Abernathy agree on most of the substance;\nRhea Vance has the better track record of working across the aisle, which this seat\nneeds.",
                 "note": "Rank Omar Abernathy and Wes Walsh second and third in either order."
               }
@@ -3948,6 +3956,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -4005,24 +4014,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "jun-bergstrom"
+                    {
+                      "kind": "candidate",
+                      "candidate": "jun-bergstrom",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "yara-larsson",
-                    "owen-chaudhry"
+                    {
+                      "kind": "candidate",
+                      "candidate": "yara-larsson",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "owen-chaudhry",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Rank Jun Bergstrom first. Yara Larsson is acceptable as a second choice; the rest of\nthe field is not ready for this office.",
                 "note": "Rank Yara Larsson and Owen Chaudhry second and third in either order."
               }
@@ -4050,6 +4061,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -4226,22 +4238,29 @@
                 "abstain": false,
                 "support": [
                   [
-                    "jun-ivanova",
-                    "uma-petrov",
-                    "cedric-rowe",
-                    "isaac-nakamura"
+                    {
+                      "kind": "candidate",
+                      "candidate": "jun-ivanova",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "uma-petrov",
+                      "campaign": 1
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "cedric-rowe",
+                      "campaign": 2
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "isaac-nakamura",
+                      "campaign": 3
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0,
-                    1,
-                    2,
-                    3
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Each of these candidates committed in writing to keeping the arts and athletics\nbudgets whole. The others did not respond to our questionnaire."
               }
             }
@@ -4268,6 +4287,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -4398,20 +4418,24 @@
                 "abstain": false,
                 "support": [
                   [
-                    "isaac-mbeki",
-                    "ada-rahimi",
-                    "yusuf-patel"
+                    {
+                      "kind": "candidate",
+                      "candidate": "isaac-mbeki",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "ada-rahimi",
+                      "campaign": 1
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "yusuf-patel",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0,
-                    1,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Each of these candidates committed in writing to keeping the arts and athletics\nbudgets whole. The others did not respond to our questionnaire."
               }
             }
@@ -4830,6 +4854,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -4869,16 +4894,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "lena-brennan"
+                    {
+                      "kind": "candidate",
+                      "candidate": "lena-brennan",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "We endorsed Ezra Garza last cycle and were disappointed. Lena Brennan has spent four\nyears on the relevant commission and knows the budget line by line."
               }
             }
@@ -4904,6 +4927,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5066,24 +5090,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "talia-vance"
+                    {
+                      "kind": "candidate",
+                      "candidate": "talia-vance",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "ada-ndiaye",
-                    "tamsin-kaur"
+                    {
+                      "kind": "candidate",
+                      "candidate": "ada-ndiaye",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "tamsin-kaur",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Talia Vance ran the department that this office oversees and left it in better shape\nthan they found it.",
                 "note": "Rank Ada Ndiaye and Tamsin Kaur second and third in either order."
               }
@@ -5104,6 +5130,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5176,24 +5203,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "camila-sandoval"
+                    {
+                      "kind": "candidate",
+                      "candidate": "camila-sandoval",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "sofia-nakamura",
-                    "mateo-pappas"
+                    {
+                      "kind": "candidate",
+                      "candidate": "sofia-nakamura",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "mateo-pappas",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Camila Sandoval ran the department that this office oversees and left it in better\nshape than they found it.",
                 "note": "Rank Sofia Nakamura and Mateo Pappas second and third in either order."
               }
@@ -5214,6 +5243,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5286,24 +5316,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "kiran-abernathy"
+                    {
+                      "kind": "candidate",
+                      "candidate": "kiran-abernathy",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "ezra-jablonski",
-                    "kiran-ndiaye"
+                    {
+                      "kind": "candidate",
+                      "candidate": "ezra-jablonski",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "kiran-ndiaye",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "We endorsed Ezra Jablonski last cycle and were disappointed. Kiran Abernathy has spent\nfour years on the relevant commission and knows the budget line by line.",
                 "note": "Rank Ezra Jablonski and Kiran Ndiaye second and third in either order."
               }
@@ -5324,6 +5356,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5411,24 +5444,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "petra-abernathy"
+                    {
+                      "kind": "candidate",
+                      "candidate": "petra-abernathy",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "silas-patel",
-                    "ezra-mendez"
+                    {
+                      "kind": "candidate",
+                      "candidate": "silas-patel",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "ezra-mendez",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Rank Petra Abernathy first. Silas Patel is acceptable as a second choice; the rest of\nthe field is not ready for this office.",
                 "note": "Rank Silas Patel and Ezra Mendez second and third in either order."
               }
@@ -5449,6 +5484,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5506,24 +5542,26 @@
                 "abstain": false,
                 "support": [
                   [
-                    "bram-okonkwo"
+                    {
+                      "kind": "candidate",
+                      "candidate": "bram-okonkwo",
+                      "campaign": 1
+                    }
                   ],
                   [
-                    "vera-okonkwo",
-                    "lena-delacroix"
+                    {
+                      "kind": "candidate",
+                      "candidate": "vera-okonkwo",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "lena-delacroix",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    1
-                  ],
-                  [
-                    0,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Rank Bram Okonkwo first. Vera Okonkwo is acceptable as a second choice; the rest of\nthe field is not ready for this office.",
                 "note": "Rank Vera Okonkwo and Lena Delacroix second and third in either order."
               }
@@ -5550,6 +5588,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5590,16 +5629,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "imani-petrov"
+                    {
+                      "kind": "candidate",
+                      "candidate": "imani-petrov",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Cedric Lombardi ran the department that this office oversees and left it in better\nshape than they found it."
               }
             },
@@ -5619,6 +5656,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5659,16 +5697,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "bram-pappas"
+                    {
+                      "kind": "candidate",
+                      "candidate": "bram-pappas",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Isaac Fontaine is the only candidate who answered our questionnaire in full. The\nothers declined to meet with us."
               }
             }
@@ -5747,6 +5783,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5801,16 +5838,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "petra-kowalczyk"
+                    {
+                      "kind": "candidate",
+                      "candidate": "petra-kowalczyk",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Rank Petra Kowalczyk first. Isaac Osei is acceptable as a second choice; the rest of\nthe field is not ready for this office."
               }
             },
@@ -5829,6 +5864,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5883,16 +5919,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "uma-moreau"
+                    {
+                      "kind": "candidate",
+                      "candidate": "uma-moreau",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "This is a close call. Uma Moreau and Luis Mendez agree on most of the substance; Uma\nMoreau has the better track record of working across the aisle, which this seat needs."
               }
             }
@@ -5917,6 +5951,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -5986,16 +6021,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "felix-suzuki"
+                    {
+                      "kind": "candidate",
+                      "candidate": "felix-suzuki",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "This is a close call. Felix Suzuki and Rafael Ferreira agree on most of the substance;\nFelix Suzuki has the better track record of working across the aisle, which this seat\nneeds."
               }
             },
@@ -6014,6 +6047,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -6083,16 +6117,14 @@
                 "abstain": false,
                 "support": [
                   [
-                    "elena-tanaka"
+                    {
+                      "kind": "candidate",
+                      "candidate": "elena-tanaka",
+                      "campaign": 0
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Elena Tanaka is the only candidate who answered our questionnaire in full. The others\ndeclined to meet with us."
               }
             }
@@ -6127,6 +6159,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -6272,20 +6305,24 @@
                 "abstain": false,
                 "support": [
                   [
-                    "vera-tanaka",
-                    "isaac-sandoval",
-                    "theo-garza"
+                    {
+                      "kind": "candidate",
+                      "candidate": "vera-tanaka",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "isaac-sandoval",
+                      "campaign": 1
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "theo-garza",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0,
-                    1,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Each of these candidates committed in writing to keeping the arts and athletics\nbudgets whole. The others did not respond to our questionnaire."
               }
             }
@@ -6312,6 +6349,7 @@
                 ]
               },
               "required": false,
+              "extensible": false,
               "campaigns": [
                 {
                   "index": 0,
@@ -6412,20 +6450,24 @@
                 "abstain": false,
                 "support": [
                   [
-                    "maeve-nakamura",
-                    "jordan-patel",
-                    "samir-jensen"
+                    {
+                      "kind": "candidate",
+                      "candidate": "maeve-nakamura",
+                      "campaign": 0
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "jordan-patel",
+                      "campaign": 1
+                    },
+                    {
+                      "kind": "candidate",
+                      "candidate": "samir-jensen",
+                      "campaign": 2
+                    }
                   ]
                 ],
                 "oppose": [],
-                "support_campaigns": [
-                  [
-                    0,
-                    1,
-                    2
-                  ]
-                ],
-                "oppose_campaigns": [],
                 "justification": "Each of these candidates committed in writing to keeping the arts and athletics\nbudgets whole. The others did not respond to our questionnaire."
               }
             }
@@ -6490,6 +6532,7 @@
             ]
           },
           "required": false,
+          "extensible": false,
           "campaigns": [
             {
               "index": 0,
@@ -6529,16 +6572,14 @@
             "abstain": false,
             "support": [
               [
-                "kwame-halvorsen"
+                {
+                  "kind": "candidate",
+                  "candidate": "kwame-halvorsen",
+                  "campaign": 0
+                }
               ]
             ],
             "oppose": [],
-            "support_campaigns": [
-              [
-                0
-              ]
-            ],
-            "oppose_campaigns": [],
             "justification": "We endorsed Desmond Moreau last cycle and were disappointed. Kwame Halvorsen has spent\nfour years on the relevant commission and knows the budget line by line."
           }
         },
@@ -6557,6 +6598,7 @@
             ]
           },
           "required": false,
+          "extensible": false,
           "campaigns": [
             {
               "index": 0,
@@ -6596,16 +6638,14 @@
             "abstain": false,
             "support": [
               [
-                "vera-patel"
+                {
+                  "kind": "candidate",
+                  "candidate": "vera-patel",
+                  "campaign": 0
+                }
               ]
             ],
             "oppose": [],
-            "support_campaigns": [
-              [
-                0
-              ]
-            ],
-            "oppose_campaigns": [],
             "justification": "Vera Patel has the clearest plan for the office and a record of delivering on it. Silas\nVillanueva has not said how the proposals would be paid for."
           }
         },
@@ -6624,6 +6664,7 @@
             ]
           },
           "required": false,
+          "extensible": false,
           "campaigns": [
             {
               "index": 0,
@@ -6663,16 +6704,14 @@
             "abstain": false,
             "support": [
               [
-                "anil-osei"
+                {
+                  "kind": "candidate",
+                  "candidate": "anil-osei",
+                  "campaign": 0
+                }
               ]
             ],
             "oppose": [],
-            "support_campaigns": [
-              [
-                0
-              ]
-            ],
-            "oppose_campaigns": [],
             "justification": "Anil Osei is the only candidate who answered our questionnaire in full. The others\ndeclined to meet with us."
           }
         }
