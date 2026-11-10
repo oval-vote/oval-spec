@@ -219,6 +219,8 @@ Campaign :
 
 - `campaign` Flags Member Newline CampaignBlock?
 - `campaign` Flags Newline CampaignBlock
+- `campaign` Flags `party` PartyMember Newline PartyCampaignBlock?
+- `campaign` Flags `party` Newline PartyCampaignBlock
 
 CampaignBlock : Indent CampaignEntry+ Dedent
 
@@ -239,6 +241,20 @@ CampaignField :
 - `note` MarkdownBody
 - `designation` String Newline
 - PartyRef
+
+PartyMember : Identifier String?
+
+PartyCampaignBlock : Indent PartyCampaignEntry+ Dedent
+
+PartyCampaignEntry :
+
+- PartyMember Newline PartyBlock?
+- PartyCampaignField
+
+PartyCampaignField :
+
+- `website` Url Newline
+- `note` MarkdownBody
 
 ContestRecommend :
 

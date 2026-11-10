@@ -89,7 +89,7 @@
     "party": {
       "description": "A political party.",
       "type": "object",
-      "required": ["id", "name", "candidates"],
+      "required": ["id", "name", "candidates", "contests"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -115,6 +115,13 @@
         },
         "candidates": {
           "description": "Derived. Identifiers of every candidate whose party this is, in document order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "contests": {
+          "description": "Derived. Identifiers of every contest in which the party is a campaign member, in ballot order.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/identifier"
@@ -401,9 +408,9 @@
       }
     },
     "campaign": {
-      "description": "One or more candidates running together for a contest.",
+      "description": "One or more candidates, or one or more parties, running together for a contest.",
       "type": "object",
-      "required": ["index", "label", "head", "members", "incumbent", "withdrawn", "stance"],
+      "required": ["index", "kind", "label", "head", "members", "incumbent", "withdrawn", "stance"],
       "additionalProperties": false,
       "properties": {
         "index": {
@@ -411,20 +418,24 @@
           "type": "integer",
           "minimum": 0
         },
+        "kind": {
+          "description": "Whether the members are candidates or parties, from `campaign` or `campaign party`.",
+          "enum": ["candidates", "parties"]
+        },
         "label": {
-          "description": "Derived. The members' names joined with \" / \", head of ticket first.",
+          "description": "Derived. The members' names joined with \" / \", head first.",
           "type": "string"
         },
         "head": {
-          "description": "Derived. Identifier of the first member: the head of the ticket, and the name the recommendation uses for this campaign.",
+          "description": "Derived. Identifier of the first member, a candidate or a party according to `kind`.",
           "$ref": "#/$defs/identifier"
         },
         "party": {
-          "description": "Derived. The party shared by every member, when all members have the same one.",
+          "description": "Derived. For a candidate campaign, the party shared by every member, when all have the same one.",
           "$ref": "#/$defs/identifier"
         },
         "members": {
-          "description": "The campaign's candidates, head of ticket first.",
+          "description": "The campaign's candidates or parties, head first.",
           "type": "array",
           "minItems": 1,
           "items": {
@@ -455,24 +466,46 @@
       }
     },
     "member": {
-      "description": "A candidate's place on a campaign.",
-      "type": "object",
-      "required": ["candidate"],
-      "additionalProperties": false,
-      "properties": {
-        "candidate": {
-          "description": "The candidate's identifier.",
-          "$ref": "#/$defs/identifier"
+      "description": "A candidate's or party's place on a campaign.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "candidate"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "description": "One of `candidate` or `party`, matching the campaign's `kind`.",
+              "const": "candidate"
+            },
+            "candidate": {
+              "description": "The candidate's identifier.",
+              "$ref": "#/$defs/identifier"
+            },
+            "role": {
+              "description": "The member's role on the ticket, from `as`.",
+              "type": "string"
+            },
+            "note": {
+              "description": "The author's note on this member, from the member's `note`.",
+              "$ref": "#/$defs/markdown"
+            }
+          }
         },
-        "role": {
-          "description": "The member's role on the ticket, from `as`.",
-          "type": "string"
-        },
-        "note": {
-          "description": "The author's note on this member, from the member's `note`.",
-          "$ref": "#/$defs/markdown"
+        {
+          "type": "object",
+          "required": ["kind", "party"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "party"
+            },
+            "party": {
+              "description": "The party's identifier.",
+              "$ref": "#/$defs/identifier"
+            }
+          }
         }
-      }
+      ]
     },
     "stance": {
       "description": "Derived. What the contest's recommendation says about this campaign.",
@@ -558,7 +591,7 @@
       }
     },
     "choice": {
-      "description": "One choice in a recommendation: a candidate printed on the ballot, or a write-in.",
+      "description": "One choice in a recommendation: a campaign printed on the ballot, or a write-in.",
       "oneOf": [
         {
           "type": "object",
@@ -566,15 +599,34 @@
           "additionalProperties": false,
           "properties": {
             "kind": {
-              "description": "One of `candidate` or `write_in`.",
+              "description": "One of `candidate`, `party`, or `write_in`.",
               "const": "candidate"
             },
             "candidate": {
-              "description": "The candidate's identifier, as written.",
+              "description": "Derived. Identifier of the head of the campaign the reference resolves to.",
               "$ref": "#/$defs/identifier"
             },
             "campaign": {
               "description": "Derived. Index of the campaign the candidate resolves to.",
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "party", "campaign"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "party"
+            },
+            "party": {
+              "description": "Derived. Identifier of the head of the campaign the reference resolves to.",
+              "$ref": "#/$defs/identifier"
+            },
+            "campaign": {
+              "description": "Derived. Index of the campaign the party resolves to.",
               "type": "integer",
               "minimum": 0
             }

@@ -96,7 +96,8 @@ This document defines Oval in four parts, each building on the one before it:
   every `error` and every `warning`.
 - **Formatting.** The canonical style for Oval documents. A conformant formatter accepts every
   well-formed document and produces an equivalent document in that style. Formatting never changes
-  the meaning of a document and never introduces an error or a warning.
+  the meaning of a document, never makes a valid document invalid, and never introduces a warning
+  into a valid document.
 - **Canonical output.** The JSON value a valid document compiles to. It is the guide with every
   reference resolved and with the fields any renderer would otherwise recompute, in a shape fixed by
   a published [JSON Schema](https://json-schema.org). Compiled output should be unaffected by file
@@ -234,9 +235,9 @@ A `Word` is a bare run of letters, digits, hyphens, and underscores that begins 
 lexer accepts every such run; which words may appear where is decided by the syntactic grammar. A
 literal in backticks in a syntactic production, such as `ballot`, matches a `Word` whose text is
 exactly that, case-sensitively. A word the syntactic grammar names this way is a **keyword**;
-Appendix B lists them. A word in a position where the grammar does not expect it is a syntax error
-(Section 3.2), not a lexical one. Words have no other use: Oval has no free identifiers, and every
-name an author chooses is an `Identifier`, a word after `@`.
+Appendix B lists them. A word in a position where the grammar does not expect it is a syntax error,
+not a lexical one. Words have no other use: Oval has no free identifiers, and every name an author
+chooses is an `Identifier`, a word after `@`.
 
 #### String
 
@@ -315,8 +316,8 @@ is no body and no token.
 The token covers the body's raw text, from the first content line's leading spaces through the last
 content line's terminator (or end of input). Blank lines before and after the body are not part of
 it; they lex as `BlankLine`. Blank lines inside the body are part of it. Body lines do not
-participate in layout (Section 2.4): they produce no `Newline`, `Indent`, or `Dedent`, and the
-indentation stack is unchanged after the body.
+participate in layout: they produce no `Newline`, `Indent`, or `Dedent`, and the indentation stack
+is unchanged after the body.
 
 The body is **opaque**. Inside it `#` is not a comment, `@`, `"`, and tabs are ordinary characters,
 and no other token is recognized. The body is Markdown; the Markdown profile below says which
@@ -401,8 +402,7 @@ A line containing nothing but whitespace and a comment is a _blank line_. Its te
 Inside a `MarkdownBlock` body blank lines are part of the body and separate paragraphs.
 
 Horizontal tab (U+0009) is **not** whitespace. A tab anywhere outside a `String`, a `Comment`, or a
-`MarkdownBlock` body is a lexical error. This rule exists so that indentation (Section 2.4) is
-unambiguous.
+`MarkdownBlock` body is a lexical error. This rule exists so that indentation is unambiguous.
 
 ### 2.4. Layout Tokens
 
@@ -457,11 +457,11 @@ Document : VersionMarker? GuideField* Declaration* Ballot*
 
 VersionMarker : `oval` Integer Newline
 
-A document is a Guide (Section 2.8) written at indentation zero. It opens with the version marker,
-then the document's fields, then any top-level `Party` and `Candidate` declarations, then the root
-`Ballot`s. These four groups appear in that order; within the fields and within the declarations,
-order is free. The grammar leaves the ballots optional for the same reason it leaves `guide`
-optional: a document with none is invalid, not malformed.
+A document is a Guide written at indentation zero. It opens with the version marker, then the
+document's fields, then any top-level `Party` and `Candidate` declarations, then the root `Ballot`s.
+These four groups appear in that order; within the fields and within the declarations, order is
+free. The grammar leaves the ballots optional for the same reason it leaves `guide` optional: a
+document with none is invalid, not malformed.
 
 There is no closing token. The document ends at end of input.
 
@@ -549,7 +549,7 @@ required ballot @city "City of Ashford"
 Here `@mayor` and `@prop-a` are required, inherited from the ballot, and `@auditor` is optional
 because its own requirement is nearer. A requirement on a ballot or a section has no meaning of its
 own; it only supplies the value its questions inherit. A question's effective requirement decides
-whether it may be recommended with `abstain` (Sections 2.15 and 2.17).
+whether it may be recommended with `abstain`.
 
 An **extensibility** is a keyword written before the keyword of a `Ballot`, `Section`, or `Contest`,
 after its requirement if it has one:
@@ -562,7 +562,7 @@ extensibility_, is found the same way as its requirement: from the nearest exten
 the contest, its section, or its enclosing ballots, and exhaustive when there is none. Two kinds of
 question are always exhaustive, whatever they inherit: a `retention` contest, which asks only yes or
 no, and a measure, which takes no extensibility of its own. Only an extensible contest's
-recommendation may contain a `write-in` (Section 2.15).
+recommendation may contain a `write-in`.
 
 ```oval example
 required extensible ballot @city "City of Ashford"
@@ -635,7 +635,7 @@ note:
 ```
 
 `guide`, `election`, and `date` are required. `note` is optional. The version marker that precedes
-them belongs to the document (Section 2.5), not to the guide.
+them belongs to the document, not to the guide.
 
 Declaration :
 
@@ -662,7 +662,8 @@ party @dem "Democratic"
   abbreviation "D"
 ```
 
-A party may be declared at the top level or inline in a candidate's `party` field.
+A party may be declared at the top level, inline in a candidate's `party` field, or inline as a
+member of a party campaign.
 
 ### 2.10. Candidate
 
@@ -732,7 +733,7 @@ A ballot is a node in the guide's tree. Its items are in ballot order. A `Ballot
 **sub-ballot**: a narrower electorate whose voters also see everything in the enclosing ballot.
 Sub-ballots nest without limit. Document-level ballots are **root ballots**; a valid document has at
 least one. A `Requirement` or `Extensibility` before `ballot` is inherited by every question in the
-ballot and its sub-ballots that does not have a nearer one (Section 2.6).
+ballot and its sub-ballots that does not have a nearer one.
 
 A ballot with no block is a syntax error, and a ballot whose block has no item is invalid.
 
@@ -757,7 +758,7 @@ SectionItem :
 A section is a titled group of questions within a ballot, matching a heading on the printed ballot.
 It has no identifier and no eligibility meaning. Sections do not nest and do not contain
 sub-ballots. A `Requirement` or `Extensibility` before `section` is inherited by every question in
-the section that does not have its own (Section 2.6).
+the section that does not have its own.
 
 ```oval example
 required section "Statewide Offices"
@@ -828,8 +829,7 @@ a formatter orders them fields, campaigns, recommendation.
 
 A `Requirement` before `contest` sets the contest's effective requirement directly, and an
 `Extensibility` sets its effective extensibility, each overriding any inherited from its section or
-ballots (Section 2.6). A retention contest is always exhaustive, and writing `extensible` before one
-is an error.
+ballots. A retention contest is always exhaustive, and writing `extensible` before one is an error.
 
 ```oval example
 extensible contest @mayor "Mayor" single
@@ -845,6 +845,8 @@ Campaign :
 
 - `campaign` Flags Member Newline CampaignBlock?
 - `campaign` Flags Newline CampaignBlock
+- `campaign` Flags `party` PartyMember Newline PartyCampaignBlock?
+- `campaign` Flags `party` Newline PartyCampaignBlock
 
 CampaignBlock : Indent CampaignEntry+ Dedent
 
@@ -866,8 +868,24 @@ CampaignField :
 - `designation` String Newline
 - PartyRef
 
-A campaign is one or more candidates running together for the contest. It has no identifier; it is
-identified by its candidates.
+PartyMember : Identifier String?
+
+PartyCampaignBlock : Indent PartyCampaignEntry+ Dedent
+
+PartyCampaignEntry :
+
+- PartyMember Newline PartyBlock?
+- PartyCampaignField
+
+PartyCampaignField :
+
+- `website` Url Newline
+- `note` MarkdownBody
+
+A campaign is one or more candidates, or one or more parties, running together for the contest. It
+has no identifier; it is identified by its members. A campaign's members are all candidates or all
+parties: a **candidate campaign** is written `campaign`, and a **party campaign** is written
+`campaign party`.
 
 A `Member` is a candidate reference (`@id`) or an inline candidate declaration (`@id "Name"`),
 optionally followed by `as String`, the member's role on the ticket ("Governor", "Vice President").
@@ -909,12 +927,41 @@ campaign incumbent
     The ticket's note.
 ```
 
-Member order is significant: the first member is the head of the ticket. In block form,
-`designation` and `PartyRef` are not permitted at the campaign level; they belong under a member.
+Member order is significant: the first member is the **head** of the campaign, the head of the
+ticket for candidates and the lead party of a coalition. In block form, `designation` and `PartyRef`
+are not permitted at the campaign level; they belong under a member.
 
-**Flags.** `incumbent` means this campaign currently occupies the office being contested;
-`withdrawn` means the campaign has ended but remains on the ballot. Both default to false. They may
-appear in either order and each at most once.
+**Party campaigns.** A party campaign offers the voter a party rather than a candidate: a party
+list, a straight-party box, or a coalition of parties that appears on the ballot as one choice. Its
+members are parties, written as a `PartyMember`: a party reference (`@id`) or an inline party
+declaration (`@id "Name"`). Party members take no role. Like a candidate campaign, it has a one-line
+form for a single party and a block form for several.
+
+```oval example
+contest @assembly "National Assembly" single
+  campaign party @dem
+  campaign party
+    @green "Green Party"
+      abbreviation "G"
+    @labour
+    website https://redgreen.example
+  campaign @kobi "Kwame Obi"
+  recommend
+    support @green
+```
+
+Here the voter may choose the Democratic Party, the coalition of the Green and Labour parties, or
+the independent Kwame Obi. In the one-line form the block holds only the campaign's `website` and
+`note`; a party with fields of its own is declared in the block form, where an inline member may be
+followed by a `PartyBlock`, or at the top level. A `PartyBlock` may follow a member only when the
+member is an inline declaration.
+
+A candidate's `party` field describes the candidate and does not make the party a member of any
+campaign. Lists of a party's candidates are not modeled; describe them in the campaign's `note`.
+
+**Flags.** Flags apply to both kinds of campaign. `incumbent` means this campaign currently occupies
+the office being contested; `withdrawn` means the campaign has ended but remains on the ballot. Both
+default to false. They may appear in either order and each at most once.
 
 ### 2.15. Contest Recommendation
 
@@ -971,22 +1018,25 @@ the `recommend` line, as `no-position` or `abstain`, or as the `support` and `op
 block, never both. Without a `NoStance`, the block is a `StanceBlock`: it is required and contains
 at least one `support` or `oppose` line, anywhere among its `justification` and `note`. With one,
 the block is a `RecommendFieldBlock`: it is optional and contains only `justification` and `note`.
-Measures use the same `RecommendFieldBlock` (Section 2.17).
+Measures use the same `RecommendFieldBlock`.
 
 Each `support` line is one **tier**. Several `support` lines are several tiers, in order from most
 to least preferred. Choices within one line are interchangeable. `oppose` lists choices the author
 advises against; it is unordered and may appear at most once.
 
-A **choice** is a candidate reference or a write-in. Campaigns have no identifiers. Every reference
-in `support` or `oppose` is a candidate identifier and names a campaign _by one of its candidates_:
-it resolves to the one campaign, among the enclosing contest's campaigns, whose members include that
-candidate. A candidate may not appear in more than one campaign within the same contest.
+A **choice** is a reference or a write-in. Campaigns have no identifiers. Every reference in
+`support` or `oppose` names a campaign _by one of its members_: a candidate identifier for a
+candidate campaign, or a party identifier for a party campaign. It resolves to the one campaign,
+among the enclosing contest's campaigns, whose members include that candidate or party. A
+candidate's `party` field is not membership, so naming a candidate never resolves to a party
+campaign. A candidate or party may not be a member of more than one campaign within the same
+contest. Any member may be named; a formatter rewrites the reference to name the campaign's head.
 
 A **write-in** is a choice the voter writes on the ballot by hand. It is not a campaign, since it is
-not printed, and is valid only in an extensible contest (Section 2.6). `write-in` followed by a
-string names the person to write in. A bare `write-in` names no one: in `support` it means writing
-in anyone the reader chooses, and in `oppose` it means writing in no one. A write-in takes its place
-in the tiers like any other choice.
+not printed, and is valid only in an extensible contest. `write-in` followed by a string names the
+person to write in. A bare `write-in` names no one: in `support` it means writing in anyone the
+reader chooses, and in `oppose` it means writing in no one. A write-in takes its place in the tiers
+like any other choice.
 
 ```oval example
 recommend
@@ -1007,7 +1057,7 @@ in no case to vote for Fox or write in anyone else.
 `no-position`: `no-position` says the author offers no advice, while `abstain` advises the reader
 not to vote on the question at all. Like `no-position`, it may carry `justification` and `note` but
 no `support` or `oppose`. A required question cannot be left blank, so `abstain` is valid only on an
-optional one (Section 2.6).
+optional one.
 
 ```oval example
 contest @auditor "City Auditor" single
@@ -1064,8 +1114,8 @@ measure @prop1 "Proposition 1"
 `description`, `if_yes`, and `if_no` are official ballot text copied verbatim. `supporters` and
 `opponents` have three states: **absent** (not researched), **`none`** (researched; none known), and
 a list. A measure contains exactly one `MeasureRecommend`. A `Requirement` before `measure` sets the
-measure's effective requirement directly, overriding any inherited from its section or ballots
-(Section 2.6). A measure takes no `Extensibility` and ignores one written on its section or ballots.
+measure's effective requirement directly, overriding any inherited from its section or ballots. A
+measure takes no `Extensibility` and ignores one written on its section or ballots.
 
 ### 2.17. Measure Recommendation
 
@@ -1082,7 +1132,7 @@ recommend no-position
 A measure has no campaigns, so its position is always on the `recommend` line and its block holds
 only `justification` and `note`. `yes` and `no` recommend a vote. `no-position` says the author
 offers no advice. `abstain` advises the reader to leave the measure blank, and is valid only on an
-optional measure, as for a contest (Section 2.15).
+optional measure, as for a contest.
 
 ---
 
@@ -1117,9 +1167,9 @@ The recoveries are normative: two implementations given the same broken document
 tokens and the same errors.
 
 A tool that only needs to accept or reject a document may stop at the first error instead. It then
-reports a subset of the errors this section specifies and is not lexer- or parser-conformant
-(Section 4), since those levels exist for tools that must make sense of every byte of a broken file;
-the documents it accepts are exactly the documents a conformant implementation accepts.
+reports a subset of the errors this section specifies and is not lexer- or parser-conformant, since
+those levels exist for tools that must make sense of every byte of a broken file; the documents it
+accepts are exactly the documents a conformant implementation accepts.
 
 Note: Each error below is followed by an example that lexes without error and a counter-example that
 produces the error, each with its token sequence: every token in order, with its kind and its text.
@@ -1322,9 +1372,9 @@ Newline «↵»
 #### Inconsistent Dedent
 
 Occurs when a line with tokens is indented less than the enclosing block and equal to no enclosing
-level (Section 2.4). The error is reported as `inconsistent-dedent` and spans the line's leading
-spaces, which remain a `Whitespace` token. To recover, emit `Dedent` tokens down to the nearest
-enclosing level, treat the line as at that level, and continue.
+level. The error is reported as `inconsistent-dedent` and spans the line's leading spaces, which
+remain a `Whitespace` token. To recover, emit `Dedent` tokens down to the nearest enclosing level,
+treat the line as at that level, and continue.
 
 ```oval example
 ballot @city "City of Ashford"
@@ -1592,6 +1642,20 @@ contest @mayor "Mayor" single
 
 A requirement applies to questions and their containers, not to campaigns.
 
+A party campaign's block accepts only party members, `website`, and `note`, so the candidate entries
+`designation` and `party` are unexpected entries there. A party member takes no role, so `as` after
+one is an unexpected token.
+
+```oval example
+campaign party @green "Green Party"
+  website https://greens.example
+```
+
+```oval counter-example
+campaign party @green "Green Party"
+  designation "Party of the Environment"
+```
+
 #### Repeated Field
 
 Occurs when a field keyword appears a second time in the same block, or at the document level. The
@@ -1819,8 +1883,9 @@ party @dem "Democrats"
 #### Mismatched Reference
 
 Occurs when a reference resolves to a declaration of a kind its position does not accept: a `party`
-line must name a party, and a member, `support`, or `oppose` must name a candidate. The error is
-reported as `mismatched-reference` and spans the reference.
+line must name a party; a member of a candidate campaign must name a candidate, and a member of a
+party campaign must name a party; and `support` or `oppose` must name a candidate or a party. The
+error is reported as `mismatched-reference` and spans the reference.
 
 ```oval example
 candidate @dana-lombardi "Dana Lombardi"
@@ -1832,11 +1897,25 @@ candidate @dana-lombardi "Dana Lombardi"
   party @sofia-yilmaz
 ```
 
+```oval example
+contest @straight "Straight Party" single
+  campaign party @dem
+  recommend no-position
+```
+
+```oval counter-example
+contest @straight "Straight Party" single
+  campaign @dem
+  recommend no-position
+```
+
+The second counter-example names a party in a candidate campaign; write `campaign party`.
+
 #### Block on a Reference
 
 Occurs when a member that is a reference, not an inline declaration, is followed by an indented
-block of candidate fields. A reference has nothing to declare. The error is reported as
-`block-on-reference` and spans the block.
+block of candidate fields, or of party fields in a party campaign. A reference has nothing to
+declare. The error is reported as `block-on-reference` and spans the block.
 
 ```oval example
 campaign
@@ -1919,9 +1998,9 @@ contest @mayor "Mayor" single
 
 #### Campaign Without Members
 
-Occurs when a block-form campaign has fields but no member. Without a member there is no candidate
-for a recommendation to name. The error is reported as `campaign-without-members` and spans the
-campaign's line.
+Occurs when a block-form campaign, of either kind, has fields but no member. Without a member there
+is nothing for a recommendation to name. The error is reported as `campaign-without-members` and
+spans the campaign's line.
 
 ```oval example
 campaign
@@ -1936,8 +2015,8 @@ campaign
 
 #### Duplicate Member
 
-Occurs when a candidate appears twice among one campaign's members. The error is reported as
-`duplicate-member` and spans the later member.
+Occurs when a candidate or party appears twice among one campaign's members. The error is reported
+as `duplicate-member` and spans the later member.
 
 ```oval example
 campaign
@@ -1951,10 +2030,10 @@ campaign
   @hana-nakamura as "Vice President"
 ```
 
-#### Candidate in Two Campaigns
+#### Member in Two Campaigns
 
-Occurs when a candidate is a member of more than one campaign in the same contest. The error is
-reported as `candidate-in-two-campaigns` and spans the later member.
+Occurs when a candidate or party is a member of more than one campaign in the same contest. The
+error is reported as `member-in-two-campaigns` and spans the later member.
 
 ```oval example
 contest @mayor "Mayor" single
@@ -1969,6 +2048,30 @@ contest @mayor "Mayor" single
   campaign @bsantos
   recommend no-position
 ```
+
+#### Party in Two Campaigns
+
+Occurs when a member of a candidate campaign has a `party`, and that party is a member of another
+campaign in the same contest. The ballot would then offer both the candidate and their party as
+separate choices for one question, which almost always means the contest was transcribed wrong. The
+error is reported as `party-in-two-campaigns` and spans whichever of the two members comes later in
+the source.
+
+```oval example
+contest @assembly "National Assembly" single
+  campaign party @dem
+  campaign party @green
+  recommend no-position
+```
+
+```oval counter-example
+contest @assembly "National Assembly" single
+  campaign party @dem
+  campaign @nreyes
+  recommend no-position
+```
+
+Here `@nreyes` is declared elsewhere with `party @dem`.
 
 #### Invalid Multiple Count
 
@@ -2017,6 +2120,24 @@ contest @judge-ueda "Retain Judge Ueda?" retention
     support @ueda
 ```
 
+#### Party Campaign in a Retention Contest
+
+Occurs when a `retention` contest's campaign is a party campaign. A retention question asks whether
+one officeholder keeps their office, so its campaign names a candidate. The error is reported as
+`retention-party-campaign` and spans the campaign's line.
+
+```oval example
+contest @judge-ueda "Retain Judge Ueda?" retention
+  campaign incumbent @ueda "Mika Ueda"
+  recommend no-position
+```
+
+```oval counter-example
+contest @judge-ueda "Retain Judge Ueda?" retention
+  campaign incumbent party @dem
+  recommend no-position
+```
+
 #### Missing Recommendation
 
 Occurs when a `Contest` has no `ContestRecommend` or a `Measure` has no `MeasureRecommend`. Every
@@ -2052,9 +2173,10 @@ measure @prop-a "Proposition A"
 
 #### Campaign Not in Contest
 
-Occurs when a `support` or `oppose` reference names a candidate who is a member of no campaign in
-the enclosing contest. A recommendation names a campaign by one of its candidates (Section 2.15).
-The error is reported as `campaign-not-in-contest` and spans the reference.
+Occurs when a `support` or `oppose` reference names a candidate or party that is a member of no
+campaign in the enclosing contest. A recommendation names a campaign by one of its members, and a
+candidate's `party` field is not membership. The error is reported as `campaign-not-in-contest` and
+spans the reference.
 
 ```oval example
 contest @mayor "Mayor" single
@@ -2092,9 +2214,9 @@ recommend
 #### Repeated Stance
 
 Occurs when the same choice appears more than once across a recommendation's `support` lines and its
-`oppose` line. Two choices are the same when they reference the same candidate, when they are
-write-ins with identical names, or when both are bare write-ins. The error is reported as
-`repeated-stance` and spans each choice after the first.
+`oppose` line. Two choices are the same when they are references that resolve to the same campaign,
+even if they name different members; when they are write-ins with identical names; or when both are
+bare write-ins. The error is reported as `repeated-stance` and spans each choice after the first.
 
 ```oval example
 recommend
@@ -2196,7 +2318,7 @@ contest @judge-ueda "Retain Judge Ueda?" retention
 
 Occurs when a contest's or measure's recommendation is `abstain` and the question's effective
 requirement is required, whether the requirement is written on the question or inherited from its
-section or ballots (Section 2.6). A required question cannot be left blank. The error is reported as
+section or ballots. A required question cannot be left blank. The error is reported as
 `abstain-on-required` and spans the `abstain` keyword.
 
 ```oval example
@@ -2219,7 +2341,7 @@ required section "City Measures"
 
 Occurs when a recommendation contains a `write-in` and its contest is exhaustive: nothing makes it
 extensible, a nearer `exhaustive` overrides an inherited `extensible`, or it is a `retention`
-contest (Section 2.6). The error is reported as `write-in-not-accepted` and spans the write-in.
+contest. The error is reported as `write-in-not-accepted` and spans the write-in.
 
 ```oval example
 extensible section "City Offices"
@@ -2292,10 +2414,10 @@ warning; this specification does not say how.
 
 #### Unused Declaration
 
-Occurs when a top-level `Party` declaration is named by no `party` line, or a top-level `Candidate`
-declaration is a member of no campaign. Inline declarations are used by the construct that declares
-them and are never reported. The warning is reported as `unused-declaration` and spans the
-declaration's header line.
+Occurs when a top-level `Party` declaration is named by no `party` line and is a member of no
+campaign, or a top-level `Candidate` declaration is a member of no campaign. Inline declarations are
+used by the construct that declares them and are never reported. The warning is reported as
+`unused-declaration` and spans the declaration's header line.
 
 ```oval example
 party @dem "Democratic"
@@ -2372,23 +2494,6 @@ contest @council "City Council" multiple 2
   recommend
     support @aokafor @bsantos
     support @cfox
-```
-
-#### Non-Head Reference
-
-Occurs when a `support` or `oppose` reference names a member of a multi-member campaign other than
-its first member. The reference resolves correctly; the warning is stylistic, since the first member
-is the name the compiled output uses for the campaign. It is reported as `non-head-reference` and
-spans the reference.
-
-```oval example
-recommend
-  support @hana-nakamura
-```
-
-```oval counter-example
-recommend
-  support @hiro-eriksen
 ```
 
 #### Write-in on the Ballot
@@ -2524,11 +2629,10 @@ syntax tree or the diagnostics.
   output, so a consumer written to an earlier edition reads the output of a later one.
 - **Discriminated unions use `kind`.** Every item in a ballot or section has a `kind` of `section`,
   `contest`, `measure`, or `ballot`, and root ballots carry `kind: "ballot"` too, so one type
-  describes a ballot anywhere. `method.kind`, `choice.kind`, and `stance.position` discriminate the
-  same way.
+  describes a ballot anywhere. `method.kind`, `campaign.kind`, `member.kind`, `choice.kind`, and
+  `stance.position` discriminate the same way.
 - **Markdown is a string** with common indentation removed, terminators normalized to `\n`, and no
-  trailing terminator (the value of Section 2.2). It is within the Markdown profile. Rendering it is
-  the consumer's job.
+  trailing terminator. It is within the Markdown profile. Rendering it is the consumer's job.
 - **Campaigns are referred to by index** within their contest's `campaigns` array, since they have
   no identifiers.
 - **Strict producers, tolerant consumers.** The schema forbids unknown keys so that a producer's
@@ -2542,8 +2646,7 @@ This section is generated from `packages/oval-schema/oval.schema.json` by `.scri
 lists the objects and keys the schema defines. Every value is one of the objects below, an array of
 them, or a scalar. An _identifier_ is an entity's identifier without its leading `@`, and _Markdown_
 is a body with its common indentation removed, line terminators normalized to `\n`, and no trailing
-terminator (Section 2.2). A key whose meaning begins with "Derived" is computed from the document;
-Section 5.3 defines it.
+terminator. A key whose meaning begins with "Derived" is computed from the document.
 
 #### Root
 
@@ -2575,14 +2678,15 @@ The document-level fields: what the guide is and which election it covers.
 
 A political party.
 
-| Key            | Type                | Required | Meaning                                                                         |
-| -------------- | ------------------- | -------- | ------------------------------------------------------------------------------- |
-| `id`           | identifier          | yes      | The party's identifier.                                                         |
-| `name`         | string              | yes      | The party's name as printed on the ballot.                                      |
-| `abbreviation` | string              | no       | The short form printed beside candidates, from `abbreviation`.                  |
-| `website`      | string, a URL       | no       | The party's website, from `website`.                                            |
-| `note`         | Markdown            | no       | The author's note on the party, from `note`.                                    |
-| `candidates`   | array of identifier | yes      | Derived. Identifiers of every candidate whose party this is, in document order. |
+| Key            | Type                | Required | Meaning                                                                                         |
+| -------------- | ------------------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `id`           | identifier          | yes      | The party's identifier.                                                                         |
+| `name`         | string              | yes      | The party's name as printed on the ballot.                                                      |
+| `abbreviation` | string              | no       | The short form printed beside candidates, from `abbreviation`.                                  |
+| `website`      | string, a URL       | no       | The party's website, from `website`.                                                            |
+| `note`         | Markdown            | no       | The author's note on the party, from `note`.                                                    |
+| `candidates`   | array of identifier | yes      | Derived. Identifiers of every candidate whose party this is, in document order.                 |
+| `contests`     | array of identifier | yes      | Derived. Identifiers of every contest in which the party is a campaign member, in ballot order. |
 
 #### Candidate
 
@@ -2653,30 +2757,33 @@ The voting method, from the contest header.
 
 #### Campaign
 
-One or more candidates running together for a contest.
+One or more candidates, or one or more parties, running together for a contest.
 
-| Key         | Type                | Required | Meaning                                                                                                                  |
-| ----------- | ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `index`     | integer, at least 0 | yes      | Derived. Position in the contest's campaigns array.                                                                      |
-| `label`     | string              | yes      | Derived. The members' names joined with " / ", head of ticket first.                                                     |
-| `head`      | identifier          | yes      | Derived. Identifier of the first member: the head of the ticket, and the name the recommendation uses for this campaign. |
-| `party`     | identifier          | no       | Derived. The party shared by every member, when all members have the same one.                                           |
-| `members`   | array of Member     | yes      | The campaign's candidates, head of ticket first.                                                                         |
-| `incumbent` | boolean             | yes      | Whether the campaign currently occupies the office, from the `incumbent` flag.                                           |
-| `withdrawn` | boolean             | yes      | Whether the campaign has ended but remains on the ballot, from the `withdrawn` flag.                                     |
-| `website`   | string, a URL       | no       | The campaign's website, from `website`.                                                                                  |
-| `note`      | Markdown            | no       | The author's note on the campaign, from `note`.                                                                          |
-| `stance`    | Stance              | yes      | Derived. What the contest's recommendation says about this campaign.                                                     |
+| Key         | Type                               | Required | Meaning                                                                                          |
+| ----------- | ---------------------------------- | -------- | ------------------------------------------------------------------------------------------------ |
+| `index`     | integer, at least 0                | yes      | Derived. Position in the contest's campaigns array.                                              |
+| `kind`      | one of `"candidates"`, `"parties"` | yes      | Whether the members are candidates or parties, from `campaign` or `campaign party`.              |
+| `label`     | string                             | yes      | Derived. The members' names joined with " / ", head first.                                       |
+| `head`      | identifier                         | yes      | Derived. Identifier of the first member, a candidate or a party according to `kind`.             |
+| `party`     | identifier                         | no       | Derived. For a candidate campaign, the party shared by every member, when all have the same one. |
+| `members`   | array of Member                    | yes      | The campaign's candidates or parties, head first.                                                |
+| `incumbent` | boolean                            | yes      | Whether the campaign currently occupies the office, from the `incumbent` flag.                   |
+| `withdrawn` | boolean                            | yes      | Whether the campaign has ended but remains on the ballot, from the `withdrawn` flag.             |
+| `website`   | string, a URL                      | no       | The campaign's website, from `website`.                                                          |
+| `note`      | Markdown                           | no       | The author's note on the campaign, from `note`.                                                  |
+| `stance`    | Stance                             | yes      | Derived. What the contest's recommendation says about this campaign.                             |
 
 #### Member
 
-A candidate's place on a campaign.
+A candidate's or party's place on a campaign.
 
-| Key         | Type       | Required | Meaning                                                     |
-| ----------- | ---------- | -------- | ----------------------------------------------------------- |
-| `candidate` | identifier | yes      | The candidate's identifier.                                 |
-| `role`      | string     | no       | The member's role on the ticket, from `as`.                 |
-| `note`      | Markdown   | no       | The author's note on this member, from the member's `note`. |
+| Key         | Type                            | Required                    | Meaning                                                        |
+| ----------- | ------------------------------- | --------------------------- | -------------------------------------------------------------- |
+| `kind`      | one of `"candidate"`, `"party"` | yes                         | One of `candidate` or `party`, matching the campaign's `kind`. |
+| `candidate` | identifier                      | with `"candidate"`          | The candidate's identifier.                                    |
+| `role`      | string                          | optional with `"candidate"` | The member's role on the ticket, from `as`.                    |
+| `note`      | Markdown                        | optional with `"candidate"` | The author's note on this member, from the member's `note`.    |
+| `party`     | identifier                      | with `"party"`              | The party's identifier.                                        |
 
 #### Stance
 
@@ -2702,14 +2809,16 @@ The author's recommendation on a contest.
 
 #### Choice
 
-One choice in a recommendation: a candidate printed on the ballot, or a write-in.
+One choice in a recommendation: a campaign printed on the ballot, or a write-in.
 
-| Key         | Type                               | Required                   | Meaning                                                             |
-| ----------- | ---------------------------------- | -------------------------- | ------------------------------------------------------------------- |
-| `kind`      | one of `"candidate"`, `"write_in"` | yes                        | One of `candidate` or `write_in`.                                   |
-| `candidate` | identifier                         | with `"candidate"`         | The candidate's identifier, as written.                             |
-| `campaign`  | integer, at least 0                | with `"candidate"`         | Derived. Index of the campaign the candidate resolves to.           |
-| `name`      | string                             | optional with `"write_in"` | The name to write in, from `write-in`. Omitted for a bare write-in. |
+| Key         | Type                                          | Required                   | Meaning                                                                    |
+| ----------- | --------------------------------------------- | -------------------------- | -------------------------------------------------------------------------- |
+| `kind`      | one of `"candidate"`, `"party"`, `"write_in"` | yes                        | One of `candidate`, `party`, or `write_in`.                                |
+| `candidate` | identifier                                    | with `"candidate"`         | Derived. Identifier of the head of the campaign the reference resolves to. |
+| `campaign`  | integer, at least 0                           | with `"candidate"`         | Derived. Index of the campaign the candidate resolves to.                  |
+| `party`     | identifier                                    | with `"party"`             | Derived. Identifier of the head of the campaign the reference resolves to. |
+| `campaign`  | integer, at least 0                           | with `"party"`             | Derived. Index of the campaign the party resolves to.                      |
+| `name`      | string                                        | optional with `"write_in"` | The name to write in, from `write-in`. Omitted for a bare write-in.        |
 
 #### Measure
 
@@ -2784,22 +2893,24 @@ Derived. Totals across the whole document.
 
 Everything below is computed from the document; none of it can disagree with the source.
 
-| Field        | On                               | Definition                                                                                                                                                                                 |
-| ------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `candidates` | party                            | Identifiers of every candidate whose party this is, in document order.                                                                                                                     |
-| `contests`   | candidate                        | Identifiers of every contest in which the candidate is a campaign member, in ballot order.                                                                                                 |
-| `path`       | ballot                           | Identifiers of the enclosing ballots, outermost first, excluding the ballot itself. Empty for a root.                                                                                      |
-| `location`   | contest, measure, question entry | `ballot`, the innermost enclosing ballot's identifier; `section`, the enclosing section's title if any; `path`, every enclosing ballot's identifier outermost first, ending with `ballot`. |
-| `required`   | contest, measure, question entry | `true` when the nearest requirement on the question, its section, or its ballots is `required` (Section 2.6); `false` when it is `optional` or there is none.                              |
-| `extensible` | contest                          | `true` when the nearest extensibility on the contest, its section, or its ballots is `extensible` and the contest is not `retention` (Section 2.6).                                        |
-| `index`      | campaign                         | Position in the contest's `campaigns` array.                                                                                                                                               |
-| `head`       | campaign                         | Identifier of the first member: the head of the ticket, and the name recommendations use for this campaign.                                                                                |
-| `label`      | campaign                         | The members' names joined with `" / "`, head first. For a single candidate, their name.                                                                                                    |
-| `party`      | campaign                         | The party every member shares, when all members have the same party. Omitted otherwise, including when any member has none.                                                                |
-| `stance`     | campaign                         | What the contest's recommendation says about this campaign: `support` with the zero-based `tier`, `oppose`, or `none`. With `no_position` or `abstain`, every campaign has `none`.         |
-| `campaign`   | choice                           | The index of the campaign a candidate choice's identifier resolves to (Section 2.15).                                                                                                      |
-| `questions`  | root                             | Every contest and measure in ballot order, each with `kind`, `id`, `title`, and `location`. A flat index for tables of contents and per-electorate views.                                  |
-| `counts`     | root                             | Totals of ballots (all, not only roots), sections, contests, measures, campaigns, candidates, and parties.                                                                                 |
+| Field                | On                               | Definition                                                                                                                                                                                 |
+| -------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `candidates`         | party                            | Identifiers of every candidate whose party this is, in document order.                                                                                                                     |
+| `contests`           | candidate                        | Identifiers of every contest in which the candidate is a campaign member, in ballot order.                                                                                                 |
+| `contests`           | party                            | Identifiers of every contest in which the party is a campaign member, in ballot order.                                                                                                     |
+| `path`               | ballot                           | Identifiers of the enclosing ballots, outermost first, excluding the ballot itself. Empty for a root.                                                                                      |
+| `location`           | contest, measure, question entry | `ballot`, the innermost enclosing ballot's identifier; `section`, the enclosing section's title if any; `path`, every enclosing ballot's identifier outermost first, ending with `ballot`. |
+| `required`           | contest, measure, question entry | `true` when the nearest requirement on the question, its section, or its ballots is `required`; `false` when it is `optional` or there is none.                                            |
+| `extensible`         | contest                          | `true` when the nearest extensibility on the contest, its section, or its ballots is `extensible` and the contest is not `retention`.                                                      |
+| `index`              | campaign                         | Position in the contest's `campaigns` array.                                                                                                                                               |
+| `head`               | campaign                         | Identifier of the first member: a candidate or a party, according to the campaign's `kind`.                                                                                                |
+| `label`              | campaign                         | The members' names joined with `" / "`, head first. For a single member, its name.                                                                                                         |
+| `party`              | campaign                         | For a candidate campaign, the party every member shares. Omitted otherwise, including for party campaigns.                                                                                 |
+| `stance`             | campaign                         | What the contest's recommendation says about this campaign: `support` with the zero-based `tier`, `oppose`, or `none`. With `no_position` or `abstain`, every campaign has `none`.         |
+| `campaign`           | choice                           | The index of the campaign a candidate or party choice resolves to.                                                                                                                         |
+| `candidate`, `party` | choice                           | The identifier of that campaign's head, whichever member the reference names.                                                                                                              |
+| `questions`          | root                             | Every contest and measure in ballot order, each with `kind`, `id`, `title`, and `location`. A flat index for tables of contents and per-electorate views.                                  |
+| `counts`             | root                             | Totals of ballots (all, not only roots), sections, contests, measures, campaigns, candidates, and parties.                                                                                 |
 
 Resolution of candidate identifiers to campaigns follows Section 2.15. A valid document resolves
 every reference, so the derived fields are always complete.
@@ -2822,8 +2933,8 @@ The repository's `mise.toml` installs `check-jsonschema`.
 
 A formatter rewrites a well-formed document into the canonical style below. Formatting never changes
 meaning: the formatted document has the same significant tokens, except the redundant modifiers it
-removes (Section 6.4), the same Markdown values, and compiles to the same canonical output
-(Section 5) as the original. Formatting is idempotent.
+removes and the references it rewrites, the same Markdown values, and compiles to the same canonical
+output as the original. Formatting is idempotent.
 
 A formatter refuses a document with lexical or syntax errors and reports them instead. Recovery from
 errors produces a tree whose shape the author did not intend, and reformatting around it could move
@@ -2846,11 +2957,10 @@ text in surprising ways.
 - Runs of blank lines collapse to one. Blank lines inside a `MarkdownBlock` body are content and are
   kept exactly.
 - A blank line and any comment lines after it belong to the next line with tokens: they are indented
-  to that line's depth and move with it when entries are reordered (Section 6.3). A blank line the
-  author wrote at the start of a block stays; one that would begin a block only because its entry
-  was reordered is removed. Blank lines at the start and end of the document are removed. A
-  formatter never inserts a blank line. Comments after the last line of the document are placed at
-  column zero.
+  to that line's depth and move with it when entries are reordered. A blank line the author wrote at
+  the start of a block stays; one that would begin a block only because its entry was reordered is
+  removed. Blank lines at the start and end of the document are removed. A formatter never inserts a
+  blank line. Comments after the last line of the document are placed at column zero.
 
 This attachment rule is a formatting decision, not a parsing one. The parser attaches a comment to
 whichever node is open when the next significant token is consumed, which puts a comment just before
@@ -2868,7 +2978,7 @@ and kept in source order within a group:
 | Ballot                                 | fields; then sections, contests, measures, and sub-ballots |
 | Section                                | fields; then contests and measures                         |
 | Contest                                | fields; campaigns; recommendations                         |
-| Campaign                               | members; then fields                                       |
+| Campaign, party campaign               | members; then fields                                       |
 | Recommendation                         | `support` tiers; `oppose`; then `justification` and `note` |
 | Measure                                | fields; recommendations                                    |
 | Party, Candidate, Member, inline Party | fields only                                                |
@@ -2883,10 +2993,10 @@ fields, is undecided and is expected to become a configurable option rather than
 
 A `Requirement` or `Extensibility` is _redundant_ when it is the value its construct would inherit
 without it: the nearest modifier of the same kind written on an enclosing section or ballot, or,
-when there is none, `optional` or `exhaustive` (Section 2.6). `exhaustive` before a `retention`
-contest is always redundant, since such a contest is always exhaustive. A formatter removes every
-redundant modifier, along with the space after it. It leaves `extensible` before a retention contest
-in place; that is an error for the author to fix (Section 3.3).
+when there is none, `optional` or `exhaustive`. `exhaustive` before a `retention` contest is always
+redundant, since such a contest is always exhaustive. A formatter removes every redundant modifier,
+along with the space after it. It leaves `extensible` before a retention contest in place; that is
+an error for the author to fix.
 
 ```oval counter-example
 optional exhaustive ballot @city "City of Ashford"
@@ -2914,6 +3024,35 @@ Removing a redundant modifier leaves every question's effective requirement and 
 effective extensibility unchanged, since each construct inherits the same values it held before. The
 formatted document therefore compiles to the same output, and a second pass finds nothing more to
 remove. The grammar fixes the order of the two modifiers, so a formatter never reorders them.
+
+### 6.5. References
+
+A `support` or `oppose` reference may name any member of the campaign it resolves to. A formatter
+rewrites each reference that names a member other than the campaign's head to name the head. A
+reference that resolves to no campaign is left as written.
+
+```oval counter-example
+contest @governor "Governor and Lieutenant Governor" single
+  campaign
+    @jlee "Jordan Lee" as "Governor"
+    @mpatel "Maya Patel" as "Lieutenant Governor"
+  recommend
+    support @mpatel
+```
+
+A formatter rewrites the recommendation above as:
+
+```oval example
+contest @governor "Governor and Lieutenant Governor" single
+  campaign
+    @jlee "Jordan Lee" as "Governor"
+    @mpatel "Maya Patel" as "Lieutenant Governor"
+  recommend
+    support @jlee
+```
+
+Both name the same campaign, and the canonical output records a choice by its campaign's head, so
+the rewrite does not change the output.
 
 ---
 
@@ -3140,6 +3279,8 @@ Campaign :
 
 - `campaign` Flags Member Newline CampaignBlock?
 - `campaign` Flags Newline CampaignBlock
+- `campaign` Flags `party` PartyMember Newline PartyCampaignBlock?
+- `campaign` Flags `party` Newline PartyCampaignBlock
 
 CampaignBlock : Indent CampaignEntry+ Dedent
 
@@ -3160,6 +3301,20 @@ CampaignField :
 - `note` MarkdownBody
 - `designation` String Newline
 - PartyRef
+
+PartyMember : Identifier String?
+
+PartyCampaignBlock : Indent PartyCampaignEntry+ Dedent
+
+PartyCampaignEntry :
+
+- PartyMember Newline PartyBlock?
+- PartyCampaignField
+
+PartyCampaignField :
+
+- `website` Url Newline
+- `note` MarkdownBody
 
 ContestRecommend :
 
