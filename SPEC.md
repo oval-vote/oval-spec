@@ -252,11 +252,10 @@ EscapedCharacter :: one of `\"` `\\`
 A string is single-line display text. Only two escapes exist: `\"` for a double quote and `\\` for a
 backslash. Strings carry no formatting; all multi-line or formatted text is a `MarkdownBlock`.
 
-A line terminator or end of input before the closing quote is an _unterminated string_
-(`unterminated-string`): the text from the opening quote to the end of the line becomes an `Error`
-token and lexing resumes on the next line. A backslash followed by anything other than `"` or `\\`
-is an _invalid escape_ (`invalid-escape`): the string is still a `String` token, and the error is
-reported on the two characters of the escape.
+A line terminator or end of input before the closing quote is an _unterminated string_: the text
+from the opening quote to the end of the line becomes an `Error` token and lexing resumes on the
+next line. A backslash followed by anything other than `"` or `\\` is an _invalid escape_: the
+string is still a `String` token, and the error is reported on the two characters of the escape.
 
 #### Integer
 
@@ -266,17 +265,17 @@ An unsigned whole number. Leading zeros are permitted, but are insignificant. In
 signed.
 
 A word that begins with a Digit but is neither an `Integer` nor a `Date` (such as `12abc`, `3_000`,
-`2026-11-5`, or `1.1`) is a _malformed number_ (`malformed-number`) and becomes one `Error` token.
-Within a word that begins with a Digit, `.` is a word character, so `1.x` is one malformed number
-rather than an `Integer` followed by an unexpected character.
+`2026-11-5`, or `1.1`) is a _malformed number_ and becomes one `Error` token. Within a word that
+begins with a Digit, `.` is a word character, so `1.x` is one malformed number rather than an
+`Integer` followed by an unexpected character.
 
 #### Date
 
 Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
 
 An ISO 8601 calendar date. The lexer and parser match the shape only. Whether the date exists on the
-calendar is a validation rule (`invalid-date`), so `2026-02-30` is a well-formed `Date` and an
-invalid document.
+calendar is handled in the validation rules, so `2026-02-30` would be considered a well-formed
+`Date`, but its presence would still be an an invalid document.
 
 #### Url
 
@@ -287,10 +286,9 @@ UrlScheme :: one of `https` `http`
 UrlCharacter :: SourceCharacter but not one of "Space (U+0020)", "Tab (U+0009)", LineTerminator
 
 A URL is written bare, without quotes. It extends to the next space, tab, or line terminator, so `#`
-and `"` inside a URL are part of it. Only `http` and `https` are permitted, and `http` draws a
-warning (`insecure-url`). A scheme and `://` with nothing after them is a _malformed URL_
-(`malformed-url`) and becomes one `Error` token. Any other word followed by `://` is lexed as a
-`Word`, a `:`, and whatever follows, and fails in the parser.
+and `"` inside a URL are part of it. Only `http` and `https` are permitted. A scheme and `://` with
+nothing after them is a _malformed URL_ and becomes one `Error` token. Any other word followed by
+`://` is lexed as a `Word`, a `:`, and whatever follows, and fails in the parser.
 
 #### Punctuator
 
@@ -322,7 +320,7 @@ indentation stack is unchanged after the body.
 
 The body is **opaque**. Inside it `#` is not a comment, `@`, `"`, and tabs are ordinary characters,
 and no other token is recognized. The body is Markdown; the Markdown profile below says which
-constructs it may use, and validation (`markdown-profile`) enforces it. The lexer does not inspect
+constructs it may use, and should be enforced during document validation. The lexer does not inspect
 the body.
 
 The token's _value_ is derived from its text: the common leading indentation of its non-blank lines
@@ -333,7 +331,7 @@ raw text.
 A `:` followed on its line by anything other than whitespace, a comment, or a line terminator does
 not open a body; whether that is valid, and whether the word before the `:` is one that takes a
 Markdown body, is the parser's concern. A Markdown field whose opening line has no body is a syntax
-error (`missing-body`), not a lexical one; omit the field instead.
+error, not a lexical one; omit the field instead.
 
 #### Markdown Profile
 
@@ -341,9 +339,9 @@ The value of a `MarkdownBlock` is Markdown as defined by
 [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/), extended with tables as defined by the
 [GitHub Flavored Markdown tables extension](https://github.github.com/gfm/#tables-extension-). Oval
 permits a subset of that language, the **Markdown profile**, so that every renderer shows a body the
-same way. A body that uses a construct outside the profile is invalid (`markdown-profile`). The
-profile is not part of the token: the lexer and parser never inspect a body, validation checks it,
-and the body reaches the canonical output unchanged.
+same way. A body that uses a construct outside the profile is invalid. The profile is not part of
+the token: the lexer and parser never inspect a body, validation checks it, and the body reaches the
+canonical output unchanged.
 
 A body may contain these block constructs:
 
@@ -359,8 +357,8 @@ And these inline constructs:
 
 - Emphasis and strong emphasis.
 - Links: inline links, reference links with their link reference definitions in the same body, and
-  autolinks. Every link destination is an absolute `http` or `https` URL, and `http` draws a warning
-  (`insecure-url`).
+  autolinks. Every link destination is an absolute `http` or `https` URL, and `http` draws a
+  warning.
 - Backslash escapes, and entity and numeric character references.
 
 A body may not contain:
@@ -375,9 +373,9 @@ footnotes, and bare URLs are extensions outside the profile. A body containing t
 shows them as the characters written; write a URL as a link.
 
 Four or more spaces of indentation beyond the body's common minimum begin an indented code block in
-CommonMark. A paragraph or list item indented that far is therefore a `markdown-profile` error;
-reduce the indentation. A formatter preserves relative indentation inside a body, so it never
-introduces or removes one.
+CommonMark. A paragraph or list item indented that far is therefore an error; reduce the
+indentation. A formatter preserves relative indentation inside a body, so it never introduces or
+removes one.
 
 ### 2.3. Ignored Tokens
 
@@ -403,8 +401,8 @@ A line containing nothing but whitespace and a comment is a _blank line_. Its te
 Inside a `MarkdownBlock` body blank lines are part of the body and separate paragraphs.
 
 Horizontal tab (U+0009) is **not** whitespace. A tab anywhere outside a `String`, a `Comment`, or a
-`MarkdownBlock` body is a lexical error (`illegal-tab`). This rule exists so that indentation
-(Section 2.4) is unambiguous.
+`MarkdownBlock` body is a lexical error. This rule exists so that indentation (Section 2.4) is
+unambiguous.
 
 ### 2.4. Layout Tokens
 
@@ -436,9 +434,8 @@ an "other character" (and an error). The lexer maintains a stack of indentation 
 - Before the first token of a line with tokens, compare its indentation `n` to the top of the stack:
   - If `n` is greater, push `n` and emit `Indent`.
   - If `n` is less, pop the stack and emit one `Dedent` per level popped until the top is less than
-    or equal to `n`. If the top is then not equal to `n`, report an _inconsistent dedent_
-    (`inconsistent-dedent`) over the line's leading spaces and treat the line as being at the top's
-    level.
+    or equal to `n`. If the top is then not equal to `n`, report an _inconsistent dedent_ over the
+    line's leading spaces and treat the line as being at the top's level.
   - If `n` is equal, emit nothing.
 - At end of input, if the last line has tokens and no terminator, emit a zero-length `Newline`. Then
   emit `Dedent` for every level above 0.
@@ -449,7 +446,7 @@ special case.
 
 The amount of indentation is not fixed; any increase opens a block. A formatter emits two spaces per
 level. A line indented more than its predecessor where the grammar does not permit a block is a
-syntax error (`unexpected-block`).
+syntax error.
 
 Lines inside a `MarkdownBlock` body do not participate in this process. The entire markdown block is
 considered one token.
@@ -464,17 +461,16 @@ A document is a Guide (Section 2.8) written at indentation zero. It opens with t
 then the document's fields, then any top-level `Party` and `Candidate` declarations, then the root
 `Ballot`s. These four groups appear in that order; within the fields and within the declarations,
 order is free. The grammar leaves the ballots optional for the same reason it leaves `guide`
-optional: a document with none is invalid (`empty-document`), not malformed.
+optional: a document with none is invalid, not malformed.
 
 There is no closing token. The document ends at end of input.
 
 **Version marker.** `oval 1` names the major version of the language the document is written in. It
 is the first entry of every document; only blank lines and comments may precede it. The grammar
-leaves it optional for the same reason it leaves `guide` optional (`missing-guide-field`): a parser
-can then build a tree for a document that lacks it and say exactly what is missing. A document
-without a marker, or whose marker names a major version the implementation does not support, is
-invalid (`unsupported-version`). The `Integer` is written without leading zeros; a formatter removes
-them.
+leaves it optional for the same reason it leaves `guide` optional: a parser can then build a tree
+for a document that lacks it and say exactly what is missing. A document without a marker, or whose
+marker names a major version the implementation does not support, is invalid. The `Integer` is
+written without leading zeros; a formatter removes them.
 
 This specification defines major version 1. Within a major version, each edition of this
 specification only adds to the language, so an implementation of a later edition accepts every
@@ -512,10 +508,10 @@ Strings :
 Each construct's section lists the fields it accepts and the value each takes.
 
 Within one block, **each field keyword may appear at most once**, and **fields may appear in any
-order**. A repeated field is a syntax error (`repeated-field`). **Children** (campaigns within a
-contest, items within a ballot) are ordered, and their order is significant. Fields and children may
-be interleaved in the source, though the canonical formatting style described later in this document
-contains a preferred order.
+order**. A repeated field is a syntax error. **Children** (campaigns within a contest, items within
+a ballot) are ordered, and their order is significant. Fields and children may be interleaved in the
+source, though the canonical formatting style described later in this document contains a preferred
+order.
 
 A `StringList` written as `none` denotes an empty list. This is distinct from omitting the field.
 
@@ -556,10 +552,10 @@ party @dem                       — refers to @dem
 Some entities may be declared **inline** at their first use instead of at the top of the document.
 Where a reference is permitted, the grammar says whether a declaration is also permitted in that
 position. An inline declaration is the same declaration as a top-level one; it is simply written
-elsewhere. Validation requires every reference to name a declaration (`undeclared-reference`) and
-every identifier to be declared at most once (`duplicate-declaration`), wherever that is.
+elsewhere. Validation requires every reference to name a declaration, and every identifier to be
+declared at most once, wherever that is.
 
-Identifiers share one namespace across all entity kinds (`duplicate-declaration`).
+Identifiers share one namespace across all entity kinds.
 
 ### 2.8. Guide
 
@@ -583,8 +579,8 @@ note:
   Written by the Franklin Civic Alliance.
 ```
 
-`guide`, `election`, and `date` are required (`missing-guide-field`). `note` is optional. The
-version marker that precedes them belongs to the document (Section 2.5), not to the guide.
+`guide`, `election`, and `date` are required. `note` is optional. The version marker that precedes
+them belongs to the document (Section 2.5), not to the guide.
 
 Declaration :
 
@@ -680,10 +676,9 @@ ballot @franklin "State of Franklin"
 A ballot is a node in the guide's tree. Its items are in ballot order. A `Ballot` item is a
 **sub-ballot**: a narrower electorate whose voters also see everything in the enclosing ballot.
 Sub-ballots nest without limit. Document-level ballots are **root ballots**; a valid document has at
-least one (`empty-document`).
+least one.
 
-A ballot with no block is a syntax error (`missing-block`), and a ballot whose block has no item is
-invalid (`empty-ballot`).
+A ballot with no block is a syntax error, and a ballot whose block has no item is invalid.
 
 ### 2.12. Section
 
@@ -753,19 +748,18 @@ contest @mayor "Mayor" ranked max 5
 
 The contest kind is written on the header line after the title:
 
-| Kind           | Meaning                          | Argument                                                   |
-| -------------- | -------------------------------- | ---------------------------------------------------------- |
-| `single`       | Vote for one.                    | none                                                       |
-| `multiple` _n_ | Vote for up to _n_; _n_ elected. | `Integer`, required, at least 2 (`invalid-multiple-count`) |
-| `ranked`       | Rank choices.                    | optional `max` `Integer`: how many may be ranked           |
-| `retention`    | Yes or no on one officeholder.   | none                                                       |
+| Kind           | Meaning                          | Argument                                         |
+| -------------- | -------------------------------- | ------------------------------------------------ |
+| `single`       | Vote for one.                    | none                                             |
+| `multiple` _n_ | Vote for up to _n_; _n_ elected. | `Integer`, required, at least 2                  |
+| `ranked`       | Rank choices.                    | optional `max` `Integer`: how many may be ranked |
+| `retention`    | Yes or no on one officeholder.   | none                                             |
 
 A contest's block contains its `Campaign`s in ballot order and its `ContestRecommend`s. The grammar
 accepts any number of each; validation requires at least one campaign except in a retention contest
-(`contest-without-campaigns`) and exactly one recommendation (`missing-recommendation`), so that a
-half-written contest still parses and the validator can name what is missing. Campaigns and the
-recommendation may be interleaved with fields in the source; a formatter orders them fields,
-campaigns, recommendation.
+and exactly one recommendation, so that a half-written contest still parses and the validator can
+name what is missing. Campaigns and the recommendation may be interleaved with fields in the source;
+a formatter orders them fields, campaigns, recommendation.
 
 ### 2.14. Campaign
 
@@ -800,7 +794,7 @@ identified by its candidates.
 A `Member` is a candidate reference (`@id`) or an inline candidate declaration (`@id "Name"`),
 optionally followed by `as String`, the member's role on the ticket ("Governor", "Vice President").
 A `MemberBlock` holding candidate fields may follow a member **only when the member is an inline
-declaration**; a reference has nothing to declare (`block-on-reference`).
+declaration**; a reference has nothing to declare.
 
 The two forms of `Campaign`:
 
@@ -838,8 +832,7 @@ campaign incumbent
 ```
 
 Member order is significant: the first member is the head of the ticket. In block form,
-`designation` and `PartyRef` are not permitted at the campaign level (`misplaced-candidate-field`);
-they belong under a member.
+`designation` and `PartyRef` are not permitted at the campaign level; they belong under a member.
 
 **Flags.** `incumbent` means this campaign currently occupies the office being contested;
 `withdrawn` means the campaign has ended but remains on the ballot. Both default to false. They may
@@ -884,17 +877,16 @@ recommend
 
 Each `support` line is one **tier**. Several `support` lines are several tiers, in order from most
 to least preferred. References within one line are interchangeable. `oppose` lists campaigns the
-author advises against; it is unordered and may appear at most once (`repeated-oppose`).
+author advises against; it is unordered and may appear at most once.
 
 Campaigns have no identifiers. Every reference in `support` or `oppose` is a candidate identifier
 and names a campaign _by one of its candidates_: it resolves to the one campaign, among the
-enclosing contest's campaigns, whose members include that candidate. `candidate-in-two-campaigns`
-guarantees there is at most one such campaign, and `campaign-not-in-contest` requires there to be
-exactly one.
+enclosing contest's campaigns, whose members include that candidate. A candidate may not appear in
+more than one campaign within the same contest.
 
 `recommend no-position` is an explicit statement that the author takes no position. It may carry
 `justification` and `note` but no `support` or `oppose`. A `recommend` block with neither `support`
-nor `oppose` is a syntax error (`empty-recommendation`); write `no-position` instead.
+nor `oppose` is a syntax error; write `no-position` instead.
 
 ### 2.16. Measure
 
@@ -942,7 +934,7 @@ measure @prop1 "Proposition 1"
 
 `description`, `if_yes`, and `if_no` are official ballot text copied verbatim. `supporters` and
 `opponents` have three states: **absent** (not researched), **`none`** (researched; none known), and
-a list. A measure contains exactly one `MeasureRecommend` (`missing-recommendation`).
+a list. A measure contains exactly one `MeasureRecommend`.
 
 ### 2.17. Measure Recommendation
 
