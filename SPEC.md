@@ -1235,7 +1235,9 @@ accepts are exactly the documents a conformant implementation accepts.
 
 Note: Each error below is followed by an example that lexes without error and a counter-example that
 produces the error, each with its token sequence: every token in order, with its kind and its text.
-A space is shown as ␣, a tab as ⇥, and a line terminator as ↵. Zero-length tokens have no text.
+Each counter-example is also followed by its errors: every error in source order, with its
+identifier and the text it spans. A space is shown as ␣, a tab as ⇥, and a line terminator as ↵.
+Zero-length tokens have no text.
 
 #### Illegal Tab
 
@@ -1263,6 +1265,10 @@ Word «subtitle»
 Error «⇥»
 String «"Vote for one"»
 Newline «↵»
+```
+
+```errors
+illegal-tab «⇥»
 ```
 
 #### Unexpected Character
@@ -1301,6 +1307,10 @@ Word «lombardi»
 Whitespace «␣»
 String «"Dana Lombardi"»
 Newline «↵»
+```
+
+```errors
+unexpected-character «-»
 ```
 
 #### Unterminated String
@@ -1343,6 +1353,10 @@ Date «2026-11-03»
 Newline «↵»
 ```
 
+```errors
+unterminated-string «"November 3, 2026 General Election»
+```
+
 #### Invalid Escape
 
 Occurs when, inside a string, `\` is followed by any character other than `"` or `\`. The error is
@@ -1372,8 +1386,30 @@ String «"Measure \#3"»
 Newline «↵»
 ```
 
+```errors
+invalid-escape «\#»
+```
+
 The token sequence is the same in both cases; the error is reported on the two characters `\#`
 inside the `String`.
+
+An invalid escape in an unterminated string is not reported. The string becomes an `Error` token,
+and its unterminated-string error is the only error for that text.
+
+```oval counter-example
+subtitle "Measure \#3
+```
+
+```tokens
+Word «subtitle»
+Whitespace «␣»
+Error «"Measure \#3»
+Newline «↵»
+```
+
+```errors
+unterminated-string «"Measure \#3»
+```
 
 #### Malformed Number
 
@@ -1401,6 +1437,10 @@ Word «date»
 Whitespace «␣»
 Error «2026-11-3»
 Newline «↵»
+```
+
+```errors
+malformed-number «2026-11-3»
 ```
 
 #### Malformed URL
@@ -1431,6 +1471,10 @@ Error «https://»
 Newline «↵»
 ```
 
+```errors
+malformed-url «https://»
+```
+
 #### Inconsistent Dedent
 
 Occurs when a line with tokens is indented less than the enclosing block and equal to no enclosing
@@ -1445,9 +1489,33 @@ ballot @city "City of Ashford"
   measure @prop-a "Proposition A"
 ```
 
-The last line returns to the section's level, so it lexes as:
+The last line returns to the section's level, so the document lexes as:
 
 ```tokens
+Word «ballot»
+Whitespace «␣»
+Punctuator «@»
+Word «city»
+Whitespace «␣»
+String «"City of Ashford"»
+Newline «↵»
+Whitespace «␣␣»
+Indent
+Word «section»
+Whitespace «␣»
+String «"Offices"»
+Newline «↵»
+Whitespace «␣␣␣␣»
+Indent
+Word «contest»
+Whitespace «␣»
+Punctuator «@»
+Word «mayor»
+Whitespace «␣»
+String «"Mayor"»
+Whitespace «␣»
+Word «single»
+Newline «↵»
 Whitespace «␣␣»
 Dedent
 Word «measure»
@@ -1457,7 +1525,6 @@ Word «prop-a»
 Whitespace «␣»
 String «"Proposition A"»
 Newline «↵»
-Dedent
 Dedent
 ```
 
@@ -1469,9 +1536,33 @@ ballot @city "City of Ashford"
 ```
 
 Three spaces match no enclosing level. The nearest enclosing level is the section's, so the line is
-treated as if indented two spaces and lexes as:
+treated as if indented two spaces and the document lexes as:
 
 ```tokens
+Word «ballot»
+Whitespace «␣»
+Punctuator «@»
+Word «city»
+Whitespace «␣»
+String «"City of Ashford"»
+Newline «↵»
+Whitespace «␣␣»
+Indent
+Word «section»
+Whitespace «␣»
+String «"Offices"»
+Newline «↵»
+Whitespace «␣␣␣␣»
+Indent
+Word «contest»
+Whitespace «␣»
+Punctuator «@»
+Word «mayor»
+Whitespace «␣»
+String «"Mayor"»
+Whitespace «␣»
+Word «single»
+Newline «↵»
 Whitespace «␣␣␣»
 Dedent
 Word «measure»
@@ -1482,7 +1573,10 @@ Whitespace «␣»
 String «"Proposition A"»
 Newline «↵»
 Dedent
-Dedent
+```
+
+```errors
+inconsistent-dedent «␣␣␣»
 ```
 
 ### 3.2. Syntax Errors

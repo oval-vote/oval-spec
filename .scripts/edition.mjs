@@ -73,20 +73,19 @@ function encodeEntities(text) {
 
 function renderTokenSequences(html) {
   const rendered = html.replace(
-    /<pre data-language="tokens"[^>]*><code>([\s\S]*?)<\/code><\/pre>/g,
-    (_, body) => {
+    /<pre data-language="(tokens|errors)"[^>]*><code>([\s\S]*?)<\/code><\/pre>/g,
+    (_, language, body) => {
       const tokens = decodeEntities(body)
         .trimEnd()
         .split("\n")
         .map((line) => {
-          const match = /^(\w+)(?: «(.*)»)?$/.exec(line);
+          const match = /^([\w-]+)(?: «(.*)»)?$/.exec(line);
           if (!match) {
             throw new Error(`malformed token sequence line: ${line}`);
           }
           const [, kind, text] = match;
-          const classes = ["token", kind === "Error" ? "token-error" : ""]
-            .filter(Boolean)
-            .join(" ");
+          const isError = language === "errors" || kind === "Error";
+          const classes = ["token", isError ? "token-error" : ""].filter(Boolean).join(" ");
           const textSpan =
             text === undefined ? "" : `<span class="token-text">${encodeEntities(text)}</span>`;
           return `<span class="${classes}"><span class="token-kind">${kind}</span>${textSpan}</span>`;
