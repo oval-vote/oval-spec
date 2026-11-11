@@ -179,7 +179,7 @@ it is written in. The marker is the first entry of the document and is defined i
 
 An Oval document is a sequence of Unicode code points encoded as UTF-8. Input that is not
 well-formed UTF-8, or that contains U+0000, is rejected as a whole and produces no tokens. A byte
-order mark (U+FEFF) at the start of the input is ignored; a formatter does not emit one.
+order mark (U+FEFF) at the start of the input is an ignored `ByteOrderMark` token.
 
 SourceCharacter :: "any Unicode code point except U+0000"
 
@@ -211,10 +211,11 @@ Token ::
 Tokens are separated by whitespace within a line as necessary. Whitespace is never required between
 a `Punctuator` and an adjacent token.
 
-Every byte of the source belongs to exactly one token. Whitespace, comments, and line terminators
-are tokens, text that cannot be tokenized becomes an `Error` token, and the indentation tokens have
-no text of their own. Concatenating the text of every token therefore reproduces the source exactly,
-which is what lets a formatter rewrite a document without losing anything.
+Every byte of the source belongs to exactly one token. Whitespace, comments, line terminators, and a
+leading byte order mark are tokens, text that cannot be tokenized becomes an `Error` token, and the
+indentation tokens have no text of their own. Concatenating the text of every token therefore
+reproduces the source exactly, which is what lets a formatter rewrite a document without losing
+anything.
 
 #### Word
 
@@ -385,6 +386,7 @@ Ignored ::
 - Comment
 - Whitespace
 - BlankLine
+- ByteOrderMark
 
 Comment :: `#` CommentCharacter*
 
@@ -392,14 +394,20 @@ CommentCharacter :: SourceCharacter but not LineTerminator
 
 Whitespace :: "Space (U+0020)"+
 
-BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespace and Comment"
+BlankLine :: "a LineTerminator ending a line with no tokens but Whitespace, Comment, ByteOrderMark"
+
+ByteOrderMark :: "Byte Order Mark (U+FEFF) at the start of the input"
 
 A `#` begins a comment that runs to the end of the line, **except inside a `MarkdownBlock` body or a
 `String`**, where it is an ordinary character. A comment may follow tokens on the same line.
 
-A line containing nothing but whitespace and a comment is a _blank line_. Its terminator lexes as
-`BlankLine` rather than `Newline`, so blank lines are ignored by the parser wherever they appear.
-Inside a `MarkdownBlock` body blank lines are part of the body and separate paragraphs.
+A line containing nothing but whitespace, a comment, and a leading byte order mark is a _blank
+line_. Its terminator lexes as `BlankLine` rather than `Newline`, so blank lines are ignored by the
+parser wherever they appear. Inside a `MarkdownBlock` body blank lines are part of the body and
+separate paragraphs.
+
+A byte order mark is a `ByteOrderMark` token only as the first character of the input. U+FEFF
+anywhere else is an unexpected character, like any other character outside ASCII.
 
 Horizontal tab (U+0009) is **not** whitespace. A tab anywhere outside a `String`, a `Comment`, or a
 `MarkdownBlock` body is a lexical error. This rule exists so that indentation is unambiguous.
@@ -426,8 +434,8 @@ positioned at the first token of the line that triggers them, after that line's 
 `Whitespace`. Because they have no text, the lossless property of Section 2.2 is preserved.
 
 A line's _indentation_ is the number of U+0020 characters before its first other character. A tab is
-an "other character" (and an error). The lexer maintains a stack of indentation levels, initially
-`[0]`.
+an "other character" (and an error). A byte order mark is not: on the first line, indentation is
+counted after it. The lexer maintains a stack of indentation levels, initially `[0]`.
 
 - At the end of each line with tokens, emit `Newline` covering the line terminator. A blank line
   emits `BlankLine` instead and does not affect the stack.
@@ -3255,6 +3263,7 @@ Ignored ::
 - Comment
 - Whitespace
 - BlankLine
+- ByteOrderMark
 
 LayoutToken ::
 
@@ -3312,7 +3321,9 @@ CommentCharacter :: SourceCharacter but not LineTerminator
 
 Whitespace :: "Space (U+0020)"+
 
-BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespace and Comment"
+BlankLine :: "a LineTerminator ending a line with no tokens but Whitespace, Comment, ByteOrderMark"
+
+ByteOrderMark :: "Byte Order Mark (U+FEFF) at the start of the input"
 
 **Syntactic productions**
 
