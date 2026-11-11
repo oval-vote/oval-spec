@@ -27,6 +27,7 @@ Ignored ::
 - Comment
 - Whitespace
 - BlankLine
+- ByteOrderMark
 
 LayoutToken ::
 
@@ -84,7 +85,9 @@ CommentCharacter :: SourceCharacter but not LineTerminator
 
 Whitespace :: "Space (U+0020)"+
 
-BlankLine :: "a LineTerminator ending a line with no tokens other than Whitespace and Comment"
+BlankLine :: "a LineTerminator ending a line with no tokens but Whitespace, Comment, ByteOrderMark"
+
+ByteOrderMark :: "Byte Order Mark (U+FEFF) at the start of the input"
 
 **Syntactic productions**
 
