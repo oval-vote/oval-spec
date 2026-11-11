@@ -150,7 +150,7 @@ The complete grammar is collected in Appendix A.
 **Media type.** The media type is `text/prs.oval`, registered (or to be registered) in the IANA
 personal tree under [RFC 6838](https://www.rfc-editor.org/info/rfc6838/), Section 3.3. The `text/`
 top-level type is used because an Oval document is readable without interpreting software (RFC 6838
-Section 4.2.1). The personal tree is used because the format is current non-commercial and
+Section 4.2.1). The personal tree is used because the format is currently non-commercial and
 experimental; it may move to the vendor tree (`text/vnd.`) if warranted.
 
 The type takes one optional parameter, `charset`, whose only permitted value is `UTF-8`. Oval
@@ -276,7 +276,7 @@ Date :: Digit Digit Digit Digit `-` Digit Digit `-` Digit Digit
 
 An ISO 8601 calendar date. The lexer and parser match the shape only. Whether the date exists on the
 calendar is handled in the validation rules, so `2026-02-30` would be considered a well-formed
-`Date`, but its presence would still be an an invalid document.
+`Date`, but its presence would still be an invalid document.
 
 #### Url
 
@@ -1153,7 +1153,7 @@ Validating a document is three stages run in order, each on the output of the on
 Every error at every stage has an identifier and a range in the source. Identifiers are stable
 across editions; tools should report errors by identifier. A validator reports every lexical error,
 every syntax error, and every rule the document breaks, in source order, so that an author can see
-them all in once pass.
+them all in one pass.
 
 ### 3.1. Lexical Errors
 
@@ -2572,7 +2572,9 @@ subtitle ""
 
 ## 4. Conformance
 
-Three conformance levels are defined so that tools can claim what they implement.
+The specification declares four levels of conformance, so tools can correctly advertise to consumers
+what parts of the language they implement. Each level includes the requirements of the previous
+level.
 
 - **Lexer-conformant.** Tokenizes any input per Sections 2.2–2.4, producing tokens that cover every
   byte, and reports lexical errors with the ranges and recovery of Section 3.1. Sufficient for
@@ -2612,18 +2614,18 @@ syntax tree or the diagnostics.
 ### 5.1. Conventions
 
 - **Keys mirror the language.** Every field that comes from a keyword uses that keyword's exact
-  spelling: `if_yes`, `fiscal_impact`, `no_position`. Derived fields use the same `snake_case`
-  style. The one exception is the contest's voting method, which the language writes on the header
-  line without a keyword; it is the `method` object, because `kind` is the discriminator used by
-  every item object.
+  spelling, such as `if_yes` and `fiscal_impact`, and every value that comes from a keyword keeps
+  its spelling too, such as `"no-position"`. Derived fields use the same `snake_case` style. The one
+  exception is the contest's voting method, which the language writes on the header line without a
+  keyword; it is the `method` object, because `kind` is the discriminator used by every item object.
 - **Arrays, not maps.** Order is meaning in Oval, so parties, candidates, ballots, items, campaigns,
   members, and tiers are arrays in document or ballot order. Entities carry an `id`, and references
   are identifier strings without the leading `@`.
 - **Absent fields are omitted.** An optional field the author did not write is not present; it is
   never `null`. `supporters` and `opponents` therefore have three states: omitted (not researched),
   `[]` (researched, none), or a list.
-- **Booleans are always present.** `incumbent`, `withdrawn`, `no_position`, `abstain`, `required`,
-  and `extensible` are written even when false.
+- **Booleans are always present.** `incumbent`, `withdrawn`, `required`, and `extensible` are
+  written even when false.
 - **The root echoes the version marker.** `oval` is the document's declared major version as an
   integer, `1`. Later editions of the same major version only add keys and enumerated values to the
   output, so a consumer written to an earlier edition reads the output of a later one.
@@ -2798,14 +2800,13 @@ Derived. What the contest's recommendation says about this campaign.
 
 The author's recommendation on a contest.
 
-| Key             | Type                      | Required | Meaning                                                                             |
-| --------------- | ------------------------- | -------- | ----------------------------------------------------------------------------------- |
-| `no_position`   | boolean                   | yes      | Whether the author takes no position, from `recommend no-position`.                 |
-| `abstain`       | boolean                   | yes      | Whether the author recommends leaving the question blank, from `recommend abstain`. |
-| `support`       | array of arrays of Choice | yes      | Tiers as written, most preferred tier first. Empty when no_position or abstain.     |
-| `oppose`        | array of Choice           | yes      | Choices as written. Empty when no_position or abstain.                              |
-| `justification` | Markdown                  | no       | The author's reasoning, from `justification`.                                       |
-| `note`          | Markdown                  | no       | The author's note on the recommendation, from `note`.                               |
+| Key             | Type                                            | Required | Meaning                                                                                                                               |
+| --------------- | ----------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `position`      | one of `"stance"`, `"no-position"`, `"abstain"` | yes      | The kind of recommendation: `stance` when it has `support` or `oppose` lines, otherwise `no-position` or `abstain`, from `recommend`. |
+| `support`       | array of arrays of Choice                       | yes      | Tiers as written, most preferred tier first. Empty unless position is stance.                                                         |
+| `oppose`        | array of Choice                                 | yes      | Choices as written. Empty unless position is stance.                                                                                  |
+| `justification` | Markdown                                        | no       | The author's reasoning, from `justification`.                                                                                         |
+| `note`          | Markdown                                        | no       | The author's note on the recommendation, from `note`.                                                                                 |
 
 #### Choice
 
@@ -2906,7 +2907,7 @@ Everything below is computed from the document; none of it can disagree with the
 | `head`               | campaign                         | Identifier of the first member: a candidate or a party, according to the campaign's `kind`.                                                                                                |
 | `label`              | campaign                         | The members' names joined with `" / "`, head first. For a single member, its name.                                                                                                         |
 | `party`              | campaign                         | For a candidate campaign, the party every member shares. Omitted otherwise, including for party campaigns.                                                                                 |
-| `stance`             | campaign                         | What the contest's recommendation says about this campaign: `support` with the zero-based `tier`, `oppose`, or `none`. With `no_position` or `abstain`, every campaign has `none`.         |
+| `stance`             | campaign                         | What the contest's recommendation says about this campaign: `support` with the zero-based `tier`, `oppose`, or `none`. Unless `position` is `stance`, every campaign has `none`.           |
 | `campaign`           | choice                           | The index of the campaign a candidate or party choice resolves to.                                                                                                                         |
 | `candidate`, `party` | choice                           | The identifier of that campaign's head, whichever member the reference names.                                                                                                              |
 | `questions`          | root                             | Every contest and measure in ballot order, each with `kind`, `id`, `title`, and `location`. A flat index for tables of contents and per-electorate views.                                  |

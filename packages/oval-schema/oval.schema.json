@@ -551,19 +551,15 @@
     "contest_recommendation": {
       "description": "The author's recommendation on a contest.",
       "type": "object",
-      "required": ["no_position", "abstain", "support", "oppose"],
+      "required": ["position", "support", "oppose"],
       "additionalProperties": false,
       "properties": {
-        "no_position": {
-          "description": "Whether the author takes no position, from `recommend no-position`.",
-          "type": "boolean"
-        },
-        "abstain": {
-          "description": "Whether the author recommends leaving the question blank, from `recommend abstain`.",
-          "type": "boolean"
+        "position": {
+          "description": "The kind of recommendation: `stance` when it has `support` or `oppose` lines, otherwise `no-position` or `abstain`, from `recommend`.",
+          "enum": ["stance", "no-position", "abstain"]
         },
         "support": {
-          "description": "Tiers as written, most preferred tier first. Empty when no_position or abstain.",
+          "description": "Tiers as written, most preferred tier first. Empty unless position is stance.",
           "type": "array",
           "items": {
             "type": "array",
@@ -574,7 +570,7 @@
           }
         },
         "oppose": {
-          "description": "Choices as written. Empty when no_position or abstain.",
+          "description": "Choices as written. Empty unless position is stance.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/choice"
