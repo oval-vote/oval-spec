@@ -286,42 +286,71 @@
       "oneOf": [
         {
           "type": "object",
-          "required": ["kind"],
+          "required": ["kind", "seats"],
           "additionalProperties": false,
           "properties": {
             "kind": {
               "description": "One of `single`, `multiple`, `ranked`, or `retention`.",
               "const": "single"
+            },
+            "seats": {
+              "description": "How many candidates are elected, from `seats`; 1 if not written.",
+              "type": "integer",
+              "minimum": 1
             }
           }
         },
         {
           "type": "object",
-          "required": ["kind", "seats"],
+          "required": ["kind", "votes", "seats", "min"],
           "additionalProperties": false,
           "properties": {
             "kind": {
               "const": "multiple"
             },
-            "seats": {
-              "description": "How many candidates are elected, from `multiple`.",
+            "votes": {
+              "description": "How many choices a voter may mark, from `multiple`.",
               "type": "integer",
               "minimum": 2
+            },
+            "seats": {
+              "description": "How many candidates are elected, from `seats`; the number of votes if not written.",
+              "type": "integer",
+              "minimum": 1
+            },
+            "min": {
+              "description": "How many choices a ballot that marks the contest must mark, from `min`; 1 if not written.",
+              "type": "integer",
+              "minimum": 1
             }
           }
         },
         {
           "type": "object",
-          "required": ["kind"],
+          "required": ["kind", "seats", "min", "complete"],
           "additionalProperties": false,
           "properties": {
             "kind": {
               "const": "ranked"
             },
-            "max": {
-              "description": "How many candidates a voter may rank, from `max`, when the contest limits it.",
+            "seats": {
+              "description": "How many candidates are elected, from `seats`; 1 if not written.",
               "type": "integer",
               "minimum": 1
+            },
+            "max": {
+              "description": "How many choices a voter may rank, from `max`. Omitted when unlimited.",
+              "type": "integer",
+              "minimum": 1
+            },
+            "min": {
+              "description": "How many choices a ballot that ranks the contest must rank, from `min`; 1 if not written. Derived as the number of campaigns when complete.",
+              "type": "integer",
+              "minimum": 1
+            },
+            "complete": {
+              "description": "Whether every printed choice must be ranked, from `all`.",
+              "type": "boolean"
             }
           }
         },

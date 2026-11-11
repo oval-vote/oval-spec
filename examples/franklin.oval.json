@@ -1454,7 +1454,8 @@
               "title": "President and Vice President of the United States",
               "subtitle": "Vote for one ticket",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "note": "The president and vice president run as a ticket. Your single vote elects both.",
               "location": {
@@ -1642,7 +1643,8 @@
               "title": "United States Senator (Special Election)",
               "subtitle": "Unexpired term ending January 3, 2027",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "tabulation": "Plurality wins",
               "note": "This is the first of two Senate contests on your ballot. This one decides who holds the\nseat for the final weeks of the current term. Vote in both.",
@@ -1715,7 +1717,8 @@
               "title": "United States Senator",
               "subtitle": "Full term beginning January 3, 2027",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "tabulation": "Plurality wins",
               "location": {
@@ -1811,7 +1814,8 @@
               "title": "United States Representative, District 16",
               "subtitle": "Millbrook",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "federal",
@@ -1883,7 +1887,8 @@
               "title": "United States Representative, District 12",
               "subtitle": "Brookhaven Hills",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "federal",
@@ -1955,7 +1960,8 @@
               "title": "United States Representative, District 11",
               "subtitle": "Ashford",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "federal",
@@ -2041,7 +2047,8 @@
               "title": "State Assembly, District 14",
               "subtitle": "Brookhaven Hills",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "franklin",
@@ -2113,7 +2120,8 @@
               "title": "State Assembly, District 17",
               "subtitle": "Ashford",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "franklin",
@@ -2185,7 +2193,8 @@
               "title": "State Assembly, District 19",
               "subtitle": "Ashford",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "franklin",
@@ -2263,7 +2272,8 @@
               "title": "State Assembly, District 23",
               "subtitle": "Millbrook",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "franklin",
@@ -2341,7 +2351,8 @@
               "title": "State Senate, District 7",
               "subtitle": "Brookhaven Hills",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "franklin",
@@ -2413,7 +2424,8 @@
               "title": "State Senate, District 11",
               "subtitle": "Ashford",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "franklin",
@@ -2485,7 +2497,8 @@
               "title": "State Senate, District 13",
               "subtitle": "Millbrook",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "franklin",
@@ -2910,7 +2923,10 @@
               "subtitle": "Rank up to ten candidates",
               "method": {
                 "kind": "ranked",
-                "max": 10
+                "seats": 1,
+                "max": 10,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -3190,7 +3206,8 @@
               "id": "ashford-da",
               "title": "District Attorney",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "ashford",
@@ -3265,7 +3282,8 @@
               "id": "ashford-city-attorney",
               "title": "City Attorney",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "ashford",
@@ -3334,7 +3352,8 @@
               "id": "ashford-sheriff",
               "title": "Sheriff",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "ashford",
@@ -3403,7 +3422,8 @@
               "id": "ashford-treasurer",
               "title": "Treasurer",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "note": "Uncontested. The incumbent is the only name on the ballot.",
               "location": {
@@ -3462,7 +3482,10 @@
               "id": "ashford-supervisor-1",
               "title": "Board of Supervisors, District 1",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -3565,7 +3588,10 @@
               "id": "ashford-supervisor-3",
               "title": "Board of Supervisors, District 3",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -3668,7 +3694,10 @@
               "id": "ashford-supervisor-5",
               "title": "Board of Supervisors, District 5",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -3805,7 +3834,10 @@
               "id": "ashford-supervisor-7",
               "title": "Board of Supervisors, District 7",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -3942,7 +3974,10 @@
               "id": "ashford-supervisor-9",
               "title": "Board of Supervisors, District 9",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -4079,7 +4114,10 @@
               "id": "ashford-supervisor-11",
               "title": "Board of Supervisors, District 11",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -4190,7 +4228,9 @@
               "subtitle": "Vote for no more than 4",
               "method": {
                 "kind": "multiple",
-                "seats": 4
+                "votes": 4,
+                "seats": 4,
+                "min": 1
               },
               "location": {
                 "ballot": "ashford",
@@ -4437,7 +4477,9 @@
               "subtitle": "Vote for no more than 4",
               "method": {
                 "kind": "multiple",
-                "seats": 4
+                "votes": 4,
+                "seats": 4,
+                "min": 1
               },
               "location": {
                 "ballot": "ashford",
@@ -5019,7 +5061,8 @@
               "id": "brookhaven-city-attorney",
               "title": "City Attorney",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "brookhaven",
@@ -5094,7 +5137,10 @@
               "id": "brookhaven-council-at-large",
               "title": "City Council, At-Large",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -5316,7 +5362,10 @@
               "id": "brookhaven-council-1",
               "title": "City Council, District 1",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -5436,7 +5485,10 @@
               "id": "brookhaven-council-3",
               "title": "City Council, District 3",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -5556,7 +5608,10 @@
               "id": "brookhaven-council-5",
               "title": "City Council, District 5",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -5693,7 +5748,10 @@
               "id": "brookhaven-council-7",
               "title": "City Council, District 7",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -5802,7 +5860,10 @@
               "id": "brookhaven-school-1",
               "title": "School Director, District 1",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -5873,7 +5934,10 @@
               "id": "brookhaven-school-3",
               "title": "School Director, District 3",
               "method": {
-                "kind": "ranked"
+                "kind": "ranked",
+                "seats": 1,
+                "min": 1,
+                "complete": false
               },
               "tabulation": "Instant runoff; majority of continuing ballots wins",
               "location": {
@@ -6004,7 +6068,8 @@
               "id": "utility-ward-5",
               "title": "Utility District Director, Ward 5",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "brookhaven",
@@ -6090,7 +6155,8 @@
               "id": "utility-ward-6",
               "title": "Utility District Director, Ward 6",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "brookhaven",
@@ -6182,7 +6248,8 @@
               "id": "park-ward-2",
               "title": "Park District Director, Ward 2",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "brookhaven",
@@ -6285,7 +6352,8 @@
               "id": "park-ward-4",
               "title": "Park District Director, Ward 4",
               "method": {
-                "kind": "single"
+                "kind": "single",
+                "seats": 1
               },
               "location": {
                 "ballot": "brookhaven",
@@ -6404,7 +6472,9 @@
               "subtitle": "Vote for no more than 4",
               "method": {
                 "kind": "multiple",
-                "seats": 4
+                "votes": 4,
+                "seats": 4,
+                "min": 1
               },
               "location": {
                 "ballot": "millbrook",
@@ -6611,7 +6681,9 @@
               "subtitle": "Vote for no more than 3",
               "method": {
                 "kind": "multiple",
-                "seats": 3
+                "votes": 3,
+                "seats": 3,
+                "min": 1
               },
               "location": {
                 "ballot": "millbrook",
@@ -6806,7 +6878,8 @@
           "title": "Transit Director, District 5",
           "subtitle": "Brookhaven",
           "method": {
-            "kind": "single"
+            "kind": "single",
+            "seats": 1
           },
           "location": {
             "ballot": "transit",
@@ -6875,7 +6948,8 @@
           "title": "Transit Director, District 7",
           "subtitle": "Ashford and Brookhaven",
           "method": {
-            "kind": "single"
+            "kind": "single",
+            "seats": 1
           },
           "location": {
             "ballot": "transit",
@@ -6944,7 +7018,8 @@
           "title": "Transit Director, District 9",
           "subtitle": "Ashford",
           "method": {
-            "kind": "single"
+            "kind": "single",
+            "seats": 1
           },
           "location": {
             "ballot": "transit",

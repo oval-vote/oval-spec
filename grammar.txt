@@ -194,12 +194,28 @@ Contest : Requirement? Extensibility? `contest` Identifier String ContestKind Ne
 
 ContestKind :
 
-- `single`
-- `multiple` Integer
-- `ranked` RankedMax?
+- `single` Seats?
+- `multiple` Integer MultipleModifier*
+- `ranked` RankedModifier*
 - `retention`
 
+Seats : `seats` Integer
+
+Minimum : `min` Integer
+
 RankedMax : `max` Integer
+
+MultipleModifier :
+
+- Seats
+- Minimum
+
+RankedModifier :
+
+- Seats
+- RankedMax
+- Minimum
+- `all`
 
 ContestBlock : Indent ContestEntry+ Dedent
 

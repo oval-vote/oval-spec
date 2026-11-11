@@ -774,12 +774,28 @@ Contest : Requirement? Extensibility? `contest` Identifier String ContestKind Ne
 
 ContestKind :
 
-- `single`
-- `multiple` Integer
-- `ranked` RankedMax?
+- `single` Seats?
+- `multiple` Integer MultipleModifier*
+- `ranked` RankedModifier*
 - `retention`
 
+Seats : `seats` Integer
+
+Minimum : `min` Integer
+
 RankedMax : `max` Integer
+
+MultipleModifier :
+
+- Seats
+- Minimum
+
+RankedModifier :
+
+- Seats
+- RankedMax
+- Minimum
+- `all`
 
 ContestBlock : Indent ContestEntry+ Dedent
 
@@ -812,14 +828,52 @@ contest @mayor "Mayor" ranked max 5
       ...
 ```
 
-The contest kind is written on the header line after the title:
+The contest kind is written on the header line after the title, followed by the modifiers the kind
+accepts:
 
-| Kind           | Meaning                          | Argument                                         |
-| -------------- | -------------------------------- | ------------------------------------------------ |
-| `single`       | Vote for one.                    | none                                             |
-| `multiple` _n_ | Vote for up to _n_; _n_ elected. | `Integer`, required, at least 2                  |
-| `ranked`       | Rank choices.                    | optional `max` `Integer`: how many may be ranked |
-| `retention`    | Yes or no on one officeholder.   | none                                             |
+| Kind           | Meaning                                                                      | Modifiers                    |
+| -------------- | ---------------------------------------------------------------------------- | ---------------------------- |
+| `single`       | Vote for one.                                                                | `seats`                      |
+| `multiple` _n_ | Vote for up to _n_, where _n_ is at least 2.                                 | `seats`, `min`               |
+| `ranked`       | Rank choices in order of preference.                                         | `seats`, `max`, `min`, `all` |
+| `retention`    | Yes or no on one candidate: a retention, or a sole candidate's confirmation. | none                         |
+
+| Modifier    | Meaning                                                                 | Default                                  |
+| ----------- | ----------------------------------------------------------------------- | ---------------------------------------- |
+| `seats` _n_ | How many candidates are elected, at least 1.                            | 1, or the number of votes for `multiple` |
+| `max` _n_   | How many choices a voter may rank, at least 1.                          | unlimited                                |
+| `min` _n_   | How many choices a ballot that marks the contest must mark, at least 1. | 1                                        |
+| `all`       | A ballot that marks the contest must rank every printed choice.         | not required                             |
+
+Each modifier appears at most once, in any order. `all` excludes `max` and `min`, and `min` may not
+exceed `max` or, for `multiple`, the number of votes.
+
+```oval example
+contest @legco "Legislative Council, Hong Kong Island" single seats 2
+contest @atlarge "City Council At-Large" multiple 5 seats 7
+contest @council "City Council" ranked seats 3 max 6
+contest @house "House of Representatives, Division of Wills" ranked all
+```
+
+The first is the single non-transferable vote: one vote, two winners. The second is limited voting,
+as in Philadelphia's at-large council race: five votes, seven winners. The third is the single
+transferable vote with three winners and at most six rankings, as in Portland. The fourth requires
+every box to be numbered, as for the Australian House of Representatives.
+
+`min` counts the marks a ballot needs when it marks the contest at all. Whether the contest may be
+left blank is decided by its requirement, not by `min`, so the two combine freely:
+
+```oval example
+contest @board "School Board" multiple 3 seats 4 min 2
+required contest @commission "County Commission" multiple 3 min 3
+```
+
+The first elects four and accepts two or three marks, or none. The second must be answered, and only
+with all three votes: a full-slate rule.
+
+A `retention` contest asks for a yes or no on its one candidate. When the campaign is `incumbent`,
+it is a retention vote, as for a judge; otherwise it is a confirmation, as when a sole candidate for
+mayor in Poland must still win a yes vote.
 
 A contest's block contains its `Campaign`s in ballot order and its `ContestRecommend`s. The grammar
 accepts any number of each; validation requires at least one campaign except in a retention contest
@@ -1466,7 +1520,8 @@ Occurs when a line carries a token the grammar does not accept at that point and
 ended: a value of the wrong kind, a token after a complete entry, a second value where only one is
 allowed, or text on the same line after a Markdown field's `:`. The error is reported as
 `unexpected-token` and spans from that token to the end of the line. To recover, skip the line. The
-diagnostic names what was expected.
+diagnostic names what was expected. A contest-kind modifier the kind does not accept, such as `max`
+after `single` or anything after `retention`, is an unexpected token.
 
 ```oval example
 date 2026-11-03
@@ -1532,9 +1587,10 @@ contest @mayor "Mayor"
 #### Missing Value
 
 Occurs when a line ends where a value is required: after a field keyword, where a Markdown field
-requires `:`; after `oval`; after `multiple` or `max`; after `as`; after a `,` in a string list; or
-after a measure's `recommend`. The error is reported as `missing-value` and is zero-length at the
-end of the line. To recover, assume the missing token; the field is kept with no value.
+requires `:`; after `oval`; after `multiple`, `seats`, `max`, or `min`; after `as`; after a `,` in a
+string list; or after a measure's `recommend`. The error is reported as `missing-value` and is
+zero-length at the end of the line. To recover, assume the missing token; the field is kept with no
+value.
 
 ```oval example
 subtitle "Vote for one"
@@ -1686,6 +1742,20 @@ campaign incumbent withdrawn @bsantos "Beatriz Santos"
 
 ```oval counter-example
 campaign incumbent incumbent @bsantos "Beatriz Santos"
+```
+
+#### Repeated Modifier
+
+Occurs when `seats`, `max`, `min`, or `all` appears twice in one contest header. The error is
+reported as `repeated-modifier` and spans the second occurrence, with its number. To recover, set it
+aside.
+
+```oval example
+contest @board "School Board" ranked max 6 min 3
+```
+
+```oval counter-example
+contest @board "School Board" ranked max 6 max 4
 ```
 
 #### Misplaced Entry
@@ -2099,6 +2169,46 @@ contest @board "School Board" ranked max 3
 contest @board "School Board" ranked max 0
 ```
 
+#### Invalid Seat Count
+
+Occurs when the `Integer` after `seats` is 0. The error is reported as `invalid-seat-count` and
+spans the integer.
+
+```oval example
+contest @council "City Council" ranked seats 3
+```
+
+```oval counter-example
+contest @council "City Council" ranked seats 0
+```
+
+#### Invalid Minimum
+
+Occurs when the `Integer` after `min` is 0, exceeds the `max` of a `ranked` contest, or exceeds the
+number of votes of a `multiple` contest. A ballot could then never meet the minimum. The error is
+reported as `invalid-minimum` and spans the integer.
+
+```oval example
+contest @board "School Board" multiple 3 min 2
+```
+
+```oval counter-example
+contest @board "School Board" multiple 3 min 4
+```
+
+#### Ranked All With a Limit
+
+Occurs when `all` appears in a header with `max` or `min`. Ranking every printed choice leaves no
+room for either limit. The error is reported as `ranked-all-with-limit` and spans `all`.
+
+```oval example
+contest @house "House of Representatives" ranked all
+```
+
+```oval counter-example
+contest @house "House of Representatives" ranked all max 6
+```
+
 #### Retention Campaign Count
 
 Occurs when a `retention` contest has no campaign or more than one. The error is reported as
@@ -2122,8 +2232,8 @@ contest @judge-ueda "Retain Judge Ueda?" retention
 
 #### Party Campaign in a Retention Contest
 
-Occurs when a `retention` contest's campaign is a party campaign. A retention question asks whether
-one officeholder keeps their office, so its campaign names a candidate. The error is reported as
+Occurs when a `retention` contest's campaign is a party campaign. A retention question asks for a
+yes or no on one candidate, so its campaign names a candidate. The error is reported as
 `retention-party-campaign` and spans the campaign's line.
 
 ```oval example
@@ -2472,13 +2582,14 @@ ballot @city-2 "City of Ashford"
 
 #### Support Beyond Multiple Count
 
-Occurs when a `multiple` contest elects _n_ and its recommendation's `support` lines name more than
-_n_ choices in total, counting each write-in as one. The author may mean to rank more acceptable
-candidates than there are seats, so this is a warning rather than an error. It is reported as
-`support-over-count` and spans the first choice beyond _n_.
+Occurs when a `multiple` contest gives the voter _n_ votes and its recommendation's `support` lines
+name more than _n_ choices in total, counting each write-in as one. The count is against votes, not
+seats: in limited voting there are more seats than votes. The author may mean to rank more
+acceptable candidates than there are votes, so this is a warning rather than an error. It is
+reported as `support-over-count` and spans the first choice beyond _n_.
 
 ```oval example
-contest @council "City Council" multiple 2
+contest @council "City Council" multiple 2 seats 3
   campaign @aokafor "Ada Okafor"
   campaign @bsantos "Beatriz Santos"
   campaign @cfox "Carl Fox"
@@ -2487,13 +2598,41 @@ contest @council "City Council" multiple 2
 ```
 
 ```oval counter-example
-contest @council "City Council" multiple 2
+contest @council "City Council" multiple 2 seats 3
   campaign @aokafor "Ada Okafor"
   campaign @bsantos "Beatriz Santos"
   campaign @cfox "Carl Fox"
   recommend
     support @aokafor @bsantos
     support @cfox
+```
+
+#### Support Below the Minimum
+
+Occurs when a recommendation in a `multiple` or `ranked` contest has a `support` line and its
+`support` lines name fewer choices in total than the contest's `min`, or, in a `ranked all` contest,
+fewer than its campaigns, counting each write-in as one. A reader who marks only those choices casts
+a ballot that does not count. Advice such as "rank Okafor first, then choose for yourself" is
+legitimate, so this is a warning rather than an error. A recommendation with no `support` line is
+not checked. The warning is reported as `support-below-minimum` and spans the last `support` line.
+
+```oval example
+contest @board "School Board" ranked min 2
+  campaign @aokafor "Ada Okafor"
+  campaign @bsantos "Beatriz Santos"
+  campaign @cfox "Carl Fox"
+  recommend
+    support @aokafor
+    support @bsantos
+```
+
+```oval counter-example
+contest @board "School Board" ranked min 2
+  campaign @aokafor "Ada Okafor"
+  campaign @bsantos "Beatriz Santos"
+  campaign @cfox "Carl Fox"
+  recommend
+    support @aokafor
 ```
 
 #### Write-in on the Ballot
@@ -2624,8 +2763,8 @@ syntax tree or the diagnostics.
 - **Absent fields are omitted.** An optional field the author did not write is not present; it is
   never `null`. `supporters` and `opponents` therefore have three states: omitted (not researched),
   `[]` (researched, none), or a list.
-- **Booleans are always present.** `incumbent`, `withdrawn`, `required`, and `extensible` are
-  written even when false.
+- **Booleans are always present.** `incumbent`, `withdrawn`, `required`, `extensible`, and
+  `complete` are written even when false.
 - **The root echoes the version marker.** `oval` is the document's declared major version as an
   integer, `1`. Later editions of the same major version only add keys and enumerated values to the
   output, so a consumer written to an earlier edition reads the output of a later one.
@@ -2751,11 +2890,17 @@ A race between campaigns for an office.
 
 The voting method, from the contest header.
 
-| Key     | Type                                                       | Required                 | Meaning                                                                       |
-| ------- | ---------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------- |
-| `kind`  | one of `"single"`, `"multiple"`, `"ranked"`, `"retention"` | yes                      | One of `single`, `multiple`, `ranked`, or `retention`.                        |
-| `seats` | integer, at least 2                                        | with `"multiple"`        | How many candidates are elected, from `multiple`.                             |
-| `max`   | integer, at least 1                                        | optional with `"ranked"` | How many candidates a voter may rank, from `max`, when the contest limits it. |
+| Key        | Type                                                       | Required                 | Meaning                                                                                                                                     |
+| ---------- | ---------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kind`     | one of `"single"`, `"multiple"`, `"ranked"`, `"retention"` | yes                      | One of `single`, `multiple`, `ranked`, or `retention`.                                                                                      |
+| `seats`    | integer, at least 1                                        | with `"single"`          | How many candidates are elected, from `seats`; 1 if not written.                                                                            |
+| `votes`    | integer, at least 2                                        | with `"multiple"`        | How many choices a voter may mark, from `multiple`.                                                                                         |
+| `seats`    | integer, at least 1                                        | with `"multiple"`        | How many candidates are elected, from `seats`; the number of votes if not written.                                                          |
+| `min`      | integer, at least 1                                        | with `"multiple"`        | How many choices a ballot that marks the contest must mark, from `min`; 1 if not written.                                                   |
+| `seats`    | integer, at least 1                                        | with `"ranked"`          | How many candidates are elected, from `seats`; 1 if not written.                                                                            |
+| `max`      | integer, at least 1                                        | optional with `"ranked"` | How many choices a voter may rank, from `max`. Omitted when unlimited.                                                                      |
+| `min`      | integer, at least 1                                        | with `"ranked"`          | How many choices a ballot that ranks the contest must rank, from `min`; 1 if not written. Derived as the number of campaigns when complete. |
+| `complete` | boolean                                                    | with `"ranked"`          | Whether every printed choice must be ranked, from `all`.                                                                                    |
 
 #### Campaign
 
@@ -2903,6 +3048,7 @@ Everything below is computed from the document; none of it can disagree with the
 | `location`           | contest, measure, question entry | `ballot`, the innermost enclosing ballot's identifier; `section`, the enclosing section's title if any; `path`, every enclosing ballot's identifier outermost first, ending with `ballot`. |
 | `required`           | contest, measure, question entry | `true` when the nearest requirement on the question, its section, or its ballots is `required`; `false` when it is `optional` or there is none.                                            |
 | `extensible`         | contest                          | `true` when the nearest extensibility on the contest, its section, or its ballots is `extensible` and the contest is not `retention`.                                                      |
+| `min`                | method                           | For `multiple` and `ranked`, the written `min`, or 1 when none is written; for `ranked all`, the number of campaigns.                                                                      |
 | `index`              | campaign                         | Position in the contest's `campaigns` array.                                                                                                                                               |
 | `head`               | campaign                         | Identifier of the first member: a candidate or a party, according to the campaign's `kind`.                                                                                                |
 | `label`              | campaign                         | The members' names joined with `" / "`, head first. For a single member, its name.                                                                                                         |
@@ -2934,8 +3080,9 @@ The repository's `mise.toml` installs `check-jsonschema`.
 
 A formatter rewrites a well-formed document into the canonical style below. Formatting never changes
 meaning: the formatted document has the same significant tokens, except the redundant modifiers it
-removes and the references it rewrites, the same Markdown values, and compiles to the same canonical
-output as the original. Formatting is idempotent.
+removes, the references it rewrites, and the voting-method modifiers it removes or reorders, the
+same Markdown values, and compiles to the same canonical output as the original. Formatting is
+idempotent.
 
 A formatter refuses a document with lexical or syntax errors and reports them instead. Recovery from
 errors produces a tree whose shape the author did not intend, and reformatting around it could move
@@ -3054,6 +3201,26 @@ contest @governor "Governor and Lieutenant Governor" single
 
 Both name the same campaign, and the canonical output records a choice by its campaign's head, so
 the rewrite does not change the output.
+
+### 6.6. Voting methods
+
+A formatter writes the modifiers of a contest kind in the order `seats`, `max`, `min`, with `all`
+last. It removes a modifier that states its default: `seats 1` after `single` or `ranked`, `seats`
+equal to the number of votes after `multiple`, and `min 1`.
+
+```oval counter-example
+contest @board "School Board" ranked min 1 seats 1 max 6
+contest @council "City Council" multiple 3 min 2 seats 3
+```
+
+A formatter rewrites the headers above as:
+
+```oval example
+contest @board "School Board" ranked max 6
+contest @council "City Council" multiple 3 min 2
+```
+
+Both pairs compile to the same method, so neither change alters the canonical output.
 
 ---
 
@@ -3255,12 +3422,28 @@ Contest : Requirement? Extensibility? `contest` Identifier String ContestKind Ne
 
 ContestKind :
 
-- `single`
-- `multiple` Integer
-- `ranked` RankedMax?
+- `single` Seats?
+- `multiple` Integer MultipleModifier*
+- `ranked` RankedModifier*
 - `retention`
 
+Seats : `seats` Integer
+
+Minimum : `min` Integer
+
 RankedMax : `max` Integer
+
+MultipleModifier :
+
+- Seats
+- Minimum
+
+RankedModifier :
+
+- Seats
+- RankedMax
+- Minimum
+- `all`
 
 ContestBlock : Indent ContestEntry+ Dedent
 
@@ -3392,7 +3575,7 @@ from the grammar; nothing is reserved, since identifiers begin with `@`.
 | Party fields     | `abbreviation` `website`                                                                         |
 | Candidate fields | `designation`                                                                                    |
 | Ballot fields    | `eligibility`                                                                                    |
-| Contest header   | `single` `multiple` `ranked` `retention` `max`                                                   |
+| Contest header   | `single` `multiple` `ranked` `retention` `seats` `max` `min` `all`                               |
 | Contest fields   | `subtitle` `tabulation`                                                                          |
 | Campaign         | `incumbent` `withdrawn` `as`                                                                     |
 | Requirement      | `required` `optional`                                                                            |
