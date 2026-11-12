@@ -1698,9 +1698,7 @@ and after `support` or `oppose`, which require at least one choice, a reference 
 also occurs when `@` is not followed by a `Word`. Any other token in that position is an unexpected
 token. The error is reported as `missing-identifier` and is zero-length at the position where the
 identifier would begin, or, after an `@` with no `Word`, just after the `@`, where the `Word` would
-begin. To recover, assume the missing token and continue with the rest of the line; after `support`
-or `oppose`, a `String` in the identifier's place is skipped with it, since it is not a second
-error. A name written there is usually a write-in missing its keyword: write `write-in "Name"`.
+begin. To recover, assume the missing token and continue with the rest of the line.
 
 ```oval example
 party @dem "Democratic"
@@ -1717,6 +1715,15 @@ party @ "Democratic"
 ```
 
 The error is just after the `@`. The party is kept with its name and an identifier with no word.
+
+```oval counter-example
+recommend
+  support "Jane Doe"
+```
+
+The error is just before the string. No choice begins with a `String`, so the string is then an
+unexpected token, and the rest of the line is skipped. A name written there is usually a write-in
+missing its keyword: write `support write-in "Jane Doe"`.
 
 #### Missing Name
 
