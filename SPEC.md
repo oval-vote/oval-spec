@@ -1812,10 +1812,11 @@ The first ballot is kept with no items.
 
 #### Unexpected Block
 
-Occurs when a line that takes no block is followed by one: a field line other than a Markdown
-field's or a `party` field's, a `support` or `oppose` line, or a version marker. The error is
-reported as `unexpected-block` and spans the block. To recover, skip the entry, which here is the
-block alone; the line before it is kept.
+Occurs when a line that takes no block is followed by one: a field line other than a `party`
+field's, a `support` or `oppose` line, or a version marker. A Markdown field's line takes a body,
+which is not a block, so its indented lines are an unexpected block when the line does not end with
+`:` and the lexer opened no body. The error is reported as `unexpected-block` and spans the block.
+To recover, skip the entry, which here is the block alone; the line before it is kept.
 
 ```oval example
 candidate @cfox "Carl Fox"
@@ -1827,6 +1828,14 @@ candidate @cfox "Carl Fox"
   designation "Small Business Owner"
     website https://fox.example
 ```
+
+```oval counter-example
+note: Read both arguments
+  Then decide
+```
+
+The line does not end with `:`, so no body is opened. The text after the `:` is an unexpected token,
+and the indented line is an unexpected block.
 
 #### Unexpected Entry
 
