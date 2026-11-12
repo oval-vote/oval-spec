@@ -151,10 +151,7 @@ CandidateField :
 - PartyRef
 - `note` MarkdownBody
 
-PartyRef :
-
-- `party` Identifier Newline
-- `party` Identifier String Newline PartyBlock?
+PartyRef : `party` Identifier String? Newline PartyBlock?
 
 Ballot : Requirement? Extensibility? `ballot` Identifier String Newline BallotBlock
 
