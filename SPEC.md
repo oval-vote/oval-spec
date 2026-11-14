@@ -1108,10 +1108,11 @@ advises against; it is unordered and may appear at most once.
 A **choice** is a reference or a write-in. Campaigns have no identifiers. Every reference in
 `support` or `oppose` names a campaign _by one of its members_: a candidate identifier for a
 candidate campaign, or a party identifier for a party campaign. It resolves to the one campaign,
-among the enclosing contest's campaigns, whose members include that candidate or party. A
-candidate's `party` field is not membership, so naming a candidate never resolves to a party
-campaign. A candidate or party may not be a member of more than one campaign within the same
-contest. Any member may be named; a formatter rewrites the reference to name the campaign's head.
+among the enclosing contest's campaigns, whose members include that candidate or party; if more than
+one does, which is the error `member-in-two-campaigns`, it resolves to the first. A candidate's
+`party` field is not membership, so naming a candidate never resolves to a party campaign. A
+candidate or party may not be a member of more than one campaign within the same contest. Any member
+may be named; a formatter rewrites the reference to name the campaign's head.
 
 A **write-in** is a choice the voter writes on the ballot by hand. It is not a campaign, since it is
 not printed, and is valid only in an extensible contest. `write-in` followed by a string names the
@@ -2486,8 +2487,8 @@ measure @prop-a "Proposition A"
 
 #### Campaign Not in Contest
 
-Occurs when a `support` or `oppose` reference names a candidate or party that is a member of no
-campaign in the enclosing contest. A recommendation names a campaign by one of its members, and a
+Occurs when a `support` or `oppose` reference resolves to a candidate or party that is a member of
+no campaign in the enclosing contest. A recommendation names a campaign by one of its members, and a
 candidate's `party` field is not membership. The error is reported as `campaign-not-in-contest` and
 spans the reference.
 
@@ -2526,10 +2527,11 @@ recommend
 
 #### Repeated Stance
 
-Occurs when the same choice appears more than once across a recommendation's `support` lines and its
-`oppose` line. Two choices are the same when they are references that resolve to the same campaign,
-even if they name different members; when they are write-ins with identical names; or when both are
-bare write-ins. The error is reported as `repeated-stance` and spans each choice after the first.
+Occurs when the same choice appears more than once across a recommendation's `support` and `oppose`
+lines. Two choices are the same when they are references with the same identifier, or that resolve
+to the same campaign even if they name different members; when they are write-ins with identical
+names; or when both are bare write-ins. The error is reported as `repeated-stance` and spans each
+choice after the first.
 
 ```oval example
 recommend
@@ -2610,7 +2612,8 @@ contest @board "School Board" ranked max 2
 Occurs when a `retention` contest's recommendation is anything other than one `support` line naming
 only its campaign, one `oppose` line naming only its campaign, `recommend no-position`, or
 `recommend abstain`. A retention question has a single answer, yes or no. The error is reported as
-`retention-stance` and spans the line that breaks the shape.
+`retention-stance` and spans each `support` or `oppose` line after the first, and the first when it
+names anything other than the contest's first campaign.
 
 ```oval example
 contest @judge-ueda "Retain Judge Ueda?" retention
