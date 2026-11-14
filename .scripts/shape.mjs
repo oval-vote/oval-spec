@@ -51,7 +51,9 @@ function typeOf(property) {
       return `array of ${plural}`;
     }
     case "integer":
-      return property.minimum === undefined ? "integer" : `integer, at least ${property.minimum}`;
+      if (property.minimum === undefined) return "integer";
+      if (property.maximum === undefined) return `integer, at least ${property.minimum}`;
+      return `integer, from ${property.minimum} to ${property.maximum}`;
     case "string":
       if (property.format === "uri") return "string, a URL";
       if (property.format === "date") return "string, `YYYY-MM-DD`";
