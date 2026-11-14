@@ -381,7 +381,9 @@ And these inline constructs:
 
 - Emphasis and strong emphasis.
 - Links: inline links, reference links with their link reference definitions in the same body, and
-  autolinks. Every link destination is an absolute `http` or `https` URL.
+  autolinks. Every link destination is an absolute `http` or `https` URL: once backslash escapes and
+  character references are resolved, it begins with `http://` or `https://`, in lowercase, followed
+  by at least one character. An email autolink's destination is a `mailto:` URL, so it is not one.
 - Backslash escapes, and entity and numeric character references.
 
 A body may not contain:
@@ -2702,8 +2704,9 @@ section "Judicial"
 Occurs when a `MarkdownBlock` value, parsed as described in Section 2.2 (Markdown Profile), contains
 a construct outside the profile, or a link whose destination is not an absolute `http` or `https`
 URL. The error is reported as `markdown-profile`, once per construct, and spans the construct within
-the body. Checking this rule requires a CommonMark parser with the tables extension; no other rule
-does.
+the body, without the spaces, tabs, and line terminators it begins or ends with. A link is reported
+where it is written, even when its destination comes from a link reference definition. Checking this
+rule requires a CommonMark parser with the tables extension; no other rule does.
 
 ```oval example
 note:
