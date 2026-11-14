@@ -2400,6 +2400,21 @@ contest @board "School Board" multiple 3 min 2
 contest @board "School Board" multiple 3 min 4
 ```
 
+#### Integer Too Large
+
+Occurs when the `Integer` after `multiple`, `seats`, `max`, or `min` is greater than
+9007199254740991, which is 2<sup>53</sup> − 1. That is the largest integer a JSON consumer can be
+relied on to read exactly (RFC 7493), so the canonical output could not carry a larger one. The
+error is reported as `integer-too-large` and spans the integer.
+
+```oval example
+contest @council "City Council" ranked seats 3 max 9007199254740991
+```
+
+```oval counter-example
+contest @council "City Council" ranked seats 3 max 9007199254740992
+```
+
 #### Ranked All With a Limit
 
 Occurs when `all` appears in a header with `max` or `min`. Ranking every printed choice leaves no
