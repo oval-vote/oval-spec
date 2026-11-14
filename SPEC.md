@@ -381,8 +381,7 @@ And these inline constructs:
 
 - Emphasis and strong emphasis.
 - Links: inline links, reference links with their link reference definitions in the same body, and
-  autolinks. Every link destination is an absolute `http` or `https` URL, and `http` draws a
-  warning.
+  autolinks. Every link destination is an absolute `http` or `https` URL.
 - Backslash escapes, and entity and numeric character references.
 
 A body may not contain:
@@ -2889,10 +2888,10 @@ measure @prop-a "Proposition A"
 
 #### Insecure URL
 
-Occurs when a `Url`, or a link destination inside a `MarkdownBlock`, uses the `http` scheme rather
-than `https`. The URL is valid, but a reader following it is not protected from tampering, and most
-sites that still answer on `http` redirect to `https`. The warning is reported as `insecure-url` and
-spans the URL, or the link destination within the body.
+Occurs when a `Url` uses the `http` scheme rather than `https`. The URL is valid, but a reader
+following it is not protected from tampering, and most sites that still answer on `http` redirect to
+`https`. The warning is reported as `insecure-url` and spans the URL. A link destination inside a
+`MarkdownBlock` is part of the body's prose, not a value of the document, so it is not checked.
 
 ```oval example
 website https://santosformayor.example
