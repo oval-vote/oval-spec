@@ -2284,8 +2284,9 @@ campaign
 
 #### Duplicate Member
 
-Occurs when a candidate or party appears twice among one campaign's members. The error is reported
-as `duplicate-member` and spans the later member.
+Occurs when two members of one campaign have the same identifier. The error is reported as
+`duplicate-member` and spans each member whose identifier is that of an earlier member of the
+campaign.
 
 ```oval example
 campaign
@@ -2301,8 +2302,9 @@ campaign
 
 #### Member in Two Campaigns
 
-Occurs when a candidate or party is a member of more than one campaign in the same contest. The
-error is reported as `member-in-two-campaigns` and spans the later member.
+Occurs when members of two campaigns in the same contest have the same identifier. The error is
+reported as `member-in-two-campaigns` and spans each member whose identifier is that of a member of
+an earlier campaign in the contest.
 
 ```oval example
 contest @mayor "Mayor" single
@@ -2320,11 +2322,12 @@ contest @mayor "Mayor" single
 
 #### Party in Two Campaigns
 
-Occurs when a member of a candidate campaign has a `party`, and that party is a member of another
-campaign in the same contest. The ballot would then offer both the candidate and their party as
-separate choices for one question, which almost always means the contest was transcribed wrong. The
-error is reported as `party-in-two-campaigns` and spans whichever of the two members comes later in
-the source.
+Occurs when a member of a candidate campaign resolves to a candidate whose declaration has a `party`
+field, and a member of another campaign in the same contest has the identifier that field names. The
+ballot would then offer both the candidate and their party as separate choices for one question,
+which almost always means the contest was transcribed wrong. The error is reported as
+`party-in-two-campaigns` and spans whichever of the two members comes later in the source. A member
+that is the later of several such pairs is reported once.
 
 ```oval example
 contest @assembly "National Assembly" single
