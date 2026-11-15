@@ -296,7 +296,8 @@
             "seats": {
               "description": "How many candidates are elected, from `seats`; 1 if not written.",
               "type": "integer",
-              "minimum": 1
+              "minimum": 1,
+              "maximum": 9007199254740991
             }
           }
         },
@@ -311,17 +312,20 @@
             "votes": {
               "description": "How many choices a voter may mark, from `multiple`.",
               "type": "integer",
-              "minimum": 2
+              "minimum": 2,
+              "maximum": 9007199254740991
             },
             "seats": {
               "description": "How many candidates are elected, from `seats`; the number of votes if not written.",
               "type": "integer",
-              "minimum": 1
+              "minimum": 1,
+              "maximum": 9007199254740991
             },
             "min": {
               "description": "How many choices a ballot that marks the contest must mark, from `min`; 1 if not written.",
               "type": "integer",
-              "minimum": 1
+              "minimum": 1,
+              "maximum": 9007199254740991
             }
           }
         },
@@ -336,17 +340,20 @@
             "seats": {
               "description": "How many candidates are elected, from `seats`; 1 if not written.",
               "type": "integer",
-              "minimum": 1
+              "minimum": 1,
+              "maximum": 9007199254740991
             },
             "max": {
               "description": "How many choices a voter may rank, from `max`. Omitted when unlimited.",
               "type": "integer",
-              "minimum": 1
+              "minimum": 1,
+              "maximum": 9007199254740991
             },
             "min": {
               "description": "How many choices a ballot that ranks the contest must rank, from `min`; 1 if not written. Derived as the number of campaigns when complete.",
               "type": "integer",
-              "minimum": 1
+              "minimum": 1,
+              "maximum": 9007199254740991
             },
             "complete": {
               "description": "Whether every printed choice must be ranked, from `all`.",
