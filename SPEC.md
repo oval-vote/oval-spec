@@ -100,9 +100,10 @@ This document defines Oval in four parts, each building on the one before it:
   into a valid document.
 - **Canonical output.** The JSON value a valid document compiles to. It is the guide with every
   reference resolved and with the fields any renderer would otherwise recompute, in a shape fixed by
-  a published [JSON Schema](https://json-schema.org). Compiled output should be unaffected by file
-  organization, comments, whitespace, and formatting — two guides with the same meaning should
-  compile to the same output.
+  a published [JSON Schema](https://json-schema.org). Compiled output is unaffected by comments,
+  whitespace, formatting, where a party or candidate is declared, and the order of choices the
+  language treats as unordered — two guides with the same meaning compile to the same output.
+  Section 5 says exactly which differences carry no meaning.
 
 The appendices collect the complete grammar and the list of keywords.
 
@@ -1106,7 +1107,9 @@ Measures use the same `RecommendFieldBlock`.
 
 Each `support` line is one **tier**. Several `support` lines are several tiers, in order from most
 to least preferred. Choices within one line are interchangeable. `oppose` lists choices the author
-advises against; it is unordered and may appear at most once.
+advises against; it is unordered and may appear at most once. Because the order of the choices on
+one line carries no meaning, the canonical output does not keep it: Section 5.1 fixes the order of a
+tier's choices and of `oppose`.
 
 A **choice** is a reference or a write-in. Campaigns have no identifiers. Every reference in
 `support` or `oppose` names a campaign _by one of its members_: a candidate identifier for a
@@ -2975,6 +2978,22 @@ schema follows, lays out the shape it fixes, and defines the derived fields. The
 _canonical_ because two conformant implementations must produce the same value for the same
 document; it is a contract between implementations and consumers, not a document for people to read.
 
+Two documents have the **same meaning**, and compile to the same value, when they differ only in:
+
+- comments, whitespace, and blank lines;
+- anything a formatter rewrites (Section 6);
+- the order of fields, relative to one another and to the children written beside them;
+- whether a party or candidate is declared at the top level or inline, and where among the top-level
+  declarations it is written, provided a campaign uses it;
+- the order of the choices on one `support` line, or on the `oppose` line.
+
+Every other difference is a difference in meaning and changes the output. That includes identifiers:
+the output carries them, as each entity's `id` and wherever an entity is referred to, so that
+consumers can address entities across compilations, and renaming one changes the output everywhere
+it appears. It also includes the order of candidates that are in no campaign and of parties that no
+campaign reaches. A document that has any carries an `unused-declaration` warning, and they keep
+their document order (Section 5.1).
+
 The output is the semantic model, not the syntax tree. It carries no source positions, comments, or
 whitespace, so two parsers cannot disagree about it on formatting. Tools that need positions use the
 syntax tree or the diagnostics.
@@ -2986,9 +3005,19 @@ syntax tree or the diagnostics.
   its spelling too, such as `"no-position"`. Derived fields use the same `snake_case` style. The one
   exception is the contest's voting method, which the language writes on the header line without a
   keyword; it is the `method` object, because `kind` is the discriminator used by every item object.
-- **Arrays, not maps.** Order is meaning in Oval, so parties, candidates, ballots, items, campaigns,
-  members, and tiers are arrays in document or ballot order. Entities carry an `id`, and references
-  are identifier strings without the leading `@`.
+- **Arrays, not maps.** Order is meaning in Oval, so ballots, items, campaigns, members, and tiers
+  are arrays in ballot order, the order the document writes them in. Entities carry an `id`, and
+  references are identifier strings without the leading `@`.
+- **Order without meaning is fixed by rule.** Where the order of the source carries no meaning, the
+  output does not follow it, so that documents with the same meaning compile to the same value.
+  - `candidates` lists each candidate at the first campaign member, in ballot order, that names it.
+    Candidates that are a member of no campaign follow, in document order.
+  - `parties` lists each party at the first campaign member, in ballot order, that reaches it: a
+    party member reaches that party, and a candidate member reaches the candidate's party, if it has
+    one. Parties that no member reaches follow, in document order.
+  - The choices of one tier, and the choices of `oppose`, are ordered by campaign index, lowest
+    first; then a bare write-in; then write-ins with names, in lexicographic order of the names'
+    Unicode code points.
 - **Absent fields are omitted.** An optional field the author did not write is not present; it is
   never `null`. `supporters` and `opponents` therefore have three states: omitted (not researched),
   `[]` (researched, none), or a list.
@@ -3023,15 +3052,15 @@ terminator. A key whose meaning begins with "Derived" is computed from the docum
 The canonical output of compiling an Oval document: the data model with every reference resolved,
 plus derived fields for renderers. Keys mirror the language's keywords.
 
-| Key          | Type                    | Required | Meaning                                                                             |
-| ------------ | ----------------------- | -------- | ----------------------------------------------------------------------------------- |
-| `oval`       | integer, at least 1     | yes      | The major version of the Oval language the document declares in its version marker. |
-| `guide`      | Guide                   | yes      | The document-level fields.                                                          |
-| `parties`    | array of Party          | yes      | Every party declared at the top level or inline, in document order.                 |
-| `candidates` | array of Candidate      | yes      | Every candidate declared at the top level or inline, in document order.             |
-| `ballots`    | array of Ballot         | yes      | Root ballots, in presentation order.                                                |
-| `questions`  | array of Question Entry | yes      | Derived. Every contest and measure in ballot order, with where it sits in the tree. |
-| `counts`     | Counts                  | yes      | Derived. Totals across the whole document.                                          |
+| Key          | Type                    | Required | Meaning                                                                                                    |
+| ------------ | ----------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+| `oval`       | integer, at least 1     | yes      | The major version of the Oval language the document declares in its version marker.                        |
+| `guide`      | Guide                   | yes      | The document-level fields.                                                                                 |
+| `parties`    | array of Party          | yes      | Every party declared at the top level or inline, by first use in ballot order; unused parties last.        |
+| `candidates` | array of Candidate      | yes      | Every candidate declared at the top level or inline, by first use in ballot order; unused candidates last. |
+| `ballots`    | array of Ballot         | yes      | Root ballots, in presentation order.                                                                       |
+| `questions`  | array of Question Entry | yes      | Derived. Every contest and measure in ballot order, with where it sits in the tree.                        |
+| `counts`     | Counts                  | yes      | Derived. Totals across the whole document.                                                                 |
 
 #### Guide
 
@@ -3048,15 +3077,15 @@ The document-level fields: what the guide is and which election it covers.
 
 A political party.
 
-| Key            | Type                | Required | Meaning                                                                                         |
-| -------------- | ------------------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `id`           | identifier          | yes      | The party's identifier.                                                                         |
-| `name`         | string              | yes      | The party's name as printed on the ballot.                                                      |
-| `abbreviation` | string              | no       | The short form printed beside candidates, from `abbreviation`.                                  |
-| `website`      | string, a URL       | no       | The party's website, from `website`.                                                            |
-| `note`         | Markdown            | no       | The author's note on the party, from `note`.                                                    |
-| `candidates`   | array of identifier | yes      | Derived. Identifiers of every candidate whose party this is, in document order.                 |
-| `contests`     | array of identifier | yes      | Derived. Identifiers of every contest in which the party is a campaign member, in ballot order. |
+| Key            | Type                | Required | Meaning                                                                                               |
+| -------------- | ------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `id`           | identifier          | yes      | The party's identifier.                                                                               |
+| `name`         | string              | yes      | The party's name as printed on the ballot.                                                            |
+| `abbreviation` | string              | no       | The short form printed beside candidates, from `abbreviation`.                                        |
+| `website`      | string, a URL       | no       | The party's website, from `website`.                                                                  |
+| `note`         | Markdown            | no       | The author's note on the party, from `note`.                                                          |
+| `candidates`   | array of identifier | yes      | Derived. Identifiers of every candidate whose party this is, in the order of the root's `candidates`. |
+| `contests`     | array of identifier | yes      | Derived. Identifiers of every contest in which the party is a campaign member, in ballot order.       |
 
 #### Candidate
 
@@ -3177,8 +3206,8 @@ The author's recommendation on a contest.
 | Key             | Type                                            | Required | Meaning                                                                                                                               |
 | --------------- | ----------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `position`      | one of `"stance"`, `"no-position"`, `"abstain"` | yes      | The kind of recommendation: `stance` when it has `support` or `oppose` lines, otherwise `no-position` or `abstain`, from `recommend`. |
-| `support`       | array of arrays of Choice                       | yes      | Tiers as written, most preferred tier first. Empty unless position is stance.                                                         |
-| `oppose`        | array of Choice                                 | yes      | Choices as written. Empty unless position is stance.                                                                                  |
+| `support`       | array of arrays of Choice                       | yes      | Tiers in the order written, most preferred first, each ordered like `oppose`. Empty unless position is stance.                        |
+| `oppose`        | array of Choice                                 | yes      | Opposed choices by campaign index, then a bare write-in, then named write-ins by name. Empty unless position is stance.               |
 | `justification` | Markdown                                        | no       | The author's reasoning, from `justification`.                                                                                         |
 | `note`          | Markdown                                        | no       | The author's note on the recommendation, from `note`.                                                                                 |
 
@@ -3270,7 +3299,7 @@ Everything below is computed from the document; none of it can disagree with the
 
 | Field                | On                               | Definition                                                                                                                                                                                 |
 | -------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `candidates`         | party                            | Identifiers of every candidate whose party this is, in document order.                                                                                                                     |
+| `candidates`         | party                            | Identifiers of every candidate whose party this is, in the order of the root's `candidates`.                                                                                               |
 | `contests`           | candidate                        | Identifiers of every contest in which the candidate is a campaign member, in ballot order.                                                                                                 |
 | `contests`           | party                            | Identifiers of every contest in which the party is a campaign member, in ballot order.                                                                                                     |
 | `path`               | ballot                           | Identifiers of the enclosing ballots, outermost first, excluding the ballot itself. Empty for a root.                                                                                      |
@@ -3362,7 +3391,10 @@ and kept in source order within a group:
 | Party, Candidate, Member, inline Party | fields only                                                |
 
 Fields keep their source order relative to one another. Children that carry meaning in their order
-(campaigns, members, tiers, items) are never reordered relative to one another.
+(campaigns, members, tiers, items) are never reordered relative to one another. The choices on a
+`support` or `oppose` line, and the top-level declarations, are also kept as written: their order
+carries no meaning, but the canonical output already fixes it (Section 5.1), so a formatter has no
+need to move what the author wrote.
 
 Whether a formatter should instead place fields first in every block, or impose an order among
 fields, is undecided and is expected to become a configurable option rather than a rule here.

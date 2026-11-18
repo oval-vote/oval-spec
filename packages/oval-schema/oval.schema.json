@@ -17,14 +17,14 @@
       "$ref": "#/$defs/guide"
     },
     "parties": {
-      "description": "Every party declared at the top level or inline, in document order.",
+      "description": "Every party declared at the top level or inline, by first use in ballot order; unused parties last.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/party"
       }
     },
     "candidates": {
-      "description": "Every candidate declared at the top level or inline, in document order.",
+      "description": "Every candidate declared at the top level or inline, by first use in ballot order; unused candidates last.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/candidate"
@@ -114,7 +114,7 @@
           "$ref": "#/$defs/markdown"
         },
         "candidates": {
-          "description": "Derived. Identifiers of every candidate whose party this is, in document order.",
+          "description": "Derived. Identifiers of every candidate whose party this is, in the order of the root's `candidates`.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/identifier"
@@ -595,7 +595,7 @@
           "enum": ["stance", "no-position", "abstain"]
         },
         "support": {
-          "description": "Tiers as written, most preferred tier first. Empty unless position is stance.",
+          "description": "Tiers in the order written, most preferred first, each ordered like `oppose`. Empty unless position is stance.",
           "type": "array",
           "items": {
             "type": "array",
@@ -606,7 +606,7 @@
           }
         },
         "oppose": {
-          "description": "Choices as written. Empty unless position is stance.",
+          "description": "Opposed choices by campaign index, then a bare write-in, then named write-ins by name. Empty unless position is stance.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/choice"

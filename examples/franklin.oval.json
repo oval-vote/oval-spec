@@ -12,9 +12,9 @@
       "name": "Democratic",
       "abbreviation": "D",
       "candidates": [
-        "dana-lombardi",
         "hana-nakamura",
         "hiro-eriksen",
+        "dana-lombardi",
         "quinn-okafor",
         "odalys-halvorsen",
         "bram-mendez",
@@ -33,9 +33,9 @@
       "name": "Republican",
       "abbreviation": "R",
       "candidates": [
-        "sofia-yilmaz",
         "yara-bergstrom",
         "omar-rowe",
+        "sofia-yilmaz",
         "talia-jensen",
         "marcus-ndiaye",
         "maeve-haddad",
@@ -92,27 +92,6 @@
     }
   ],
   "candidates": [
-    {
-      "id": "dana-lombardi",
-      "name": "Dana Lombardi",
-      "designation": "United States Senator",
-      "party": "dem",
-      "note": "Appointed in January 2025 to fill the vacancy left by Senator Hale's resignation. Previously\nSecretary of State of Franklin.",
-      "contests": [
-        "us-senate-special",
-        "us-senate-full"
-      ]
-    },
-    {
-      "id": "sofia-yilmaz",
-      "name": "Sofia Yilmaz",
-      "designation": "Business Owner",
-      "party": "gop",
-      "contests": [
-        "us-senate-special",
-        "us-senate-full"
-      ]
-    },
     {
       "id": "hana-nakamura",
       "name": "Hana Nakamura",
@@ -207,6 +186,27 @@
       "party": "ind",
       "contests": [
         "president"
+      ]
+    },
+    {
+      "id": "dana-lombardi",
+      "name": "Dana Lombardi",
+      "designation": "United States Senator",
+      "party": "dem",
+      "note": "Appointed in January 2025 to fill the vacancy left by Senator Hale's resignation. Previously\nSecretary of State of Franklin.",
+      "contests": [
+        "us-senate-special",
+        "us-senate-full"
+      ]
+    },
+    {
+      "id": "sofia-yilmaz",
+      "name": "Sofia Yilmaz",
+      "designation": "Business Owner",
+      "party": "gop",
+      "contests": [
+        "us-senate-special",
+        "us-senate-full"
       ]
     },
     {
