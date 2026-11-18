@@ -3309,9 +3309,9 @@ The repository's `mise.toml` installs `check-jsonschema`.
 
 A formatter rewrites a well-formed document into the canonical style below. Formatting never changes
 meaning: the formatted document has the same significant tokens, except the redundant modifiers it
-removes, the references it rewrites, and the voting-method modifiers it removes or reorders, the
-same Markdown values, and compiles to the same canonical output as the original. Formatting is
-idempotent.
+removes, the references it rewrites, the voting-method modifiers it removes or reorders, and the
+leading zeros it removes from integers, the same Markdown values, and compiles to the same canonical
+output as the original. Formatting is idempotent.
 
 A formatter refuses a document with lexical or syntax errors and reports them instead. Recovery from
 errors produces a tree whose shape the author did not intend, and reformatting around it could move
@@ -3451,6 +3451,24 @@ contest @council "City Council" multiple 3 min 2
 ```
 
 Both pairs compile to the same method, so neither change alters the canonical output.
+
+### 6.7. Integers
+
+A formatter writes every `Integer` without leading zeros, so an integer whose digits are all zeros
+is written `0`. Leading zeros are insignificant, so the rewrite does not change the canonical
+output.
+
+```oval counter-example
+oval 01
+contest @council "City Council" multiple 03 min 002
+```
+
+A formatter rewrites the lines above as:
+
+```oval example
+oval 1
+contest @council "City Council" multiple 3 min 2
+```
 
 ---
 
